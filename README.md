@@ -1,2 +1,2 @@
-# MovieuCupidon - Projet Informatique 2021
+# MovieCupidon - Projet Informatique 2021
 
