@@ -1,16 +1,20 @@
-image: maven:latest
-
-cache:
-  paths:
-    - .m2/repository/
-
-before_script:
-  - apt-get update -qq
-  - apt-get install -y -qq build-essential libz-dev zlib1g-dev
+stages:
+  - build
+  - deploy
 
 build:
+  image: maven:latest
   stage: build
   script:
-    - chmod +x install-graal.sh && ./install-graal.sh jdk8
-    - export GRAALVM_HOME=${CI_PROJECT_DIR}/graalvm-ce-java8-19.3.1
-    - mvn clean install -P native
+    - mvn install
+    - mvn install -Ppackage-docker-image -Ddocker_username=$DOCKER_USERNAME -Ddocker_password=$DOCKER_PASSWORD 
+
+
+deploy:
+  image: docker:latest
+  stage: deploy
+  script:
+    - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+    - docker pull bayar4b/example-service-1
+    - docker run -p 10080:8080 --name=example-service-1 unige/example-service-1
+
