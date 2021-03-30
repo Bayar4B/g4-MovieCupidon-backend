@@ -1,0 +1,21 @@
+stages:
+  - build-and-push
+  
+image: docker:latest
+
+build-and-push:
+  stage: build
+  script:
+      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+      - cd exemple-service-1/
+      - docker build -f src/main/docker/Dockerfile.jvm -t MovieCupidon-backend/example-service-1 .
+      - docker tag MovieCupidon-backend/example-service-1 bayar4b/MovieCupidon-backend_example-service-1:latest 
+      - docker push bayar4b/valuation-service:latest
+
+
+deploy:
+  stage: deploy
+  script:
+    - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+    - docker pull bayar4b/example-service-1
+    - docker run -p 10080:8080 --name=example-service-1 unige/example-service-1
