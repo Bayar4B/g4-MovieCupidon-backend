@@ -2,21 +2,21 @@ stages:
   - build
   - deploy
   
-image: maven:latest
-
 build:
   stage: build
+  image : maven:latest
+  script:
+      - mvn clean install
+
+
+
+deploy:
+  image: docker:latest
+  stage: deploy
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-      - mvn clean install
       - cd exemple-service-1/
       #- ./mvnw clean install
       - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
       - docker tag MovieCupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
       - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
-
-
-deploy:
-  stage: deploy
-  script:
-    - echo "tmp"
