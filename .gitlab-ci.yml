@@ -9,7 +9,7 @@ build:
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - cd exemple-service-1/
-      - ./mvnw clean install
+      #- ./mvnw clean install
       - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
       - docker tag MovieCupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
       - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
