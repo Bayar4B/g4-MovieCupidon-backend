@@ -2,12 +2,13 @@ stages:
   - build
   - deploy
   
-image: docker:latest
+image: maven:latest
 
 build:
   stage: build
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+      - mvn clean install
       - cd exemple-service-1/
       #- ./mvnw clean install
       - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
