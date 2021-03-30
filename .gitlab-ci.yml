@@ -1,5 +1,6 @@
 stages:
   - build
+  - deploy
   
 image: docker:latest
 
@@ -16,6 +17,4 @@ build:
 deploy:
   stage: deploy
   script:
-    - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-    - docker pull bayar4b/example-service-1
-    - docker run -p 10080:8080 --name=example-service-1 unige/example-service-1
+    - echo "tmp"
