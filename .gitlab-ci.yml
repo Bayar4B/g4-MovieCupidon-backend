@@ -6,7 +6,7 @@ build:
   image: maven:latest
   stage: build
   script:
-    - mvn install
+    - mvn clean install
     - mvn install -Ppackage-docker-image -Ddocker_username=$DOCKER_USERNAME -Ddocker_password=$DOCKER_PASSWORD 
 
 
