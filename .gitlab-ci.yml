@@ -1,9 +1,9 @@
 stages:
-  - build-and-push
+  - build
   
 image: docker:latest
 
-build-and-push:
+build:
   stage: build
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
