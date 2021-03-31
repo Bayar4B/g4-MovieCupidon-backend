@@ -22,8 +22,8 @@ deploy:
       - cd exemple-service-1/
       #- ./mvnw clean install
       - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
-      # - docker tag MovieCupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
-      # - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
+      - docker tag MovieCupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
+      - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
 # This file is a template, and might need editing before it works on your project.
 # docker-build-master:
 #   # Official docker image.

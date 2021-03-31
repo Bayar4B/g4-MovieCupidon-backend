@@ -5,11 +5,11 @@
   <groupId>ch.unige</groupId>
   <artifactId>exemple-service-1</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <!-- <parent>
+  <parent>
     <groupId>ch.unige</groupId>
     <artifactId>MovieCupidon-backend</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-  </parent> -->
+  </parent>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
