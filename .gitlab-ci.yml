@@ -7,6 +7,8 @@ build:
   image : maven:latest
   script:
       - mvn package
+  artifacts:
+    untracked: true
 
 
 
