@@ -11,7 +11,7 @@ build:
 
 
 deploy:
-  dependecies:
+  dependencies:
     - build
   image: docker:latest
   stage: deploy
