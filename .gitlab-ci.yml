@@ -1,0 +1,38 @@
+stages:
+  - build
+  - deploy
+  
+build:
+  stage: build
+  image : maven:latest
+  script:
+      - mvn package
+  artifacts:
+    untracked: true
+
+
+
+deploy:
+  dependencies:
+    - build
+  image: docker:latest
+  stage: deploy
+  script:
+      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+      - cd exemple-service-1/
+      #- ./mvnw clean install
+      - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
+      - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
+      - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
+# This file is a template, and might need editing before it works on your project.
+# docker-build-master:
+#   # Official docker image.
+#   image: docker:latest
+#   stage: build
+#   services:
+#     - docker:dind
+#   before_script:
+#     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+#   script:
+#     - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+#     - docker push "$CI_REGISTRY_IMAGE"
