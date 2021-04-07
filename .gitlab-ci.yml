@@ -17,10 +17,13 @@ deploy:
   stage: deploy
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-      # - cd exemple-service-1/
-      - docker build -f lobby-service/src/main/docker/Dockerfile.jvm -t moviecupidon/lobby-service:latest .
+      - cd lobby-service/
+      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/lobby-service:latest .
       - docker push moviecupidon/lobby-service:latest
-      - docker build -f sample-selection-service/src/main/docker/Dockerfile.jvm -t moviecupidon/sample-selection-service:latest .
+      - cd ..
+      - cd sample-selection-service/
+      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/sample-selection-service:latest .
       - docker push moviecupidon/sample-selection-service:latest
+      - cd ..
   # only:
   #   - master
