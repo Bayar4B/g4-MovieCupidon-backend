@@ -34,10 +34,10 @@ deploy:
       - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
 
 
-      - cd ../api-gateway-kong/src/main/docker/
-      - docker build -f Dockerfile -t movie-cupidon-backend/api-gateway .
-      - docker tag movie-cupidon-backend/api-gateway bayar4b/movie-cupidon-backend_api-gateway:latest 
-      - docker push bayar4b/movie-cupidon-backend_api-gateway:latest
+      #- cd ../api-gateway-kong/src/main/docker/
+      #- docker build -f Dockerfile -t movie-cupidon-backend/api-gateway .
+      #- docker tag movie-cupidon-backend/api-gateway bayar4b/movie-cupidon-backend_api-gateway:latest 
+      #- docker push bayar4b/movie-cupidon-backend_api-gateway:latest
 
 
 
