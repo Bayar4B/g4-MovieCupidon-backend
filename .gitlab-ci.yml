@@ -3,7 +3,7 @@ stages:
   - deploy
 
 cache:
-    directories:
+    paths:
       - $HOME/.m2
 
 
