@@ -19,11 +19,13 @@ deploy:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - cd lobby-service/
       - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/lobby-service:latest .
-      - docker push moviecupidon/lobby-service:latest
+      - docker tag moviecupidon/lobby-service:latest bayar4b/moviecupidon/lobby-service:latest
+      - docker push bayar4b/moviecupidon/lobby-service:latest
       - cd ..
       - cd sample-selection-service/
       - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/sample-selection-service:latest .
-      - docker push moviecupidon/sample-selection-service:latest
+      - docker tag moviecupidon/sample-selection-service:latest bayar4b/moviecupidon/sample-selection-service:latest
+      - docker push bayar4b/moviecupidon/sample-selection-service:latest
       - cd ..
   # only:
   #   - master
