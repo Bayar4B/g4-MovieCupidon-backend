@@ -12,10 +12,10 @@ public class GreetingResourceTest {
     @Test
     public void testHelloEndpoint() {
         given()
-          .when().get("/MovieCupidon-backend/lobby")
+          .when().get("/MovieCupidon-backend")
           .then()
              .statusCode(200)
-             .body(is("this is lobby service"));
+             .body(is("This is lobby service"));
     }
 
 }
