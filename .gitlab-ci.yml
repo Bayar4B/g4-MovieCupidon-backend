@@ -1,7 +1,12 @@
 stages:
   - build
   - deploy
-  
+
+cache:
+    directories:
+      - $HOME/.m2
+
+
 build:
   stage: build
   image : maven:latest
@@ -14,7 +19,7 @@ build:
 
 deploy:
   services:
-    - docker
+    - docker:19.03.12-dind
   dependencies:
     - build
   image: docker:latest
