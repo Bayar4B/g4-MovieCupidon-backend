@@ -1,9 +1,7 @@
 stages:
   - build
   - deploy
-
-
-
+  
 build:
   stage: build
   image : maven:latest
@@ -17,8 +15,6 @@ build:
   artifacts:
     untracked: true
 
-
-
 deploy:
   dependencies:
     - build
@@ -26,18 +22,16 @@ deploy:
   stage: deploy
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-      - cd exemple-service-1/
-      #- ./mvnw clean install
 
-      - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
-      - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
-      - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
-
-
-      #- cd ../api-gateway-kong/src/main/docker/
-      #- docker build -f Dockerfile -t movie-cupidon-backend/api-gateway .
-      #- docker tag movie-cupidon-backend/api-gateway bayar4b/movie-cupidon-backend_api-gateway:latest 
-      #- docker push bayar4b/movie-cupidon-backend_api-gateway:latest
-
-
-
+      - cd lobby-service/
+      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/lobby-service:latest .
+      - docker tag moviecupidon/lobby-service:latest bayar4b/movie-cupidon-backend_lobby-service:latest
+      - docker push bayar4b/movie-cupidon-backend_lobby-service:latest
+      - cd ..
+      - cd sample-selection-service/
+      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/sample-selection-service:latest .
+      - docker tag moviecupidon/sample-selection-service:latest bayar4b/movie-cupidon-backend_sample-selection-service:latest
+      - docker push bayar4b/movie-cupidon-backend_sample-selection-service:latest
+      - cd ..
+  # only:
+  #   - master
