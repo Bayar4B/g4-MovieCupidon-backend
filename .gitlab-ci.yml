@@ -12,7 +12,8 @@ build:
 
 
 
-deploy:
+
+deploy_docker_hub:
   dependencies:
     - build
   image: docker:latest
@@ -20,10 +21,13 @@ deploy:
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - cd exemple-service-1/
-      #- ./mvnw clean install
       - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
       - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
       - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
+  only:
+    - master
+
+
 # This file is a template, and might need editing before it works on your project.
 # docker-build-master:
 #   # Official docker image.
