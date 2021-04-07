@@ -17,7 +17,7 @@ deploy:
   stage: deploy
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-      - cd exemple-service-1/
+      # - cd exemple-service-1/
       - docker build -f lobby-service/src/main/docker/Dockerfile.jvm -t MovieCupidon:lobby-service:latest .
       - docker push MovieCupidon:lobby-service:latest
       - docker build -f sample-selection-service/src/main/docker/Dockerfile.jvm -t MovieCupidon:sample-selection-service:latest .
