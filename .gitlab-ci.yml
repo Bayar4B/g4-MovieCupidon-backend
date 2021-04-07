@@ -24,15 +24,11 @@ deploy:
       - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
       - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
       - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
-# This file is a template, and might need editing before it works on your project.
-# docker-build-master:
-#   # Official docker image.
-#   image: docker:latest
-#   stage: build
-#   services:
-#     - docker:dind
-#   before_script:
-#     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-#   script:
-#     - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-#     - docker push "$CI_REGISTRY_IMAGE"
+
+      - cd ../
+      - docker build -f api-gateway-kong/src/main/docker/Dockerfile -t movie-cupidon-backend/api-gateway:latest .
+      - docker tag movie-cupidon-backend/api-gateway:latest bayar4b/movie-cupidon-backend_api-gateway:latest
+      - docker push bayar4b/movie-cupidon-backend_api-gateway:latest
+      
+
+
