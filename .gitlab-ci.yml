@@ -28,12 +28,15 @@ deploy:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - cd exemple-service-1/
       #- ./mvnw clean install
-      - docker build -f src/main/docker/Dockerfile.jvm -t bayar4b/movie-cupidon-backend/example-service-1:latest .
 
-      - docker push bayar4b/movie-cupidon-backend/example-service-1:latest
+      - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
+      - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
+      - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
+
 
       - cd ../api-gateway-kong/src/main/docker/
-      - docker build -f Dockerfile -t bayar4b/movie-cupidon-backend_api-gateway:latest .
+      - docker build -f Dockerfile -t movie-cupidon-backend/api-gateway .
+      - docker tag movie-cupidon-backend/api-gateway bayar4b/movie-cupidon-backend_api-gateway:latest 
       - docker push bayar4b/movie-cupidon-backend_api-gateway:latest
 
 
