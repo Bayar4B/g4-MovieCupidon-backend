@@ -10,10 +10,7 @@ build:
   artifacts:
     untracked: true
 
-
-
-
-deploy_docker_hub:
+deploy:
   dependencies:
     - build
   image: docker:latest
@@ -21,22 +18,9 @@ deploy_docker_hub:
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - cd exemple-service-1/
-      - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
-      - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
-      - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
-  only:
-    - master
-
-
-# This file is a template, and might need editing before it works on your project.
-# docker-build-master:
-#   # Official docker image.
-#   image: docker:latest
-#   stage: build
-#   services:
-#     - docker:dind
-#   before_script:
-#     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-#   script:
-#     - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-#     - docker push "$CI_REGISTRY_IMAGE"
+      - docker build -f lobby-service/src/main/docker/Dockerfile.jvm -t MovieCupidon:lobby-service:latest .
+      - docker push MovieCupidon:lobby-service:latest
+      - docker build -f sample-selection-service/src/main/docker/Dockerfile.jvm -t MovieCupidon:sample-selection-service:latest .
+      - docker push MovieCupidon:sample-selection-service:latest
+  # only:
+  #   - master
