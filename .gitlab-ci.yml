@@ -13,6 +13,8 @@ build:
 
 
 deploy:
+  service:
+    - docker
   dependencies:
     - build
   image: docker:latest
@@ -29,6 +31,6 @@ deploy:
       - docker build -f api-gateway-kong/src/main/docker/Dockerfile -t movie-cupidon-backend/api-gateway:latest .
       - docker tag movie-cupidon-backend/api-gateway:latest bayar4b/movie-cupidon-backend_api-gateway:latest
       - docker push bayar4b/movie-cupidon-backend_api-gateway:latest
-      
+
 
 
