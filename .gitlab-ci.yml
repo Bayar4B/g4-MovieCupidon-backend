@@ -5,13 +5,13 @@ stages:
 
 
 build:
-  variables:
-      MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
-    cache:
-      key: maven
-      paths: [.repository/]
   stage: build
   image : maven:latest
+  variables:
+      MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
+  cache:
+      key: maven
+      paths: [.repository/]
   script:
       - mvn package
   artifacts:
