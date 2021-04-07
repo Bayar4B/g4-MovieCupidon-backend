@@ -25,7 +25,7 @@ services:
     tty: true
             
    api-gateway:
-    image: unige/api-gateway      # A CHANGER POUR LE NOTRE... 
+    image: bayar4b/movie-cupidon-backend_api-gateway:latest      # A CHANGER POUR LE NOTRE... 
     container_name:  api-gateway
     hostname:  api-gateway
     networks:
