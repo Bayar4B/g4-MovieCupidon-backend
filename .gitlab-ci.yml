@@ -33,5 +33,6 @@ deploy:
       - docker tag moviecupidon/sample-selection-service:latest bayar4b/movie-cupidon-backend_sample-selection-service:latest
       - docker push bayar4b/movie-cupidon-backend_sample-selection-service:latest
       - cd ..
+      - docker rmi $(docker images | grep 'bayar4b')
   # only:
   #   - master
