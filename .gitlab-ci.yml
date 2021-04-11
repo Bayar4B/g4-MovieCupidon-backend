@@ -36,5 +36,5 @@ deploy:
       - docker push bayar4b/movie-cupidon-backend_sample-selection-service:latest
       - cd ..
       - docker rmi $(docker images | grep 'bayar4b') || true
-  # only:
-  #   - master
+  only:
+    - master
