@@ -5,13 +5,18 @@ stages:
 build:
   stage: build
   image : maven:latest
+  variables:
+      MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
+  cache:
+      key: maven
+      paths: [.repository/]
   script:
       - mvn package
   artifacts:
-    untracked: true
-
-
-
+    # untracked: true
+    paths:
+      - lobby-service/target/
+      - sample-selection-service/target/
 deploy:
   dependencies:
     - build
@@ -19,20 +24,17 @@ deploy:
   stage: deploy
   script:
       - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-      - cd exemple-service-1/
-      #- ./mvnw clean install
-      - docker build -f src/main/docker/Dockerfile.jvm -t movie-cupidon-backend/example-service-1 .
-      - docker tag movie-cupidon-backend/example-service-1 bayar4b/movie-cupidon-backend_example-service-1:latest 
-      - docker push bayar4b/movie-cupidon-backend_example-service-1:latest
-# This file is a template, and might need editing before it works on your project.
-# docker-build-master:
-#   # Official docker image.
-#   image: docker:latest
-#   stage: build
-#   services:
-#     - docker:dind
-#   before_script:
-#     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-#   script:
-#     - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-#     - docker push "$CI_REGISTRY_IMAGE"
+
+      - cd lobby-service/
+      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/lobby-service:latest .
+      - docker tag moviecupidon/lobby-service:latest bayar4b/movie-cupidon-backend_lobby-service:latest
+      - docker push bayar4b/movie-cupidon-backend_lobby-service:latest
+      - cd ..
+      - cd sample-selection-service/
+      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/sample-selection-service:latest .
+      - docker tag moviecupidon/sample-selection-service:latest bayar4b/movie-cupidon-backend_sample-selection-service:latest
+      - docker push bayar4b/movie-cupidon-backend_sample-selection-service:latest
+      - cd ..
+      - docker rmi $(docker images | grep 'bayar4b') || true
+  only:
+    - master
