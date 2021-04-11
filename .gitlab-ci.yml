@@ -13,8 +13,10 @@ build:
   script:
       - mvn package
   artifacts:
-    untracked: true
-
+    # untracked: true
+    paths:
+      - lobby-service/target/
+      - sample-selection-service/target/
 deploy:
   dependencies:
     - build
@@ -33,6 +35,6 @@ deploy:
       - docker tag moviecupidon/sample-selection-service:latest bayar4b/movie-cupidon-backend_sample-selection-service:latest
       - docker push bayar4b/movie-cupidon-backend_sample-selection-service:latest
       - cd ..
-      - docker rmi $(docker images | grep 'bayar4b')
+      - docker rmi $(docker images | grep 'bayar4b') || true
   # only:
   #   - master
