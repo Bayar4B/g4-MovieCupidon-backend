@@ -2,7 +2,9 @@ package ch.unige;
 
 import ch.unige.dao.SessionsDB;
 import ch.unige.domain.Session;
-
+import ch.unige.domain.User;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -19,15 +21,21 @@ public class SessionRessource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/size")
-    public Integer countMovies(){
+    public Integer countSessions(){
         return sessionsDB.getSessionDB_size();
     }
 
     @POST
     @Path("/create-session")
     @Produces(MediaType.TEXT_PLAIN) //user-creator
-    @Consumes(MediaType.TEXT_PLAIN)
-    public Response createSession(Session newSession, @Context UriInfo info) {
+    public Response createSession(@Context UriInfo info, @NotEmpty @FormParam("username") String username) {
+    	
+    	// --- LE @NotEmpty NE MARCHE PAS --- //
+    	
+    	User creator_user = new User(username);
+    	System.out.println(creator_user.getUsername());
+    	Session newSession = new Session(1); // VALEUR 1 pour tester
+    	
         sessionsDB.add_session(newSession);
 //        String newUrl = "http://localhost/" + newSession.getToken();
         URI uri = info.getBaseUriBuilder().path(newSession.getToken()).build();
