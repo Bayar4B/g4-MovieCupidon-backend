@@ -4,5 +4,6 @@
 *.prefs
 *.vscode
 *.settings
+.DS_Store
 /.idea/
 /.metadata/
