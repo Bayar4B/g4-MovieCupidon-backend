@@ -1,6 +1,7 @@
 package ch.unige;
 
 import ch.unige.dao.SessionsDB;
+import ch.unige.dao.UserDB;
 import ch.unige.domain.Session;
 import ch.unige.domain.User;
 import javax.validation.constraints.NotEmpty;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 public class SessionRessource {
 
     private static SessionsDB sessionsDB = SessionsDB.getInstance();
+    private static UserDB userDB = UserDB.getInstance();
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -28,14 +30,16 @@ public class SessionRessource {
     @POST
     @Path("/create-session")
     @Produces(MediaType.TEXT_PLAIN) //user-creator
-    public Response createSession(@Context UriInfo info, @NotEmpty @FormParam("username") String username) {
+    public Response createSession(@Context UriInfo info, @FormParam("username") String username) {
     	
     	// --- LE @NotEmpty NE MARCHE PAS --- //
     	
     	User creator_user = new User(username);
+    	userDB.add_user(creator_user);
     	System.out.println(creator_user.getUsername());
-    	Session newSession = new Session(1); // VALEUR 1 pour tester
+
     	
+    	Session newSession = new Session(creator_user.getUser_id()); 
         sessionsDB.add_session(newSession);
 //        String newUrl = "http://localhost/" + newSession.getToken();
         URI uri = info.getBaseUriBuilder().path(newSession.getToken()).build();
