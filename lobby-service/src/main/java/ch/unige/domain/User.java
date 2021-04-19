@@ -11,10 +11,8 @@ import ch.unige.dao.UserDB;
 
 public class User {
 	
-    @NotEmpty(message = "Name may not be empty")
 	private String username;
     private int user_id;
-    private String room_token;
     private boolean ready_statut;
 	
 	public User(String username) {
@@ -43,14 +41,6 @@ public class User {
 		this.user_id = user_id;
 	}
 
-	public String getRoom_token() {
-		return room_token;
-	}
-
-	public void setRoom_token(String room_token) {
-		this.room_token = room_token;
-	}
-
 	public boolean isReady_statut() {
 		return ready_statut;
 	}
@@ -59,7 +49,11 @@ public class User {
 		this.ready_statut = ready_statut;
 	}
 	
-	private boolean validUsername(String username) {
+	public boolean getReady_status() {
+		return this.ready_statut;
+	}
+	
+	public boolean validUsername(String username) {
 		if (username.isEmpty()) {		// Pas forcement besoin de cette partie mais permet de differencier si le username
 										// est juste vide ou s'il contient uniquement des espace ou tabs
 	        System.out.println("Username empty");
