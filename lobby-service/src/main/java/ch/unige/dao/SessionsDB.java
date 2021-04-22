@@ -43,6 +43,19 @@ public class SessionsDB {
         return randomString();
     }
 
+    public boolean sessionExist(String token){
+        return session_db.stream().map(Session::getToken).filter(token::equals).findFirst().isPresent();
+    }
+
+    public int sessionSize(String token) {
+        for (int i = 0; i < session_db.size(); i++) {
+            if (session_db.get(i).getToken().equals(token)) {
+                return session_db.get(i).getNbMax();
+            }
+        }
+        return -1;
+    }
+
     public synchronized void add_session(Session session_to_add){
         session_db.add(session_to_add);
     }
