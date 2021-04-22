@@ -18,7 +18,7 @@ public class CreateSessionRessourceTest extends TestCase{
 	@Test
 	public void createSessionTest() {
 		given().formParam("username", "username_test")
-			.when().post("/create-session")
+			.when().post("/create-session/new-session")
 			.then()
 				.statusCode(200);
 	}
