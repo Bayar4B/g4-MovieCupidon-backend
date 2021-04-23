@@ -20,7 +20,7 @@ public class CreateSessionRessource {
 
     private static SessionsDB sessionsDB = SessionsDB.getInstance();
     private static UserDB userDB = UserDB.getInstance();
-    private static UserInLobbyDB user_lobby_DB = UserInLobbyDB.getInstance();
+    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -44,7 +44,7 @@ public class CreateSessionRessource {
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
-        user_lobby_DB.addUserInLobby(userInLobby);
+        userLobbyDB.addUserInLobby(userInLobby);
 
 //        String newUrl = "http://localhost/" + newSession.getToken();
         URI uri = info.getBaseUriBuilder().path("session/" + newSession.getToken()).build();
