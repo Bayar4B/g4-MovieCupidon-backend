@@ -2,13 +2,11 @@ package ch.unige;
 
 import ch.unige.dao.SessionsDB;
 import ch.unige.dao.UserDB;
-import ch.unige.dao.User_in_lobby_DB;
+import ch.unige.dao.UserInLobbyDB;
 import ch.unige.domain.Session;
 import ch.unige.domain.User;
-import ch.unige.domain.User_in_lobby;
+import ch.unige.domain.UserInLobby;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +20,7 @@ public class CreateSessionRessource {
 
     private static SessionsDB sessionsDB = SessionsDB.getInstance();
     private static UserDB userDB = UserDB.getInstance();
-    private static User_in_lobby_DB user_lobby_DB = User_in_lobby_DB.getInstance();
+    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -45,8 +43,8 @@ public class CreateSessionRessource {
     	Session newSession = new Session(creator_user.getUser_id()); 
         sessionsDB.add_session(newSession);
 
-        User_in_lobby new_user_in_lobby = new User_in_lobby(creator_user, newSession);
-        user_lobby_DB.add_User_in_lobby(new_user_in_lobby);
+        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        userLobbyDB.addUserInLobby(userInLobby);
 
 //        String newUrl = "http://localhost/" + newSession.getToken();
         URI uri = info.getBaseUriBuilder().path("session/" + newSession.getToken()).build();

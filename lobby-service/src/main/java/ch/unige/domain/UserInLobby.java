@@ -1,12 +1,14 @@
 package ch.unige.domain;
 
-public class User_in_lobby {
+public class UserInLobby {
     private User user;
-    private Session lobby;
+    private String lobby;
+    private int readyOrNot; //0 for ready, 1 for ready
 
-    public User_in_lobby(User user, Session lobby){
+    public UserInLobby(User user, String lobby){
         this.user = user;
         this.lobby = lobby;
+        this.readyOrNot = 0;
     }
 
     public User getUser(){
@@ -17,11 +19,11 @@ public class User_in_lobby {
         this.user = user;
     }
 
-    public Session getLobby(){
+    public String getLobby(){
         return lobby;
     }
 
-    public void setLobby(Session lobby){
+    public void setLobby(String lobby){
         this.lobby = lobby;
     }
 }
