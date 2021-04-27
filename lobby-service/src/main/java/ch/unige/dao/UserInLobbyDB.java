@@ -71,12 +71,32 @@ public class UserInLobbyDB {
     */
     public void updateUserInLobby(UserInLobby user) {
 
-    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
-			if(user.getUser().getUser_id() == userInLobbiesDB.get(i).getUser().getUser_id() ) {
-				userInLobbiesDB.set(i,user);		
-			}
-		}
+    	int index = findUserInLobbyById(user.getUser().getUser_id());
+    	if(index == -1) {
+    		//TODO Handling when user not found in DB...
+    		return;
+    	}
+    	userInLobbiesDB.set(index,user);
+
     }
     
+    public int findUserInLobbyById(int id) {
+    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
+			if(id == userInLobbiesDB.get(i).getUser().getUser_id() ) {
+				return(i);		
+			}
+		}
+    	return(-1);
+    }
+    
+    public int findLobbyInUserInLobbyDBByToken(String token) {
+    	// TODO This isn't really usefull for now..
+    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
+			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobby())) {
+				return(i);		
+			}
+		}
+    	return(-1);
+    }
 
 }

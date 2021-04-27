@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.ArrayList;
 
 @Path("/session")
 public class SessionRessource {
@@ -66,6 +67,39 @@ public class SessionRessource {
         return "This is lobby service in SessionRessource";
     }
 
+    @POST
+    @Path("/{TOKEN}/{USERID}/ToggleReady")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response toggleReady(@Context UriInfo info, @PathParam("TOKEN") String token, @PathParam("USERID") int userid ){
 
+        if (!sessionsDB.sessionExist(token)){
+            // Check if session exist
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        int userIndexUserInDB = user_lobby_DB.findUserInLobbyById(userid);
+        if (userIndexUserInDB  == -1){
+            // User doesn't exist in the userInLobbyDB...
+        	
+            return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
+            /*
+            TODO
+                code 401 pour le moment mais il faudra voir si on change pas
+             */
+        }
+        //TODO Check if user is in the said lobby.
+//        int lobbyIndexUserInDB = user_lobby_DB.findLobbyInUserInLobbyDBByToken(token);
+//        if(  lobbyIndexUserInDB != userIndexUserInDB  ){
+//        		// User Not in the correct Database..
+//        	return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
+//            /*
+//            TODO
+//                code 401 pour le moment mais il faudra voir si on change pas
+//             */	
+//        }
+
+        user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
+        
+        return Response.ok().build();
+    }
 }
 
