@@ -1,6 +1,7 @@
 package ch.unige.dao;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import ch.unige.domain.Session;
 import ch.unige.domain.UserInLobby;
@@ -63,4 +64,19 @@ public class UserInLobbyDB {
     public void incrementUserLobbyId(){
         this.nextUserLobbyId++;
     }
+    
+    /**
+    *  Updates a user info in the UserInLobby table.
+    * @param  user  a UserInLobby object, which is the user whose info we want to update.
+    */
+    public void updateUserInLobby(UserInLobby user) {
+
+    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
+			if(user.getUser().getUser_id() == userInLobbiesDB.get(i).getUser().getUser_id() ) {
+				userInLobbiesDB.set(i,user);		
+			}
+		}
+    }
+    
+
 }

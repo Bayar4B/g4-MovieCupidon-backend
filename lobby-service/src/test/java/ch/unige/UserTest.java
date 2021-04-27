@@ -31,14 +31,15 @@ public class UserTest extends TestCase{
 		user.setUser_id(11);
 		assertEquals(11, user.getUser_id());
 	}
-	
-	@Test
-	public void setReadyStatusTest() {
-		User user = new User("test");
-		user.setReady_statut(true);
-		assertEquals(true, user.getReady_status());
-	}
-	
+
+// Shouldn't be in this class but in UserInDB..
+//	@Test
+//	public void setReadyStatusTest() {
+//		User user = new User("test");
+//		user.setReady_statut(true);
+//		assertEquals(true, user.getReady_status());
+//	}
+//	
 	@Test  	
 	public void validUsername_EmptyTest() {
 		User user = new User("test");
