@@ -8,7 +8,7 @@ import ch.unige.domain.UserInLobby;
 
 public class UserInLobbyDB {
     private static UserInLobbyDB instance;
-    private static ArrayList<UserInLobby> userInLobbiesDB = new ArrayList();
+    private static ArrayList<UserInLobby> userInLobbiesDB = new ArrayList<UserInLobby>();
     private int nextUserLobbyId;
 
     public UserInLobbyDB() {
@@ -71,7 +71,7 @@ public class UserInLobbyDB {
     */
     public void updateUserInLobby(UserInLobby user) {
 
-    	int index = findUserInLobbyById(user.getUser().getUser_id());
+    	int index = findUserInLobbyById(user.getUser().getUserId());
     	if(index == -1) {
     		//TODO Handling when user not found in DB...
     		return;
@@ -82,7 +82,7 @@ public class UserInLobbyDB {
     
     public int findUserInLobbyById(int id) {
     	for (int i = 0; i < userInLobbiesDB.size(); i++) {
-			if(id == userInLobbiesDB.get(i).getUser().getUser_id() ) {
+			if(id == userInLobbiesDB.get(i).getUser().getUserId() ) {
 				return(i);		
 			}
 		}
@@ -99,4 +99,10 @@ public class UserInLobbyDB {
     	return(-1);
     }
 
+	@Override
+	public String toString() { 
+	    String result = "";
+	    for (int i = 0; i < userInLobbiesDB.size(); i++) {result += String.valueOf(i) + ") "+ String.valueOf(userInLobbiesDB.get(i)) + " \n";}
+	    return result;
+	} 
 }

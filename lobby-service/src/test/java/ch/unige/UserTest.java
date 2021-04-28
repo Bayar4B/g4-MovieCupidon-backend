@@ -28,8 +28,8 @@ public class UserTest extends TestCase{
 	@Test
 	public void setUserIDTest() {
 		User user = new User("test");
-		user.setUser_id(11);
-		assertEquals(11, user.getUser_id());
+		user.setUserID(11);
+		assertEquals(11, user.getUserId());
 	}
 
 // Shouldn't be in this class but in UserInDB..

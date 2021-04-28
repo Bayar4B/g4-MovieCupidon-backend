@@ -98,8 +98,17 @@ public class SessionRessource {
 //        }
 
         user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
-        
-        return Response.ok().build();
+        return Response.ok("Nouveau Ready Statut: " + String.valueOf( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
+//        return Response.ok().build();
+    }
+    
+    /*TODO: This is for dev purposes only: */
+    
+    @GET
+    @Path("/seeUserInLobbyDB")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String seeUserInLobbyDB() {
+        return String.valueOf(user_lobby_DB);
     }
 }
 

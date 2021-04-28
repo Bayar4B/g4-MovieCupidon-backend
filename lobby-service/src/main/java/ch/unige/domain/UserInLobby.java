@@ -33,11 +33,8 @@ public class UserInLobby {
     	return this.ReadyStatus;	
     }
     
-	public boolean isReady_statut() {
-		return ReadyStatus;
-	}
 
-	public void setReady_statut(boolean ready_statut) {
+	public void setReadyStatut(boolean ready_statut) {
 		this.ReadyStatus = ready_statut;
 	}
 	
@@ -56,5 +53,10 @@ public class UserInLobby {
 	}
 	
 
+	@Override
+	public String toString() { 
+	    String result = "User: "+ String.valueOf(this.user) + " , lobbyId:" + this.lobby + " , Ready Status: " + String.valueOf(this.ReadyStatus); 
+	    return result;
+	} 
     
 }

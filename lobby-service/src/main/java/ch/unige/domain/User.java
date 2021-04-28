@@ -32,11 +32,11 @@ public class User {
 		this.username = username;
 	}
 
-	public int getUser_id() {
+	public int getUserId() {
 		return user_id;
 	}
 
-	public void setUser_id(int user_id) {
+	public void setUserID(int user_id) {
 		this.user_id = user_id;
 	}
 
@@ -71,5 +71,10 @@ public class User {
 	}
 
 	
+	@Override
+	public String toString() { 
+	    String result = "Username"+ this.getUsername() + " , userId:" + this.getUserId(); 
+	    return result;
+	} 
 	
 }
