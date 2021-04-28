@@ -68,7 +68,7 @@ public class SessionRessource {
     }
 
     @POST
-    @Path("/{TOKEN}/{USERID}/ToggleReady")
+    @Path("/{TOKEN}/{USERID}/toggleready")
     @Produces(MediaType.TEXT_PLAIN)
     public Response toggleReady(@Context UriInfo info, @PathParam("TOKEN") String token, @PathParam("USERID") int userid ){
 
@@ -87,20 +87,22 @@ public class SessionRessource {
              */
         }
         //TODO Check if user is in the said lobby.
-//        int lobbyIndexUserInDB = user_lobby_DB.findLobbyInUserInLobbyDBByToken(token);
-//        if(  lobbyIndexUserInDB != userIndexUserInDB  ){
-//        		// User Not in the correct Database..
-//        	return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
-//            /*
-//            TODO
-//                code 401 pour le moment mais il faudra voir si on change pas
-//             */	
-//        }
+        
+        if(  token.equalsIgnoreCase( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
+        		// User Not in the correct Database..
+        	return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
+            /*
+            TODO
+                code 401 pour le moment mais il faudra voir si on change pas
+             */	
+        }
 
         user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
         return Response.ok("Nouveau Ready Statut: " + String.valueOf( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
-//        return Response.ok().build();
+
     }
+    
+
     
     /*TODO: This is for dev purposes only: */
     

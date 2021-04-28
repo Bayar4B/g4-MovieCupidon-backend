@@ -89,7 +89,7 @@ public class UserInLobbyDB {
     	return(-1);
     }
     
-    public int findLobbyInUserInLobbyDBByToken(String token) {
+    public int findUserInLobbyById(String token) {
     	// TODO This isn't really usefull for now..
     	for (int i = 0; i < userInLobbiesDB.size(); i++) {
 			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobby())) {
