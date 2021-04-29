@@ -74,13 +74,14 @@ public class SessionRessource {
 
         if (!sessionsDB.sessionExist(token)){
             // Check if session exist
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        	System.out.println("Aucun Lobby avec ce Token" );
+            return Response.status(Response.Status.BAD_REQUEST).entity("Aucun Lobby avec ce Token").build();
         }
         int userIndexUserInDB = user_lobby_DB.findUserInLobbyById(userid);
         if (userIndexUserInDB  == -1){
             // User doesn't exist in the userInLobbyDB...
-        	
-            return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
+        	System.out.println("Aucun User avec cet ID");
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Aucun User avec cet ID").build(); //code 401
             /*
             TODO
                 code 401 pour le moment mais il faudra voir si on change pas
@@ -88,9 +89,10 @@ public class SessionRessource {
         }
         //TODO Check if user is in the said lobby.
         
-        if(  token.equalsIgnoreCase( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
-        		// User Not in the correct Database..
-        	return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
+        if(  !token.equalsIgnoreCase( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
+        		// User Not in the correct Lobby..
+        	System.out.println("Cet utilisateur(" +userid +") n'est pas dans ce Lobby:"+token);
+        	return Response.status(Response.Status.UNAUTHORIZED).entity("Cet utilisateur n'est pas dans ce Lobby").build(); //code 401
             /*
             TODO
                 code 401 pour le moment mais il faudra voir si on change pas

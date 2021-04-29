@@ -73,7 +73,7 @@ public class User {
 	
 	@Override
 	public String toString() { 
-	    String result = "Username"+ this.getUsername() + " , userId:" + this.getUserId(); 
+	    String result = "Username: "+ this.getUsername() + " , userId:" + this.getUserId(); 
 	    return result;
 	} 
 	
