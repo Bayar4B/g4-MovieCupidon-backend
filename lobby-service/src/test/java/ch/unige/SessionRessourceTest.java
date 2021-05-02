@@ -175,18 +175,17 @@ public class SessionRessourceTest extends TestCase{
         User joiner2 = new User("joiner2");
         User joiner3 = new User("joiner3");
         User joiner4 = new User("joiner4");
-        User joiner5 = new User("joiner5");
 
         // ----------- Ajout des Joiners à la Session ----------- // 
         
         UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
         userLobbyDB.addUserInLobby(userInLobbyJoiner1);
         UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner2);
         UserInLobby userInLobbyJoiner3 = new UserInLobby(joiner3, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner3);
         UserInLobby userInLobbyJoiner4 = new UserInLobby(joiner4, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner4);
         
         
         // ----------- Teste le fait que la Session est bien pleine ----------- // 
@@ -196,5 +195,6 @@ public class SessionRessourceTest extends TestCase{
 			.then()
 				.statusCode(401);
 	}
+	
 
 }

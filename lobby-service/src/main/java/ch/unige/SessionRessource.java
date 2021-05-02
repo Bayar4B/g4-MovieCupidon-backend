@@ -3,6 +3,7 @@ package ch.unige;
 import ch.unige.dao.SessionsDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
+import ch.unige.domain.SessionConfig;
 import ch.unige.domain.User;
 import ch.unige.domain.UserInLobby;
 
@@ -18,7 +19,7 @@ public class SessionRessource {
 
     private static SessionsDB sessionsDB = SessionsDB.getInstance();
     private static UserDB userDB = UserDB.getInstance();
-    private static UserInLobbyDB user_lobby_DB = UserInLobbyDB.getInstance();
+    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 
 
     @GET
@@ -40,7 +41,7 @@ public class SessionRessource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        if (!user_lobby_DB.isTherePlaceInLobby(token)){
+        if (!userLobbyDB.isTherePlaceInLobby(token)){
             //check if there is space in the looby
             return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
             /*
@@ -53,12 +54,42 @@ public class SessionRessource {
         userDB.add_user(creator_user);
 
         UserInLobby newUserInLobby = new UserInLobby(creator_user, token);
-        user_lobby_DB.addUserInLobby(newUserInLobby);
+        userLobbyDB.addUserInLobby(newUserInLobby);
 
         URI uri = info.getBaseUriBuilder().path("session/" + token).build();
         return Response.ok(uri).build();
     }
 
+    @POST
+    @Path("/{token}/start")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response startGame(@Context UriInfo info, @PathParam("token") String token,
+    		@FormParam("action") int action, @FormParam("aventure") int aventure, @FormParam("horreur") int horreur,
+    		@FormParam("sci_fi") int sci_fi, @FormParam("documentaire") int documentaire) {
+    	
+    	if (!sessionsDB.sessionExist(token)){
+    		return Response.status(Response.Status.BAD_REQUEST).build();
+    	}
+    	if(!userLobbyDB.isEveryoneReady(token)) {
+    		return Response.status(Response.Status.CONFLICT).build();
+    	}	
+    	
+    	SessionConfig config = new SessionConfig(action, aventure, horreur, sci_fi, documentaire);
+    	
+    //---------------------------------------------------------------------------------------------//
+    //
+    // TODO : Le retour : Doit-il etre fait par sample selection ou par cette fonction ? 
+    // 		- Si c'est Sample selection qui redistribue, cette fonction doit retourner la config
+    // 		- Si c'est cette fonction qui redistribue, on doit recup le sample de sample selection 
+    //				puis redirigé sur le bon url
+    //
+    //---------------------------------------------------------------------------------------------//
+
+    	URI uri = info.getAbsolutePath();
+    	return Response.ok(uri).build();
+    }
+    
+    
     @GET
     @Path("/helloworld")
     @Produces(MediaType.TEXT_PLAIN)

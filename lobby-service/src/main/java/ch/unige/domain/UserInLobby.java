@@ -8,7 +8,7 @@ public class UserInLobby {
     public UserInLobby(User user, String lobby){
         this.user = user;
         this.lobby = lobby;
-        this.readyOrNot = 0;
+        this.setReadyOrNot(0);
     }
 
     public User getUser(){
@@ -26,4 +26,12 @@ public class UserInLobby {
     public void setLobby(String lobby){
         this.lobby = lobby;
     }
+
+	public int getReadyOrNot() {
+		return readyOrNot;
+	}
+
+	public void setReadyOrNot(int readyOrNot) {
+		this.readyOrNot = readyOrNot;
+	}
 }
