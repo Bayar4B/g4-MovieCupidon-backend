@@ -1,0 +1,75 @@
+#WebUi
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+      - name: webui
+        image: bayar4b/movie-cupidon-frontend:latest
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webui-service
+spec:
+  selector:
+    app: webui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+
+# apiVersion:  extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: webui-ingress
+#   annotations:
+#     ingress.kubernetes.io/rewrite-target: /
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /
+#         backend:
+#           serviceName: webui-service
+#           servicePort: 80
+
+# ---
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: the-ingress
+# spec:
+#   rules:
+#   - host: foo.bar.com
+#     http:
+#       paths:
+#       - path: /foo
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: service1
+#             port:
+#               number: 4200
+#       - path: /bar
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: service2
+#             port:
+#               number: 8080
+# ---
