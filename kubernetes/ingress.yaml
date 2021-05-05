@@ -1,8 +1,74 @@
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: minimal-ingress
+#   annotations:
+#     kubernetes.io/ingress.class: "nginx"
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: webui-service
+#             port:
+#               number: 80
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: lobby-service
+#             port:
+#               number: 8080
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   # annotations:
+#   #   nginx.ingress.kubernetes.io/rewrite-target: /$2
+#   name: webui-ingress
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /
+#         backend:
+#           service:
+#             name: webui-service
+#             port: 
+#               number: 80  
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$2
+#   name: lobby-ingress
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /lobby(/|$)(.*)
+#         backend:
+#           name: lobby-service
+#           port: 
+#               number: 8080 
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minimal-ingress
+  name: webui-ingress
+  annotations:
+    kubernetes.io/ingress.class: public
 spec:
+  # defaultBackend:
+  # backend:
+  #         service:
+  #           name: webui-service
+  #           port:
+  #             number: 80
   rules:
   - http:
       paths:
@@ -12,11 +78,30 @@ spec:
           service:
             name: webui-service
             port:
-              number: 80
-      - path: /lobby/
+              number: 7900
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lobby-ingress
+  annotations:
+    kubernetes.io/ingress.class: public
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  # defaultBackend:
+    # backend:
+    #         service:
+    #           name: webui-service
+    #           port:
+    #             number: 80
+  rules:
+  - http:
+      paths:
+      - path: /lobby(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: lobby-service
             port:
-              number: 8080
+              number: 7900
+
