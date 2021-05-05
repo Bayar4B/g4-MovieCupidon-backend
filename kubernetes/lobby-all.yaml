@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: lobby
-        image: moviecupidon/lobby-serice:1.0.0-SNAPSHOT
+        image: moviecupidon/lobby-service:1.0.0-SNAPSHOT
         ports:
         - containerPort: 8080
 ---
@@ -29,5 +29,5 @@ spec:
     app: lobby
   ports:
     - protocol: TCP
-      port: 7900
+      port: 8080
       targetPort: 8080
