@@ -1,13 +1,14 @@
 package ch.unige.dao;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import ch.unige.domain.Session;
 import ch.unige.domain.UserInLobby;
 
 public class UserInLobbyDB {
     private static UserInLobbyDB instance;
-    private static ArrayList<UserInLobby> userInLobbiesDB = new ArrayList();
+    private static ArrayList<UserInLobby> userInLobbiesDB = new ArrayList<UserInLobby>();
     private int nextUserLobbyId;
 
     public UserInLobbyDB() {
@@ -63,4 +64,45 @@ public class UserInLobbyDB {
     public void incrementUserLobbyId(){
         this.nextUserLobbyId++;
     }
+    
+    /**
+    *  Updates a user info in the UserInLobby table.
+    * @param  user  a UserInLobby object, which is the user whose info we want to update.
+    */
+    public void updateUserInLobby(UserInLobby user) {
+
+    	int index = findUserInLobbyById(user.getUser().getUserId());
+    	if(index == -1) {
+    		//TODO Handling when user not found in DB...
+    		return;
+    	}
+    	userInLobbiesDB.set(index,user);
+
+    }
+    
+    public int findUserInLobbyById(int id) {
+    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
+			if(id == userInLobbiesDB.get(i).getUser().getUserId() ) {
+				return(i);		
+			}
+		}
+    	return(-1);
+    }
+    
+    public int findUserInLobbyById(String token) {
+    	// TODO This isn't really usefull for now..
+    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
+			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobby())) {
+				return(i);		
+			}
+		}
+    	return(-1);
+    }
+
+	@Override
+	public String toString() { 
+	    String result = "";
+	    for (int i = 0; i < userInLobbiesDB.size(); i++) {result += String.valueOf(i) + ") "+ String.valueOf(userInLobbiesDB.get(i)) + " \n";}
+	    return result;
+	} 
 }

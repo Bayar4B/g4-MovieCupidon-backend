@@ -34,7 +34,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -73,7 +73,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -102,7 +102,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -131,7 +131,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -160,7 +160,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());

@@ -13,7 +13,6 @@ public class User {
 	
 	private String username;
     private int user_id;
-    private boolean ready_statut;
 	
 	public User(String username) {
 		if(this.validUsername(username)) {
@@ -21,7 +20,7 @@ public class User {
 		}else {
 			throw new BadRequestException();
 		}
-		this.setReady_statut(false);
+		
 		this.user_id = UserDB.getNewUserID();
 	}
 
@@ -33,25 +32,15 @@ public class User {
 		this.username = username;
 	}
 
-	public int getUser_id() {
+	public int getUserId() {
 		return user_id;
 	}
 
-	public void setUser_id(int user_id) {
+	public void setUserID(int user_id) {
 		this.user_id = user_id;
 	}
 
-	public boolean isReady_statut() {
-		return ready_statut;
-	}
 
-	public void setReady_statut(boolean ready_statut) {
-		this.ready_statut = ready_statut;
-	}
-	
-	public boolean getReady_status() {
-		return this.ready_statut;
-	}
 	
 	public boolean validUsername(String username) {
 		if (username.isEmpty()) {		// Pas forcement besoin de cette partie mais permet de differencier si le username
@@ -82,5 +71,10 @@ public class User {
 	}
 
 	
+	@Override
+	public String toString() { 
+	    String result = "Username: "+ this.getUsername() + " , userId:" + this.getUserId(); 
+	    return result;
+	} 
 	
 }
