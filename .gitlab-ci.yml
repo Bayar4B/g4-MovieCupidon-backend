@@ -6,7 +6,7 @@ stages:
 build:
   stage: build
   script:
-    - mvn clean package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=false -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
+    - mvn package 
   variables:
     MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
   cache:
@@ -20,6 +20,6 @@ build:
 deploy:
   stage: deploy
   script:
-    - mvn package -DskipTests -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=true -Dquarkus.container-image.build=false -Dquarkus.container-image.tag=latest
+    - mvn package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=true -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
   only:
     - master
