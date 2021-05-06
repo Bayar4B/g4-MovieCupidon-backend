@@ -3,7 +3,6 @@ package ch.unige;
 import ch.unige.dao.SessionsDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
-import ch.unige.domain.SessionConfig;
 import ch.unige.domain.User;
 import ch.unige.domain.UserInLobby;
 
@@ -38,7 +37,7 @@ public class SessionRessource {
 
         if (!sessionsDB.sessionExist(token)){
             // Check if session exist
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         if (!userLobbyDB.isTherePlaceInLobby(token)){
@@ -60,33 +59,20 @@ public class SessionRessource {
         return Response.ok(uri).build();
     }
 
-    @POST
+    @GET
     @Path("/{token}/start")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response startGame(@Context UriInfo info, @PathParam("token") String token,
-    		@FormParam("action") int action, @FormParam("aventure") int aventure, @FormParam("horreur") int horreur,
-    		@FormParam("sci_fi") int sci_fi, @FormParam("documentaire") int documentaire) {
+    public Response startGame(@PathParam("token") String token) {
     	
     	if (!sessionsDB.sessionExist(token)){
-    		return Response.status(Response.Status.BAD_REQUEST).build();
+    		return Response.status(Response.Status.NOT_FOUND).build();
     	}
+
     	if(!userLobbyDB.isEveryoneReady(token)) {
     		return Response.status(Response.Status.CONFLICT).build();
     	}	
     	
-    	SessionConfig config = new SessionConfig(action, aventure, horreur, sci_fi, documentaire);
-    	
-    //---------------------------------------------------------------------------------------------//
-    //
-    // TODO : Le retour : Doit-il etre fait par sample selection ou par cette fonction ? 
-    // 		- Si c'est Sample selection qui redistribue, cette fonction doit retourner la config
-    // 		- Si c'est cette fonction qui redistribue, on doit recup le sample de sample selection 
-    //				puis redirigé sur le bon url
-    //
-    //---------------------------------------------------------------------------------------------//
-
-    	URI uri = info.getAbsolutePath();
-    	return Response.ok(uri).build();
+    	return Response.ok().build();
     }
     
     
