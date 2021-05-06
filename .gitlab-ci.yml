@@ -23,3 +23,5 @@ deploy:
   stage: deploy
   script:
     - mvn package -DskipTests -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=true -Dquarkus.container-image.build=false -Dquarkus.container-image.tag=latest
+  only:
+    - master
