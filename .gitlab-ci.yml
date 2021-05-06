@@ -3,17 +3,18 @@ stages:
   - build
   - deploy
 
-variables:
-    MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
-cache:
-    key: maven
-    paths: [.repository/]
+
 
 
 build:
   stage: build
   script:
     - mvn package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=false -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
+  cache:
+    key: maven
+    paths: [.repository/]
   artifacts:
     paths:
       - lobby-service/target/
