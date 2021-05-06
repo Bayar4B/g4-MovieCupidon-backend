@@ -3,13 +3,10 @@ stages:
   - build
   - deploy
 
-
-
-
 build:
   stage: build
   script:
-    - mvn package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=false -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
+    - mvn clean package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=false -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
   variables:
     MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
   cache:
