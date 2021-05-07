@@ -1,40 +1,25 @@
+image: maven:latest
 stages:
   - build
   - deploy
-  
+
 build:
   stage: build
-  image : maven:latest
-  variables:
-      MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
-  cache:
-      key: maven
-      paths: [.repository/]
   script:
-      - mvn package
+    - mvn package 
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
+  cache:
+    key: maven
+    paths: [.repository/]
   artifacts:
-    # untracked: true
     paths:
       - lobby-service/target/
       - sample-selection-service/target/
+
 deploy:
-  dependencies:
-    - build
-  image: docker:latest
   stage: deploy
   script:
-      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-
-      - cd lobby-service/
-      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/lobby-service:latest .
-      - docker tag moviecupidon/lobby-service:latest bayar4b/movie-cupidon-backend_lobby-service:latest
-      - docker push bayar4b/movie-cupidon-backend_lobby-service:latest
-      - cd ..
-      - cd sample-selection-service/
-      - docker build -f src/main/docker/Dockerfile.jvm -t moviecupidon/sample-selection-service:latest .
-      - docker tag moviecupidon/sample-selection-service:latest bayar4b/movie-cupidon-backend_sample-selection-service:latest
-      - docker push bayar4b/movie-cupidon-backend_sample-selection-service:latest
-      - cd ..
-      - docker rmi $(docker images | grep 'bayar4b') || true
+    - mvn package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=true -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
   only:
     - master

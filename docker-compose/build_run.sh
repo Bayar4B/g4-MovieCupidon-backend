@@ -24,8 +24,12 @@ echo "WSL detecté"
 echo "On démarre KONG API GATEWAY ET ON SLEEP 5s "
 docker-compose -f docker-compose-wsl.yml up &
 
-else
+elif [[ $(uname) =~ Darwin ]]; then
+echo "MacOS detecté"
+echo "On démarre KONG API GATEWAY ET ON SLEEP 5s "
+docker-compose -f docker-compose-wsl.yml up &
 
+else
 echo "On démarre KONG API GATEWAY ET ON SLEEP 5s "
 docker-compose up &
 fi
