@@ -124,12 +124,13 @@ public class SessionRessource {
 
     
     /*TODO: This is for dev purposes only: */
-    
+    /*
     @GET
     @Path("/seeUserInLobbyDB")
     @Produces(MediaType.TEXT_PLAIN)
     public String seeUserInLobbyDB() {
         return String.valueOf(UserInLobbyDB);
     }
+    */
 }
 
