@@ -1,14 +1,16 @@
 package ch.unige.domain;
 
+import ch.unige.dao.UserInLobbyDB;
+
 public class UserInLobby {
     private User user;
     private String lobby;
-    private int readyOrNot; //0 for ready, 1 for ready
+    private boolean ReadyStatus; //1 for ready, 0 for ready
 
     public UserInLobby(User user, String lobby){
         this.user = user;
         this.lobby = lobby;
-        this.setReadyOrNot(0);
+        this.ReadyStatus = false;
     }
 
     public User getUser(){
@@ -26,12 +28,33 @@ public class UserInLobby {
     public void setLobby(String lobby){
         this.lobby = lobby;
     }
-
-	public int getReadyOrNot() {
-		return readyOrNot;
+    
+    public boolean getReadyStatus() {
+    	return this.ReadyStatus;	
+    }
+    
+	public void setReadyStatut(boolean ready_statut) {
+		this.ReadyStatus = ready_statut;
 	}
-
-	public void setReadyOrNot(int readyOrNot) {
-		this.readyOrNot = readyOrNot;
+	
+	public boolean toggleReadyStatus() {
+		/* Devrait-on ajouter un synchronized pour éviter les problèmes de concurrence..? Es-ce que synchronized est assez?*/
+		
+		this.ReadyStatus = !this.ReadyStatus; 
+		UserInLobbyDB userInLobbyDBInstance = UserInLobbyDB.getInstance();
+		userInLobbyDBInstance.updateUserInLobby(this); // Updates it's value on the database.
+		return(this.ReadyStatus);
 	}
+	
+	public boolean getReady_status() {
+		return this.ReadyStatus;
+	}
+	
+
+	@Override
+	public String toString() { 
+	    String result = "User: "+ String.valueOf(this.user) + " , lobbyId:" + this.lobby + " , Ready Status: " + String.valueOf(this.ReadyStatus); 
+	    return result;
+	} 
+    
 }

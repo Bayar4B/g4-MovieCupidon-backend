@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.ArrayList;
 
 @Path("/session")
 public class SessionRessource {
@@ -83,6 +84,52 @@ public class SessionRessource {
         return "This is lobby service in SessionRessource";
     }
 
+    @POST
+    @Path("/{TOKEN}/{USERID}/toggleready")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response toggleReady(@Context UriInfo info, @PathParam("TOKEN") String token, @PathParam("USERID") int userid ){
 
+        if (!sessionsDB.sessionExist(token)){
+            // Check if session exist
+        	System.out.println("Aucun Lobby avec ce Token" );
+            return Response.status(Response.Status.BAD_REQUEST).entity("Aucun Lobby avec ce Token").build();
+        }
+        int userIndexUserInDB = UserInLobbyDB.findUserInLobbyById(userid);
+        if (userIndexUserInDB  == -1){
+            // User doesn't exist in the userInLobbyDB...
+        	System.out.println("Aucun User avec cet ID");
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Aucun User avec cet ID").build(); //code 401
+            /*
+            TODO
+                code 401 pour le moment mais il faudra voir si on change pas
+             */
+        }
+        //TODO Check if user is in the said lobby.
+        
+        if(  !token.equalsIgnoreCase( UserInLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
+        		// User Not in the correct Lobby..
+        	System.out.println("Cet utilisateur(" +userid +") n'est pas dans ce Lobby:"+token);
+        	return Response.status(Response.Status.UNAUTHORIZED).entity("Cet utilisateur n'est pas dans ce Lobby").build(); //code 401
+            /*
+            TODO
+                code 401 pour le moment mais il faudra voir si on change pas
+             */	
+        }
+
+        UserInLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
+        return Response.ok("Nouveau Ready Statut: " + String.valueOf( UserInLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
+
+    }
+    
+
+    
+    /*TODO: This is for dev purposes only: */
+    
+    @GET
+    @Path("/seeUserInLobbyDB")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String seeUserInLobbyDB() {
+        return String.valueOf(UserInLobbyDB);
+    }
 }
 

@@ -11,8 +11,6 @@ import ch.unige.domain.UserInLobby;
 import io.quarkus.test.junit.QuarkusTest;
 import junit.framework.*;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 
@@ -34,7 +32,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -90,7 +88,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -119,7 +117,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -148,7 +146,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -177,7 +175,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -228,7 +226,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -252,10 +250,10 @@ public class SessionRessourceTest extends TestCase{
         
         // ----------- Setting them to Ready ----------- // 
         
-        userInLobbyJoiner1.setReadyOrNot(1);
-        userInLobbyJoiner2.setReadyOrNot(1);
-        userInLobbyJoiner3.setReadyOrNot(1);
-        userInLobbyJoiner4.setReadyOrNot(1);
+        userInLobbyJoiner1.setReadyStatut(true);
+        userInLobbyJoiner2.setReadyStatut(true);
+        userInLobbyJoiner3.setReadyStatut(true);
+        userInLobbyJoiner4.setReadyStatut(true);
         
         userLobbyDB.addUserInLobby(userInLobbyJoiner1);
         userLobbyDB.addUserInLobby(userInLobbyJoiner2);
@@ -286,7 +284,7 @@ public class SessionRessourceTest extends TestCase{
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
@@ -310,10 +308,10 @@ public class SessionRessourceTest extends TestCase{
         
         // ----------- Setting them to Ready ----------- // 
         
-        userInLobbyJoiner1.setReadyOrNot(1);
-        userInLobbyJoiner2.setReadyOrNot(1);
-        userInLobbyJoiner3.setReadyOrNot(1);
-        userInLobbyJoiner4.setReadyOrNot(0);
+        userInLobbyJoiner1.setReadyStatut(true);
+        userInLobbyJoiner2.setReadyStatut(true);
+        userInLobbyJoiner3.setReadyStatut(true);
+        userInLobbyJoiner4.setReadyStatut(false);
         
         userLobbyDB.addUserInLobby(userInLobbyJoiner1);
         userLobbyDB.addUserInLobby(userInLobbyJoiner2);

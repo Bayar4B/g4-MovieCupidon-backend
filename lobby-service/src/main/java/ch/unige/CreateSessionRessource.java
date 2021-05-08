@@ -40,7 +40,7 @@ public class CreateSessionRessource {
     	userDB.add_user(creator_user);
     	System.out.println(creator_user.getUsername());
 
-    	Session newSession = new Session(creator_user.getUser_id()); 
+    	Session newSession = new Session(creator_user.getUserId()); 
         sessionsDB.add_session(newSession);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
