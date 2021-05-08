@@ -63,7 +63,7 @@ public class UserInLobbyDB {
     	// Verifier que toutes les personnes dans le lobby différentes du owner sont ready
     	if (userInLobbiesDB.stream()
     			.filter(s -> s.getLobby().equals(token) &&
-    					s.getReadyOrNot() == 0 && 
+    					s.getReadyOrNot() == 1 && 
     					s.getUser().getUser_id() != ownerId)
     			.count() == nbUser-1)
     	{
