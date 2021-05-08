@@ -38,12 +38,12 @@ public class SessionRessource {
 
         if (!sessionsDB.sessionExist(token)){
             // Check if session exist
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Session inexistante ou mauvais token.").build();
         }
 
         if (!userLobbyDB.isTherePlaceInLobby(token)){
             //check if there is space in the looby
-            return Response.status(Response.Status.UNAUTHORIZED).build(); //code 401
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Aucune place dans le lobby restante.").build(); //code 401
             /*
             TODO
                 code 401 pour le moment mais il faudra voir si on change pas
@@ -66,11 +66,11 @@ public class SessionRessource {
     public Response startGame(@PathParam("token") String token) {
     	
     	if (!sessionsDB.sessionExist(token)){
-    		return Response.status(Response.Status.NOT_FOUND).build();
+    		return Response.status(Response.Status.NOT_FOUND).entity("Session inexistante ou mauvais token.").build();
     	}
 
     	if(!userLobbyDB.isEveryoneReady(token)) {
-    		return Response.status(Response.Status.CONFLICT).build();
+    		return Response.status(Response.Status.CONFLICT).entity("Tous les joiner ne sont pas ready.").build();
     	}	
     	
     	return Response.ok().build();
