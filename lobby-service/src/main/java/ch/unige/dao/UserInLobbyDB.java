@@ -1,8 +1,10 @@
 package ch.unige.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.unige.domain.Session;
 import ch.unige.domain.UserInLobby;
@@ -47,9 +49,11 @@ public class UserInLobbyDB {
     	
     	// Récupère le Owner id 
     	
-    	long ownerId = sessionDBinstance.getFullDB().stream()
+    	List<Integer> ownerId_List = sessionDBinstance.getFullDB().stream()
     			.filter(s -> s.getToken().equals(token))
-    			.map(Session::getCreator_user_id).count();
+    			.map(Session::getCreator_user_id).collect(Collectors.toList());
+    	
+    	int ownerId = ownerId_List.get(0);
     			
     	// Récupère le nombre d'untilisateur dans une session 
     	long nbUser = userInLobbiesDB.stream()		// Nombre de personne dans un lobby
@@ -59,7 +63,7 @@ public class UserInLobbyDB {
     	// Verifier que toutes les personnes dans le lobby différentes du owner sont ready
     	if (userInLobbiesDB.stream()
     			.filter(s -> s.getLobby().equals(token) &&
-    					s.getReadyOrNot() == 1 && 
+    					s.getReadyOrNot() == 0 && 
     					s.getUser().getUser_id() != ownerId)
     			.count() == nbUser-1)
     	{
