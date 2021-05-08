@@ -33,11 +33,9 @@ public class UserInLobby {
     	return this.ReadyStatus;	
     }
     
-
 	public void setReadyStatut(boolean ready_statut) {
 		this.ReadyStatus = ready_statut;
 	}
-	
 	
 	public boolean toggleReadyStatus() {
 		/* Devrait-on ajouter un synchronized pour éviter les problèmes de concurrence..? Es-ce que synchronized est assez?*/
