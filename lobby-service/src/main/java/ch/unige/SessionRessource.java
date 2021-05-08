@@ -19,7 +19,7 @@ public class SessionRessource {
 
     private static SessionsDB sessionsDB = SessionsDB.getInstance();
     private static UserDB userDB = UserDB.getInstance();
-    private static UserInLobbyDB user_lobby_DB = UserInLobbyDB.getInstance();
+    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 
 
     @GET
@@ -41,7 +41,7 @@ public class SessionRessource {
             return Response.status(Response.Status.NOT_FOUND).entity("Session inexistante ou mauvais token.").build();
         }
 
-        if (!user_lobby_DB.isTherePlaceInLobby(token)){
+        if (!userLobbyDB.isTherePlaceInLobby(token)){
             //check if there is space in the looby
             return Response.status(Response.Status.UNAUTHORIZED).entity("Aucune place dans le lobby restante.").build(); //code 401
             /*
@@ -54,7 +54,7 @@ public class SessionRessource {
         userDB.add_user(creator_user);
 
         UserInLobby newUserInLobby = new UserInLobby(creator_user, token);
-        user_lobby_DB.addUserInLobby(newUserInLobby);
+        userLobbyDB.addUserInLobby(newUserInLobby);
 
         URI uri = info.getBaseUriBuilder().path("session/" + token).build();
         return Response.ok(uri).build();
@@ -69,7 +69,7 @@ public class SessionRessource {
     		return Response.status(Response.Status.NOT_FOUND).entity("Session inexistante ou mauvais token.").build();
     	}
 
-    	if(!user_lobby_DB.isEveryoneReady(token)) {
+    	if(!userLobbyDB.isEveryoneReady(token)) {
     		return Response.status(Response.Status.CONFLICT).entity("Tous les joiner ne sont pas ready.").build();
     	}	
     	
@@ -94,7 +94,7 @@ public class SessionRessource {
         	System.out.println("Aucun Lobby avec ce Token" );
             return Response.status(Response.Status.BAD_REQUEST).entity("Aucun Lobby avec ce Token").build();
         }
-        int userIndexUserInDB = user_lobby_DB.findUserInLobbyById(userid);
+        int userIndexUserInDB = userLobbyDB.findUserInLobbyById(userid);
         if (userIndexUserInDB  == -1){
             // User doesn't exist in the userInLobbyDB...
         	System.out.println("Aucun User avec cet ID");
@@ -106,7 +106,7 @@ public class SessionRessource {
         }
         //TODO Check if user is in the said lobby.
         
-        if(  !token.equalsIgnoreCase( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
+        if(  !token.equalsIgnoreCase( userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
         		// User Not in the correct Lobby..
         	System.out.println("Cet utilisateur(" +userid +") n'est pas dans ce Lobby:"+token);
         	return Response.status(Response.Status.UNAUTHORIZED).entity("Cet utilisateur n'est pas dans ce Lobby").build(); //code 401
@@ -116,8 +116,8 @@ public class SessionRessource {
              */	
         }
 
-        user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
-        return Response.ok("Nouveau Ready Statut: " + String.valueOf( user_lobby_DB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
+        userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
+        return Response.ok("Nouveau Ready Statut: " + String.valueOf( userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
 
     }
     
@@ -129,7 +129,7 @@ public class SessionRessource {
     @Path("/seeUserInLobbyDB")
     @Produces(MediaType.TEXT_PLAIN)
     public String seeUserInLobbyDB() {
-        return String.valueOf(user_lobby_DB);
+        return String.valueOf(userLobbyDB);
     }
     
 }
