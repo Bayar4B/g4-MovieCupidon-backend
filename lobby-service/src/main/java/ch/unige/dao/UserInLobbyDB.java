@@ -79,7 +79,7 @@ public class UserInLobbyDB {
         return userInLobbiesDB.size();
     }
 
-    public static ArrayList<UserInLobby> getFullUserInLobbyDB(){
+    public ArrayList<UserInLobby> getFullUserInLobbyDB(){
         return userInLobbiesDB;
     }
 
@@ -110,7 +110,7 @@ public class UserInLobbyDB {
 
     }
     
-    public static int findUserInLobbyById(int id) {
+    public int findUserInLobbyById(int id) {
     	for (int i = 0; i < userInLobbiesDB.size(); i++) {
 			if(id == userInLobbiesDB.get(i).getUser().getUserId() ) {
 				return(i);		
