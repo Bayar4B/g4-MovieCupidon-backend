@@ -1,7 +1,5 @@
 package ch.unige.ChatService;
 
-import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
