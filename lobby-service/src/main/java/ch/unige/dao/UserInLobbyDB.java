@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.unige.domain.Session;
+import ch.unige.domain.Lobby;
 import ch.unige.domain.UserInLobby;
 
 public class UserInLobbyDB {
@@ -35,26 +35,26 @@ public class UserInLobbyDB {
     }
 
     public boolean isTherePlaceInLobby(String token){
-        SessionsDB sessionDBinstance = SessionsDB.getInstance();
-        int sizeOfSession = sessionDBinstance.sessionSize(token);
-        if (userInLobbiesDB.stream().map(UserInLobby::getLobby).filter(token::equals).count()+1 <= sizeOfSession) {
+        LobbyDB lobbyDBinstance = LobbyDB.getInstance();
+        int sizeOflobby = lobbyDBinstance.lobbySize(token);
+        if (userInLobbiesDB.stream().map(UserInLobby::getLobby).filter(token::equals).count()+1 <= sizeOflobby) {
             return true;
         }
         return false;
     }
     
     public boolean isEveryoneReady(String token) {
-    	SessionsDB sessionDBinstance = SessionsDB.getInstance();
+    	LobbyDB lobbyDBinstance = LobbyDB.getInstance();
     	
     	// Récupère le Owner id 
     	
-    	List<Integer> ownerId_List = sessionDBinstance.getFullDB().stream()
+    	List<Integer> ownerId_List = lobbyDBinstance.getFullDB().stream()
     			.filter(s -> s.getToken().equals(token))
-    			.map(Session::getCreator_user_id).collect(Collectors.toList());
+    			.map(Lobby::getCreator_user_id).collect(Collectors.toList());
     	
     	int ownerId = ownerId_List.get(0);
     			
-    	// Récupère le nombre d'untilisateur dans une session 
+    	// Récupère le nombre d'untilisateur dans une lobby 
     	long nbUser = userInLobbiesDB.stream()		// Nombre de personne dans un lobby
     			.filter(s -> s.getLobby().equals(token))
     			.count();

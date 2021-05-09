@@ -1,6 +1,6 @@
 package ch.unige;
 
-import ch.unige.dao.SessionsDB;
+import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
 import ch.unige.domain.User;
@@ -14,10 +14,10 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.ArrayList;
 
-@Path("/session")
-public class SessionRessource {
+@Path("/lobby")
+public class LobbyRessource {
 
-    private static SessionsDB sessionsDB = SessionsDB.getInstance();
+    private static LobbyDB lobbyDB = LobbyDB.getInstance();
     private static UserDB userDB = UserDB.getInstance();
     private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 
@@ -36,9 +36,9 @@ public class SessionRessource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response joinLobby(@Context UriInfo info, @FormParam("username") String username, @FormParam("token") String token){
 
-        if (!sessionsDB.sessionExist(token)){
-            // Check if session exist
-            return Response.status(Response.Status.NOT_FOUND).entity("Session inexistante ou mauvais token.").build();
+        if (!lobbyDB.lobbyExist(token)){
+            // Check if lobby exist
+            return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
         }
 
         if (!userLobbyDB.isTherePlaceInLobby(token)){
@@ -56,7 +56,7 @@ public class SessionRessource {
         UserInLobby newUserInLobby = new UserInLobby(creator_user, token);
         userLobbyDB.addUserInLobby(newUserInLobby);
 
-        URI uri = info.getBaseUriBuilder().path("session/" + token).build();
+        URI uri = info.getBaseUriBuilder().path("lobby/" + token).build();
         return Response.ok(uri).build();
     }
 
@@ -65,8 +65,8 @@ public class SessionRessource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response startGame(@PathParam("token") String token) {
     	
-    	if (!sessionsDB.sessionExist(token)){
-    		return Response.status(Response.Status.NOT_FOUND).entity("Session inexistante ou mauvais token.").build();
+    	if (!lobbyDB.lobbyExist(token)){
+    		return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
     	}
 
     	if(!userLobbyDB.isEveryoneReady(token)) {
@@ -81,7 +81,7 @@ public class SessionRessource {
     @Path("/helloworld")
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {
-        return "This is lobby service in SessionRessource";
+        return "This is lobby service in lobbyRessource";
     }
 
     @POST
@@ -89,8 +89,8 @@ public class SessionRessource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response toggleReady(@Context UriInfo info, @PathParam("TOKEN") String token, @PathParam("USERID") int userid ){
 
-        if (!sessionsDB.sessionExist(token)){
-            // Check if session exist
+        if (!lobbyDB.lobbyExist(token)){
+            // Check if lobby exist
         	System.out.println("Aucun Lobby avec ce Token" );
             return Response.status(Response.Status.BAD_REQUEST).entity("Aucun Lobby avec ce Token").build();
         }

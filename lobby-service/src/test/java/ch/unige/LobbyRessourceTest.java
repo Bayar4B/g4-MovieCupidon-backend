@@ -2,10 +2,10 @@ package ch.unige;
 
 import org.junit.jupiter.api.Test;
 
-import ch.unige.dao.SessionsDB;
+import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
-import ch.unige.domain.Session;
+import ch.unige.domain.Lobby;
 import ch.unige.domain.User;
 import ch.unige.domain.UserInLobby;
 import io.quarkus.test.junit.QuarkusTest;
@@ -15,30 +15,30 @@ import junit.framework.*;
 import static io.restassured.RestAssured.given;
 
 @QuarkusTest
-public class SessionRessourceTest extends TestCase{
+public class LobbyRessourceTest extends TestCase{
 	
 	@Test
 	public void validLobby_Test() {
 		
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
 
         // ----------- Init des joiners ----------- // 
         
@@ -47,7 +47,7 @@ public class SessionRessourceTest extends TestCase{
         User joiner3 = new User("joiner3");
         User joiner4 = new User("joiner4");
 
-        // ----------- Ajout des Joiners à la Session ----------- // 
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
         
         UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
         userLobbyDB.addUserInLobby(userInLobbyJoiner1);
@@ -58,7 +58,7 @@ public class SessionRessourceTest extends TestCase{
 		
         
 		given().formParam("username", joiner4.getUsername()).formParam("token", token)
-			.when().post("/session/join")
+			.when().post("/lobby/join")
 			.then()
 				.statusCode(200);
 	}
@@ -67,7 +67,7 @@ public class SessionRessourceTest extends TestCase{
 	public void lobby_WrongToken_Test() {
 		
 		given().formParam("username", "username_test").formParam("token", "ABCD")
-			.when().post("/session/join")
+			.when().post("/lobby/join")
 			.then()
 				.statusCode(404);
 	}
@@ -78,26 +78,26 @@ public class SessionRessourceTest extends TestCase{
 		
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
         
 		given().formParam("username", "").formParam("token", token)
-			.when().post("/session/join")
+			.when().post("/lobby/join")
 			.then()
 				.statusCode(400);
 	}
@@ -107,26 +107,26 @@ public class SessionRessourceTest extends TestCase{
 		
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
         
 		given().formParam("username", " ").formParam("token", token)
-			.when().post("/session/join")
+			.when().post("/lobby/join")
 			.then()
 				.statusCode(400);
 	}
@@ -136,52 +136,52 @@ public class SessionRessourceTest extends TestCase{
 		
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
         
 		given().formParam("username", "username_test%").formParam("token", token)
-			.when().post("/session/join")
+			.when().post("/lobby/join")
 			.then()
 				.statusCode(400);
 	}
 	
 	@Test
-	public void lobby_SessionFull_Test() {
+	public void lobby_LobbyFull_Test() {
 		
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
         
         
         // ----------- Init des joiners ----------- // 
@@ -191,7 +191,7 @@ public class SessionRessourceTest extends TestCase{
         User joiner3 = new User("joiner3");
         User joiner4 = new User("joiner4");
 
-        // ----------- Ajout des Joiners à la Session ----------- // 
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
         
         UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
         userLobbyDB.addUserInLobby(userInLobbyJoiner1);
@@ -203,10 +203,10 @@ public class SessionRessourceTest extends TestCase{
         userLobbyDB.addUserInLobby(userInLobbyJoiner4);
         
         
-        // ----------- Teste le fait que la Session est bien pleine ----------- // 
+        // ----------- Teste le fait que la Lobby est bien pleine ----------- // 
         
 		given().formParam("username", "joiner5").formParam("token", token)
-			.when().post("/session/join")
+			.when().post("/lobby/join")
 			.then()
 				.statusCode(401);
 	}
@@ -216,23 +216,23 @@ public class SessionRessourceTest extends TestCase{
 	public void startGame_Test() {
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
 		
         // ----------- Init des joiners ----------- // 
         
@@ -241,7 +241,7 @@ public class SessionRessourceTest extends TestCase{
         User joiner3 = new User("joiner3");
         User joiner4 = new User("joiner4");
 
-        // ----------- Ajout des Joiners à la Session ----------- // 
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
         
         UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
         UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
@@ -264,7 +264,7 @@ public class SessionRessourceTest extends TestCase{
         
         // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
         given().pathParam("token", token)
-			.when().get("/session/{token}/start")
+			.when().get("/lobby/{token}/start")
 			.then()
 				.statusCode(200);
 	}
@@ -274,23 +274,23 @@ public class SessionRessourceTest extends TestCase{
 	public void startGame_NotEveryoneReady_Test() {
 		// ----------- Init des DB ----------- // 
 		
-		SessionsDB sessionsDB = SessionsDB.getInstance();
+		LobbyDB lobbyDB = LobbyDB.getInstance();
 	    UserDB userDB = UserDB.getInstance();
 	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	    
 	    
-	    // ----------- Création d'une Session ----------- // 
+	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
     	userDB.add_user(creator_user);
 
-    	Session newSession = new Session(creator_user.getUserId()); 
-        sessionsDB.add_session(newSession);
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+        lobbyDB.add_lobby(newLobby);
 
-        UserInLobby userInLobby = new UserInLobby(creator_user, newSession.getToken());
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
         
-        String token = newSession.getToken();
+        String token = newLobby.getToken();
 		
         // ----------- Init des joiners ----------- // 
         
@@ -299,7 +299,7 @@ public class SessionRessourceTest extends TestCase{
         User joiner3 = new User("joiner3");
         User joiner4 = new User("joiner4");
 
-        // ----------- Ajout des Joiners à la Session ----------- // 
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
         
         UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
         UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
@@ -322,7 +322,7 @@ public class SessionRessourceTest extends TestCase{
         
         // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
         given().pathParam("token", token)
-			.when().get("/session/{token}/start")
+			.when().get("/lobby/{token}/start")
 			.then()
 				.statusCode(409);
 	}
