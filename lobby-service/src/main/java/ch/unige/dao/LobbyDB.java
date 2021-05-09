@@ -5,6 +5,7 @@ import ch.unige.domain.Lobby;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 
 public class LobbyDB {
@@ -43,8 +44,9 @@ public class LobbyDB {
         return randomString();
     }
 
-    public boolean lobbyExist(String token){
-        return lobby_db.stream().map(Lobby::getToken).filter(token::equals).findFirst().isPresent();
+    public boolean lobbyExist(String token){   	
+        return (lobby_db.stream()
+        		.filter(l -> l.getToken().equals(token)).count() > 0);
     }
 
     public int lobbySize(String token) {

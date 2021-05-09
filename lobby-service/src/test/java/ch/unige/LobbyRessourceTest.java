@@ -30,10 +30,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
+    	Lobby newLobby = new Lobby(creator_user.getUserId());
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -86,10 +84,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -115,10 +111,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -144,10 +138,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -173,10 +165,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -224,10 +214,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -282,10 +270,8 @@ public class LobbyRessourceTest extends TestCase{
 	    // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);

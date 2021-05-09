@@ -1,9 +1,15 @@
 package ch.unige.domain;
 
 import ch.unige.dao.LobbyDB;
+import ch.unige.dao.UserInLobbyDB;
 
 
 public class Lobby {
+
+    private static LobbyDB lobbyDB = LobbyDB.getInstance();
+    private static UserInLobbyDB userInLobbyDB = UserInLobbyDB.getInstance();
+
+
 
     private String token; //lobby-id
     private int creator_user_id;
@@ -17,6 +23,7 @@ public class Lobby {
         this.setToken(lobby_db.getNewToken());
         this.setlobby_status("Preparation - Lobby");
         this.nbMax = 5;
+        lobbyDB.add_lobby(this);
     }
 
     public String getToken() {

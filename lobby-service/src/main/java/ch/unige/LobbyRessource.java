@@ -35,7 +35,7 @@ public class LobbyRessource {
     @Path("/join")
     @Produces(MediaType.TEXT_PLAIN)
     public Response joinLobby(@Context UriInfo info, @FormParam("username") String username, @FormParam("token") String token){
-
+    	
         if (!lobbyDB.lobbyExist(token)){
             // Check if lobby exist
             return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
@@ -51,7 +51,6 @@ public class LobbyRessource {
         }
 
         User creator_user = new User(username);
-        userDB.add_user(creator_user);
 
         UserInLobby newUserInLobby = new UserInLobby(creator_user, token);
         userLobbyDB.addUserInLobby(newUserInLobby);

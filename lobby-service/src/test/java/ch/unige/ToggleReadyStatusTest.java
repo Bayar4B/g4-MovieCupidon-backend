@@ -64,10 +64,8 @@ public class ToggleReadyStatusTest extends TestCase{
 	 // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername_test_toggle_1");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -89,10 +87,8 @@ public class ToggleReadyStatusTest extends TestCase{
 	 // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername_test_toggle_2");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -114,10 +110,8 @@ public class ToggleReadyStatusTest extends TestCase{
 	 // ----------- Création d'une Lobby ----------- // 
 	    
 	    User creator_user = new User("ownerUsername_test_toggle_3");
-    	userDB.add_user(creator_user);
 
     	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-        lobbyDB.add_lobby(newLobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);

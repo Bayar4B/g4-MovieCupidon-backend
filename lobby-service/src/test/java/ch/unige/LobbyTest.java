@@ -40,8 +40,11 @@ public class LobbyTest extends TestCase{
 	@Test
 	public void toStringTest() {
 		Lobby lobby = new Lobby(11);
+		String token = lobby.getToken();
 		lobby.setToken("ABCD");
 		assertEquals("UC: 11 token: ABCD", lobby.toString() );
+		lobby.setToken(token);		// Sert juste a reset le token pour ne pas 
+							//avoir de conflit plus tard dans les autres test qui essaye la valeur ABCD comme token
 	}
 	
 }

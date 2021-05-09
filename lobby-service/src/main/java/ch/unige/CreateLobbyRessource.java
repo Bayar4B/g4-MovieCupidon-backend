@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @Path("/create-lobby")
 public class CreateLobbyRessource {
 
-    private static LobbyDB lobbysDB = LobbyDB.getInstance();
+    private static LobbyDB lobbyDB = LobbyDB.getInstance();
     private static UserDB userDB = UserDB.getInstance();
     private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 
@@ -26,7 +26,7 @@ public class CreateLobbyRessource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/size")
     public Integer countlobbys(){
-        return lobbysDB.getlobbyDB_size();
+        return lobbyDB.getlobbyDB_size();
     }
 
     @POST
@@ -35,11 +35,8 @@ public class CreateLobbyRessource {
     public Response createlobby(@Context UriInfo info, @FormParam("username") String username) {
     	
     	User creator_user = new User(username);
-    	userDB.add_user(creator_user);
-    	System.out.println(creator_user.getUsername());
 
     	Lobby newlobby = new Lobby(creator_user.getUserId()); 
-        lobbysDB.add_lobby(newlobby);
 
         UserInLobby userInLobby = new UserInLobby(creator_user, newlobby.getToken());
         userLobbyDB.addUserInLobby(userInLobby);
@@ -56,7 +53,7 @@ public class CreateLobbyRessource {
     @Path("/seeDB")
     @Produces(MediaType.TEXT_PLAIN)
     public ArrayList<Lobby> seeDatabaseFull(){
-        return lobbysDB.getFullDB();
+        return lobbyDB.getFullDB();
     }
 
 
