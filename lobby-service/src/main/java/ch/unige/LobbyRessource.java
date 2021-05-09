@@ -35,8 +35,8 @@ public class LobbyRessource {
 
     @POST
     @Path("/join")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response joinLobby(@Context UriInfo info, @FormParam("username") String username, @FormParam("token") String token){
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response joinLobby(@FormParam("username") String username, @FormParam("token") String token){
     	
         if (!lobbyDB.lobbyExist(token)){
             // Check if lobby exist
@@ -52,13 +52,19 @@ public class LobbyRessource {
              */
         }
 
-        User creator_user = new User(username);
+        User joiner = new User(username);
+        int joinerID = joiner.getUserId();
 
-        UserInLobby newUserInLobby = new UserInLobby(creator_user, token);
+        UserInLobby newUserInLobby = new UserInLobby(joiner, token);
         userLobbyDB.addUserInLobby(newUserInLobby);
 
-        URI uri = info.getBaseUriBuilder().path("lobby/" + token).build();
-        return Response.ok(uri).build();
+        String message = "{\"joinerID\":"+joinerID+"}";
+        
+        // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
+        return Response.status(Response.Status.OK)
+        		.entity(message)
+        		.type(MediaType.APPLICATION_JSON)
+        		.build(); 
     }
 
     @GET
@@ -87,8 +93,8 @@ public class LobbyRessource {
 
     @POST
     @Path("/{TOKEN}/{USERID}/toggleready")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response toggleReady(@Context UriInfo info, @PathParam("TOKEN") String token, @PathParam("USERID") int userid ){
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response toggleReady(@PathParam("TOKEN") String token, @PathParam("USERID") int userid ){
 
         if (!lobbyDB.lobbyExist(token)){
             // Check if lobby exist
@@ -118,8 +124,13 @@ public class LobbyRessource {
         }
 
         userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).toggleReadyStatus();
-        return Response.ok("Nouveau Ready Statut: " + String.valueOf( userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
-
+        
+        String message = "{\"isOwner\":"+userid+", \"Status\": "+userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()+"}";
+        
+        return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
     }
 
     

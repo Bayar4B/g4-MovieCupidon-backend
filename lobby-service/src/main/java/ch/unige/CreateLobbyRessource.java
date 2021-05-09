@@ -31,23 +31,25 @@ public class CreateLobbyRessource {
 
     @POST
     @Path("/new-lobby")
-    @Produces(MediaType.TEXT_PLAIN) //user-creator
-    public Response createlobby(@Context UriInfo info, @FormParam("username") String username) {
+    @Produces(MediaType.APPLICATION_JSON) 
+    public Response createlobby(@FormParam("username") String username) {
     	
     	User creator_user = new User(username);
-    	System.out.println("Owner ID : "+creator_user.getUserId());
+    	int ownerID = creator_user.getUserId();
 
     	Lobby newlobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newlobby.getToken());
+    	String token = newlobby.getToken();
+        UserInLobby userInLobby = new UserInLobby(creator_user, token);
         userLobbyDB.addUserInLobby(userInLobby);
 
-//        String newUrl = "http://localhost/" + newlobby.getToken();
-        URI uri = info.getBaseUriBuilder().path("lobby/" + newlobby.getToken()).build();
-        System.out.println(uri);
-
-//        return Response.ok(newlobby).header("Redirectlobby", newUrl).build(); // code 200 mais vaudrait mieux 303
-        return Response.seeOther(uri).build(); //return le code 303 (normalement on veut ça)
+        // Message JSON envoyé
+        String message = "{\"ownerID\":"+ownerID+", \"ownerID\":"+token+"}";
+        
+        // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
+        return Response.status(Response.Status.OK)
+        		.entity(message)
+        		.type(MediaType.APPLICATION_JSON)
+        		.build(); 
     }
 
     @GET
