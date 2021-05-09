@@ -23,7 +23,6 @@ public class SocketEndpoint {
 	
 	private Map<String, Session> sessions;
 	private Map<String,Map<String, Session>> sessionsList = sessionsPerLobbyDB.getSessionsListDB();
-//    Map<String, Session> sessions = new ConcurrentHashMap<>(); 
 
     @OnOpen
     public void onOpen(Session session,@PathParam("token") String token, @PathParam("username") String username) {
