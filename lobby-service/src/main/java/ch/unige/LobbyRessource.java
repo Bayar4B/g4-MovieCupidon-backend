@@ -13,6 +13,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/lobby")
 public class LobbyRessource {
@@ -105,7 +107,7 @@ public class LobbyRessource {
         }
         //TODO Check if user is in the said lobby.
         
-        if(  !token.equalsIgnoreCase( userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobby() )  ){
+        if(  !token.equalsIgnoreCase( userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getLobbyToken() )  ){
         		// User Not in the correct Lobby..
         	System.out.println("Cet utilisateur(" +userid +") n'est pas dans ce Lobby:"+token);
         	return Response.status(Response.Status.UNAUTHORIZED).entity("Cet utilisateur n'est pas dans ce Lobby").build(); //code 401
@@ -119,16 +121,68 @@ public class LobbyRessource {
         return Response.ok("Nouveau Ready Statut: " + String.valueOf( userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()) ).build();
 
     }
-    
 
     
     /*TODO: This is for dev purposes only: */
     
     @GET
     @Path("/seeUserInLobbyDB")
-    @Produces(MediaType.TEXT_PLAIN)
     public String seeUserInLobbyDB() {
         return String.valueOf(userLobbyDB);
+    }
+    
+    @GET
+    @Path("/{token}/{userID}/isOwner")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response isOwner(@PathParam("token") String token, @PathParam("userID") int userID) {
+    	
+    	// Test si le lobby est bien présent
+    	if (!lobbyDB.lobbyExist(token)){
+            // Check if lobby exist
+            return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
+        }
+    	
+    	// Verifie que ce userID est bien dans la session demandée
+    	if (!userLobbyDB.isUserInLobby(token, userID)) {
+    		return Response.status(Response.Status.CONFLICT).entity("Ce user n'est pas présent dans cette session.").build();
+    	}
+    	
+    	// La valeur de retour si le user est bien le owner ou non
+    	boolean isHeTheOwner = (lobbyDB.getFullDB().stream()
+    		.filter(l -> l.getToken().equals(token) && l.getCreator_user_id() == userID)
+    		.count() > 0);
+    	
+    	// Creation du string convertit en JSON
+    	String message = "{\"isOwner\":"+isHeTheOwner+"}";
+    	
+    	return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
+    }
+    
+    @GET
+    @Path("/{token}/whoIsTheOwner")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response whoIsTheOwner(@PathParam("token") String token) {
+    	
+    	// Test si le lobby est bien présent
+    	if (!lobbyDB.lobbyExist(token)){
+            // Check if lobby exist
+            return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
+        }
+    	
+    	int ownerID = lobbyDB.getFullDB().stream()
+    			.filter(l -> l.getToken().equals(token))
+    			.collect(Collectors.toList())
+    			.get(0)
+    			.getCreator_user_id();
+    	
+    	String message = "{\"ownerID\":"+ownerID+"}";
+    	return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
     }
     
 }

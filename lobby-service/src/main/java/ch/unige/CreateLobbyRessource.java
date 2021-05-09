@@ -35,6 +35,7 @@ public class CreateLobbyRessource {
     public Response createlobby(@Context UriInfo info, @FormParam("username") String username) {
     	
     	User creator_user = new User(username);
+    	System.out.println("Owner ID : "+creator_user.getUserId());
 
     	Lobby newlobby = new Lobby(creator_user.getUserId()); 
 
@@ -55,7 +56,6 @@ public class CreateLobbyRessource {
     public ArrayList<Lobby> seeDatabaseFull(){
         return lobbyDB.getFullDB();
     }
-
 
 }
 

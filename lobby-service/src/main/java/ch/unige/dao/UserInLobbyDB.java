@@ -37,7 +37,7 @@ public class UserInLobbyDB {
     public boolean isTherePlaceInLobby(String token){
         LobbyDB lobbyDBinstance = LobbyDB.getInstance();
         int sizeOflobby = lobbyDBinstance.lobbySize(token);
-        if (userInLobbiesDB.stream().map(UserInLobby::getLobby).filter(token::equals).count()+1 <= sizeOflobby) {
+        if (userInLobbiesDB.stream().map(UserInLobby::getLobbyToken).filter(token::equals).count()+1 <= sizeOflobby) {
             return true;
         }
         return false;
@@ -56,12 +56,12 @@ public class UserInLobbyDB {
     			
     	// Récupère le nombre d'untilisateur dans une lobby 
     	long nbUser = userInLobbiesDB.stream()		// Nombre de personne dans un lobby
-    			.filter(s -> s.getLobby().equals(token))
+    			.filter(s -> s.getLobbyToken().equals(token))
     			.count();
     	
     	// Verifier que toutes les personnes dans le lobby différentes du owner sont ready
     	if (userInLobbiesDB.stream()
-    			.filter(s -> s.getLobby().equals(token) &&
+    			.filter(s -> s.getLobbyToken().equals(token) &&
     					s.getReady_status() == true && 
     					s.getUser().getUserId() != ownerId)
     			.count() == nbUser-1)
@@ -69,6 +69,16 @@ public class UserInLobbyDB {
             return true;
         }
     	return false;
+    }
+    
+    public boolean isUserInLobby(String token, int userID) {
+    	//Verifie qu'un User est bien dans le lobby souhaité
+    	
+    	Long listUserInLobby = userInLobbiesDB.stream()
+    		.filter(l -> l.getLobbyToken().equals(token) && l.getUser().getUserId() == userID)
+    		.count();
+    	
+    	return (listUserInLobby > 0);
     }
 
     public synchronized void addUserInLobby(UserInLobby association){
@@ -122,7 +132,7 @@ public class UserInLobbyDB {
     public int findUserInLobbyById(String token) {
     	// TODO This isn't really usefull for now..
     	for (int i = 0; i < userInLobbiesDB.size(); i++) {
-			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobby())) {
+			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobbyToken())) {
 				return(i);		
 			}
 		}
