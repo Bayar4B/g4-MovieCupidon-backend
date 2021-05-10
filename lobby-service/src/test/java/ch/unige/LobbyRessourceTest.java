@@ -414,6 +414,10 @@ public class LobbyRessourceTest extends TestCase{
         User joiner3 = new User("joiner3");
         User joiner4 = new User("joiner4");
 
+		// ----------- Get l'id du joueur 1 ----------- //
+
+		int joiner1_id = joiner2.getUserId();
+
         // ----------- Ajout des Joiners à la Lobby ----------- // 
         
         UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
@@ -428,28 +432,28 @@ public class LobbyRessourceTest extends TestCase{
         
         // ----------- Teste de remove le user à l'id = 2 ----------- // 
         
-		given().pathParam("TOKEN", token).pathParam("USERID", 2)
+		given().pathParam("TOKEN", token).pathParam("USERID", joiner1_id)
 			.when().get("/lobby/quit/{TOKEN}/{USERID}")
 			.then()
 				.statusCode(200);
 
 		// ----------- Teste de remove à nouveau le même user ----------- // 
         
-		given().pathParam("TOKEN", token).pathParam("USERID", 2)
+		given().pathParam("TOKEN", token).pathParam("USERID", joiner1_id)
 			.when().get("/lobby/quit/{TOKEN}/{USERID}")
 			.then()
 				.statusCode(404);
 
-		// ----------- Teste de user = 1 avec mauvais token ----------- // 
+		// ----------- Teste de user = 2 avec mauvais token ----------- // 
         
-		given().pathParam("TOKEN", "ABCDEF").pathParam("USERID", 1)
+		given().pathParam("TOKEN", "ABCDEF").pathParam("USERID", joiner1_id + 1)
 			.when().get("/lobby/quit/{TOKEN}/{USERID}")
 			.then()
 				.statusCode(404);
 
 		// ----------- Teste de remove avec id HS ----------- // 
         
-		given().pathParam("TOKEN", token).pathParam("USERID", 666)
+		given().pathParam("TOKEN", token).pathParam("USERID", 6666)
 			.when().get("/lobby/quit/{TOKEN}/{USERID}")
 			.then()
 				.statusCode(404);
