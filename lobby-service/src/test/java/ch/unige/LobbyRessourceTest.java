@@ -430,7 +430,7 @@ public class LobbyRessourceTest extends TestCase{
         userLobbyDB.addUserInLobby(userInLobbyJoiner4);
         
         
-        // ----------- Teste de remove le user à l'id = 2 ----------- // 
+        // ----------- Teste de remove le user 1 ----------- // 
         
 		given().pathParam("TOKEN", token).pathParam("USERID", joiner1_id)
 			.when().get("/lobby/quit/{TOKEN}/{USERID}")
@@ -453,7 +453,14 @@ public class LobbyRessourceTest extends TestCase{
 
 		// ----------- Teste de remove avec id HS ----------- // 
         
-		given().pathParam("TOKEN", token).pathParam("USERID", 6666)
+		given().pathParam("TOKEN", token).pathParam("USERID", 66666)
+			.when().get("/lobby/quit/{TOKEN}/{USERID}")
+			.then()
+				.statusCode(404);
+
+		// ----------- Teste de remove avec id HS et faux token ----------- // 
+        
+		given().pathParam("TOKEN", "FEDCBA").pathParam("USERID", 66666)
 			.when().get("/lobby/quit/{TOKEN}/{USERID}")
 			.then()
 				.statusCode(404);
