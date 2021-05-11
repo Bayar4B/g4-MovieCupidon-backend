@@ -88,14 +88,14 @@ public class UserInLobbyDB {
 
     public synchronized boolean removeUserFromLobby(String token, int user_id) {
         for (Iterator<UserInLobby> iterator = userInLobbiesDB.iterator(); iterator.hasNext();) {
-            UserInLobby user = iterator.next();
+            UserInLobby association = iterator.next();
             
             // Remove le user s'il correspond au token ainsi qu'a l'id
-            if (token.equals(user.getLobbyToken()) && user_id == user.getUser().getUserId()) {
+            if (token.equals(association.getLobbyToken()) && user_id == association.getUser().getUserId()) {
                 iterator.remove();
                 return true;
             }
-            //System.out.println(user.getUser().getUsername() + " : " + user.getUser().getUser_id() + " : " + user.getLobby());
+            //System.out.println(association.getUser().getUsername() + " : " + association.getUser().getUserId() + " : " + association.getLobbyToken());
         }
         return false;
     }

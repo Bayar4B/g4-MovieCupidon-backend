@@ -138,8 +138,8 @@ public class LobbyRessource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response UserInL(@PathParam("TOKEN") String token, @PathParam("USERID") int user_id){
         String message;
-        if(userLobbyDB.removeUserFromLobby(token, user_id)){
-            message = "User removed";
+        if(userLobbyDB.removeUserFromLobby(token, user_id) && userDB.removeUser(user_id)){
+            message = "User removed end deleted";
             return Response.status(Response.Status.OK).entity(message).build();
         }
         message = "User or lobby not found";
