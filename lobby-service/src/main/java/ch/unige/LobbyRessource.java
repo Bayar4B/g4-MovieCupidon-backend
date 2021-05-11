@@ -136,7 +136,7 @@ public class LobbyRessource {
     @GET
     @Path("/quit/{TOKEN}/{USERID}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response UserInL(@PathParam("TOKEN") String token, @PathParam("USERID") int user_id){
+    public Response UserQuitLobby(@PathParam("TOKEN") String token, @PathParam("USERID") int user_id){
         String message;
         if(userLobbyDB.removeUserFromLobby(token, user_id) && userDB.removeUser(user_id)){
             message = "User removed end deleted";
