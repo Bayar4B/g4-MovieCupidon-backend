@@ -133,6 +133,18 @@ public class LobbyRessource {
     			.build();
     }
 
+    @GET
+    @Path("/quit/{TOKEN}/{USERID}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response UserQuitLobby(@PathParam("TOKEN") String token, @PathParam("USERID") int user_id){
+        String message;
+        if(userLobbyDB.removeUserFromLobby(token, user_id) && userDB.removeUser(user_id)){
+            message = "User removed end deleted";
+            return Response.status(Response.Status.OK).entity(message).build();
+        }
+        message = "User or lobby not found";
+        return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+    }
     
     /*TODO: This is for dev purposes only: */
     

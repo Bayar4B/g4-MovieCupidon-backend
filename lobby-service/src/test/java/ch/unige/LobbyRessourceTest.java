@@ -392,4 +392,77 @@ public class LobbyRessourceTest extends TestCase{
 				.statusCode(404);
 	}
 
+	@Test
+	public void removeUserFromLobby_Test() {
+		
+		// ----------- Création d'une Lobby ----------- // 
+	    
+	    User creator_user = new User("ownerUsername");
+
+    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
+
+        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
+        userLobbyDB.addUserInLobby(userInLobby);
+        
+        String token = newLobby.getToken();
+        
+        
+        // ----------- Init des joiners ----------- // 
+        
+        User joiner1 = new User("joiner1");
+        User joiner2 = new User("joiner2");
+        User joiner3 = new User("joiner3");
+        User joiner4 = new User("joiner4");
+
+		// ----------- Get l'id du joueur 1 ----------- //
+
+		int joiner1_id = joiner2.getUserId();
+
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
+        
+        UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
+        UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner2);
+        UserInLobby userInLobbyJoiner3 = new UserInLobby(joiner3, token);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner3);
+        UserInLobby userInLobbyJoiner4 = new UserInLobby(joiner4, token);
+        userLobbyDB.addUserInLobby(userInLobbyJoiner4);
+        
+        
+        // ----------- Teste de remove le user 1 ----------- // 
+        
+		given().pathParam("TOKEN", token).pathParam("USERID", joiner1_id)
+			.when().get("/lobby/quit/{TOKEN}/{USERID}")
+			.then()
+				.statusCode(200);
+
+		// ----------- Teste de remove à nouveau le même user ----------- // 
+        
+		given().pathParam("TOKEN", token).pathParam("USERID", joiner1_id)
+			.when().get("/lobby/quit/{TOKEN}/{USERID}")
+			.then()
+				.statusCode(404);
+
+		// ----------- Teste de user = 2 avec mauvais token ----------- // 
+        
+		given().pathParam("TOKEN", "ABCDEF").pathParam("USERID", joiner1_id + 1)
+			.when().get("/lobby/quit/{TOKEN}/{USERID}")
+			.then()
+				.statusCode(404);
+
+		// ----------- Teste de remove avec id HS ----------- // 
+        
+		given().pathParam("TOKEN", token).pathParam("USERID", 66666)
+			.when().get("/lobby/quit/{TOKEN}/{USERID}")
+			.then()
+				.statusCode(404);
+
+		// ----------- Teste de remove avec id HS et faux token ----------- // 
+        
+		given().pathParam("TOKEN", "FEDCBA").pathParam("USERID", 66666)
+			.when().get("/lobby/quit/{TOKEN}/{USERID}")
+			.then()
+				.statusCode(404);
+	}
 }

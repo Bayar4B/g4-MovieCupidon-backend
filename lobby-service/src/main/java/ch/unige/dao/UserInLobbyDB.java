@@ -1,6 +1,7 @@
 package ch.unige.dao;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,6 +85,21 @@ public class UserInLobbyDB {
     public synchronized void addUserInLobby(UserInLobby association){
         userInLobbiesDB.add(association);
     }
+
+    public synchronized boolean removeUserFromLobby(String token, int user_id) {
+        for (Iterator<UserInLobby> iterator = userInLobbiesDB.iterator(); iterator.hasNext();) {
+            UserInLobby association = iterator.next();
+            
+            // Remove le user s'il correspond au token ainsi qu'a l'id
+            if (token.equals(association.getLobbyToken()) && user_id == association.getUser().getUserId()) {
+                iterator.remove();
+                return true;
+            }
+            //System.out.println(association.getUser().getUsername() + " : " + association.getUser().getUserId() + " : " + association.getLobbyToken());
+        }
+        return false;
+    }
+
 
     public int getUserInLobbyDBSize(){
         return userInLobbiesDB.size();
