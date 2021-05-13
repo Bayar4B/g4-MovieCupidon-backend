@@ -43,7 +43,7 @@ public class CreateLobbyRessource {
         userLobbyDB.addUserInLobby(userInLobby);
 
         // Message JSON envoyé
-        String message = "{\"ownerID\":"+ownerID+", \"ownerID\":"+token+"}";
+        String message = "{\"ownerID\":"+ownerID+", \"token\":"+token+"}";
         
         // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
         return Response.status(Response.Status.OK)
