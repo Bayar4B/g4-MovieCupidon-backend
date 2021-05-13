@@ -66,13 +66,13 @@ public class LobbyRessourceWebSocket {
     	// Selon l'action, on fait la fonction correspondante
     	if (action.equals("helloworld")) {
             System.out.println("Helloworld Trigered");
-    		hello(token, userID);
+    		helloWorld(token, userID);
     	}
     	if (action.equals("ConnectToLobby")) {
-    		Lobby(token, userID);
+    		lobby(token, userID);
     	}
     	if (action.equals("ToggleReady")) {
-    		ToggleReady(token, userID);
+    		toggleReady(token, userID);
     	}
     	if (action.equals("isOwner")) {
     		isOwner(token, userID);
@@ -83,7 +83,7 @@ public class LobbyRessourceWebSocket {
     }
     
     
-    private void hello(String token, int userID) {
+    private void helloWorld(String token, int userID) {
     	// On récupère la session websocket actuelle
         Session actualSession = sessionsList.get(token).get(userID);
 
@@ -97,7 +97,7 @@ public class LobbyRessourceWebSocket {
         });
     }
     
-    public void Lobby(String token, int userID){
+    public void lobby(String token, int userID){
         // Here we are in the lobby
     	// On récupère la session websocket actuelle
         Session actualSession = sessionsList.get(token).get(userID);
@@ -113,7 +113,7 @@ public class LobbyRessourceWebSocket {
     	
     }
     
-    public void ToggleReady(String token, int userID){
+    public void toggleReady(String token, int userID){
     	// On récupère la session websocket actuelle
     	Session actualSession = sessionsList.get(token).get(userID);
     	
