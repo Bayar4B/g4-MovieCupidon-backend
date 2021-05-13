@@ -33,40 +33,6 @@ public class LobbyRessource {
         return Response.ok(uri).build();
     }
 
-    @POST
-    @Path("/join")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response joinLobby(@FormParam("username") String username, @FormParam("token") String token){
-    	
-        if (!lobbyDB.lobbyExist(token)){
-            // Check if lobby exist
-            return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
-        }
-
-        if (!userLobbyDB.isTherePlaceInLobby(token)){
-            //check if there is space in the looby
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Aucune place dans le lobby restante.").build(); //code 401
-            /*
-            TODO
-                code 401 pour le moment mais il faudra voir si on change pas
-             */
-        }
-
-        User joiner = new User(username);
-        int joinerID = joiner.getUserId();
-
-        UserInLobby newUserInLobby = new UserInLobby(joiner, token);
-        userLobbyDB.addUserInLobby(newUserInLobby);
-
-        String message = "{\"joinerID\":"+joinerID+"}";
-        
-        // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
-        return Response.status(Response.Status.OK)
-        		.entity(message)
-        		.type(MediaType.APPLICATION_JSON)
-        		.build(); 
-    }
-
     @GET
     @Path("/{token}/start")
     @Produces(MediaType.TEXT_PLAIN)
