@@ -90,13 +90,13 @@ public class LobbyRessourceWebSocketTest extends TestCase{
     URI userInADifferentLobbyUri;
     
     @Test
-    public void testWebsocketChat() throws Exception {
+    public void testWebsocket() throws Exception {
     	
         try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, correctUri)) {
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
             session.getAsyncRemote().sendText("helloworld");
             Assertions.assertEquals("This is lobby service in lobbyRessource", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("ConnectToLobby");
+            session.getAsyncRemote().sendText("connectToLobby");
             Assertions.assertEquals("You are in the lobby : TOKEN1", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     }
@@ -105,35 +105,35 @@ public class LobbyRessourceWebSocketTest extends TestCase{
     public void ToggleReadyTest() throws Exception {
     	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, correctUri)) {
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("ToggleReady");
+            session.getAsyncRemote().sendText("toggleReady");
             Assertions.assertEquals("{\"isOwner\":1000, \"Status\": true}", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     
     	// Correct Toggle Ready !
     	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, wrongTokenUri)) {
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("ToggleReady");
+            session.getAsyncRemote().sendText("toggleReady");
             Assertions.assertEquals("This token doesn't belongs to any lobby. Token : TOKEN3", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
 
     	// Toggle Ready with a wrong Token
     	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, wrongTokenUri)) {
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("ToggleReady");
+            session.getAsyncRemote().sendText("toggleReady");
             Assertions.assertEquals("This token doesn't belongs to any lobby. Token : TOKEN3", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     
     	// Toggle Ready with a wrong User ID
     	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, wrongUserIDUri)) {
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("ToggleReady");
+            session.getAsyncRemote().sendText("toggleReady");
             Assertions.assertEquals("There isn't any user with this ID, userID : 3000", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     	
     	// Toggle Ready with a user that isn't in this lobby
     	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, userInADifferentLobbyUri)) {
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("ToggleReady");
+            session.getAsyncRemote().sendText("toggleReady");
             Assertions.assertEquals("There isn't any user with this ID in the lobby : Token : TOKEN1 ; userID : 2000", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     }
