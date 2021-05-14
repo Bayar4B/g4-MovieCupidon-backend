@@ -65,13 +65,13 @@ public class LobbyRessourceWebSocket {
     public void onMessage(String action, @PathParam("token") String token, @PathParam("userID") int userID) {
     	// Selon l'action, on fait la fonction correspondante
     	if (action.equals("helloworld")) {
-            System.out.println("Helloworld Trigered");
+            System.out.println("helloworld Trigered");
     		helloWorld(token, userID);
     	}
-    	if (action.equals("ConnectToLobby")) {
+    	if (action.equals("connectToLobby")) {
     		lobby(token, userID);
     	}
-    	if (action.equals("ToggleReady")) {
+    	if (action.equals("toggleReady")) {
     		toggleReady(token, userID);
     	}
     	if (action.equals("isOwner")) {
@@ -91,7 +91,7 @@ public class LobbyRessourceWebSocket {
                
         System.out.println("Succeed sending the hello message.");
         actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result != null) {
+        	if (result.getException() != null) {
                 System.out.println("Unable to send the hello from lobby message : "+result.getException());
         	}
         });
@@ -106,7 +106,7 @@ public class LobbyRessourceWebSocket {
         
         System.out.println("Succeed connecting to the lobby : "+token);
         actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result != null) {
+        	if (result.getException() != null) {
                 System.out.println("Unable to go in the lobby : "+token+" : "+result.getException());
         	}
         });
@@ -124,7 +124,7 @@ public class LobbyRessourceWebSocket {
         	String message = "This token doesn't belongs to any lobby. Token : "+token;
         	
         	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result != null) {
+            	if (result.getException() != null) {
                     System.out.println("Unable to send the message : "+message+" : "+result.getException());
             	}
             });
@@ -139,7 +139,7 @@ public class LobbyRessourceWebSocket {
         	String message = "There isn't any user with this ID, userID : " + userID;
         	
         	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result != null) {
+            	if (result.getException() != null) {
                     System.out.println("Unable to send the message : "+message+" : "+result.getException());
             	}
             });
@@ -153,7 +153,7 @@ public class LobbyRessourceWebSocket {
         	String message = "There isn't any user with this ID in the lobby : Token : " + token + " ; userID : " + userID;
 
         	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result != null) {
+            	if (result.getException() != null) {
                     System.out.println("Unable to send the message : "+message+" : "+result.getException());
             	}
             });
@@ -167,7 +167,7 @@ public class LobbyRessourceWebSocket {
         String message = "{\"isOwner\":"+userID+", \"Status\": "+userLobbyDB.getFullUserInLobbyDB().get(userIndexUserInDB).getReadyStatus()+"}";
         
         actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result != null) {
+        	if (result.getException() != null) {
                 System.out.println("Unable to send the message : "+message+" : "+result.getException());
         	}
         });
@@ -186,7 +186,7 @@ public class LobbyRessourceWebSocket {
         	String message = "This token doesn't belongs to any lobby. Token : "+token;
         	
         	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result != null) {
+            	if (result.getException() != null) {
                     System.out.println("Unable to send the message : "+message+" : "+result.getException());
             	}
             });
@@ -200,7 +200,7 @@ public class LobbyRessourceWebSocket {
         	String message = "There isn't any user with this ID in the lobby : Token : " + token + " ; userID : " + userID;
 
         	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result != null) {
+            	if (result.getException() != null) {
                     System.out.println("Unable to send the message : "+message+" : "+result.getException());
             	}
             });
@@ -214,13 +214,13 @@ public class LobbyRessourceWebSocket {
     		.filter(l -> l.getToken().equals(token) && l.getCreator_user_id() == userID)
     		.count() > 0);
     	
-        System.out.println("Succeed asking if the user is the owner : userID : " + userID + ", owner ? "+isHeTheOwner);
+        System.out.println("Succeed asking if the user is the owner : userID : " + userID + ", owner : "+isHeTheOwner);
         
         // Creation du string convertit en JSON
     	String message = "{\"isOwner\":"+isHeTheOwner+"}";
     	
     	actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result != null) {
+        	if (result.getException() != null) {
                 System.out.println("Unable to send the message : "+message+" : "+result.getException());
         	}
         });
@@ -238,7 +238,7 @@ public class LobbyRessourceWebSocket {
         	String message = "This token doesn't belongs to any lobby. Token : "+token;
         	
         	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result != null) {
+            	if (result.getException() != null) {
                     System.out.println("Unable to send the message : "+message+" : "+result.getException());
             	}
             });
@@ -259,7 +259,7 @@ public class LobbyRessourceWebSocket {
     	String message = "{\"ownerID\":"+ownerID+"}";
     	
     	actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result != null) {
+        	if (result.getException() != null) {
                 System.out.println("Unable to send the message : "+message+" : "+result.getException());
         	}
         });
