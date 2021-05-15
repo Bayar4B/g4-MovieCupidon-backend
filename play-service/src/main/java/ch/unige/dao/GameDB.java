@@ -80,10 +80,19 @@ public class GameDB {
                 }
             }
         }
+        //* Print result array
+        /*
         for (int i = 0; i < 20 ; i++) {
             System.out.print(resultList.get(i) + ", ");
         }
         System.out.println();
+        */
+
+        //* Regarde si le token n'existe pas dans la DB
+        if(resultList.isEmpty()) {
+            return -1; // error code
+        }
+
         return calcMax(resultList);
     }
 

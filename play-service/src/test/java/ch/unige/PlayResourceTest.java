@@ -3,8 +3,6 @@ package ch.unige;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-import ch.unige.dao.GameDB;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -13,7 +11,6 @@ public class PlayResourceTest {
 
     @Test
     public void PlayTest() {
-        GameDB gameDB = GameDB.getInstance();
 
         //* TOKEN = ABCDEF, add scores
         given().when().get("/play/send/ABCDEF/0/48").then().statusCode(200).body(is("Success"));
@@ -52,12 +49,15 @@ public class PlayResourceTest {
         given().when().get("/play/send/QWERTZ/9/25").then().statusCode(200).body(is("Success"));
 
         //* Getresult TOKEN = ABCDEF, le film indexé 5 gagne
-        given().when().get("/play/getScore/ABCDEF").then().statusCode(200).body(is("5"));
+        given().when().get("/play/getResult/ABCDEF").then().statusCode(200).body(is("5"));
 
         //* Getresult TOKEN = FEDCBA, le film indexé 12 gagne
-        given().when().get("/play/getScore/FEDCBA").then().statusCode(200).body(is("12"));
+        given().when().get("/play/getResult/FEDCBA").then().statusCode(200).body(is("12"));
 
         //* Getresult TOKEN = QWERTZ, le film indexé 15 gagne
-        given().when().get("/play/getScore/QWERTZ").then().statusCode(200).body(is("15"));
+        given().when().get("/play/getResult/QWERTZ").then().statusCode(200).body(is("15"));
+
+        //* Getresult TOKEN = XXXZZZ, rien dans la DB avec ce token
+        given().when().get("/play/getResult/XXXZZZ").then().statusCode(404);
     }
 }

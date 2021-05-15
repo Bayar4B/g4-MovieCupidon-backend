@@ -1,5 +1,6 @@
 package ch.unige;
 
+import javax.management.relation.RelationSupport;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -33,9 +34,9 @@ public class PlayResource {
     }
 
     @GET
-    @Path("/getScore/{TOKEN}")
+    @Path("/getResult/{TOKEN}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response GetGameScores(@PathParam("TOKEN") String token) {
+    public Response GetGameResult(@PathParam("TOKEN") String token) {
 
         /**
          * TOKEN : token du lobby dont on veut le résultat
@@ -45,6 +46,11 @@ public class PlayResource {
 
         // * Retourne le movie_id du film gagnant
         int result_id = gameDB.getResult(token);
+        //* Vérifier la vailidé du token
+        if(result_id == -1) {
+            String message = "Token not in DB";
+            return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+        }
         gameDB.deleteData(token);
 
         return Response.status(Response.Status.OK).entity(result_id).build();
