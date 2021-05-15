@@ -68,17 +68,8 @@ public class LobbyRessourceWebSocket {
             System.out.println("helloworld Trigered");
     		helloWorld(token, userID);
     	}
-    	if (action.equals("connectToLobby")) {
-    		lobby(token, userID);
-    	}
     	if (action.equals("toggleReady")) {
     		toggleReady(token, userID);
-    	}
-    	if (action.equals("isOwner")) {
-    		isOwner(token, userID);
-    	}
-    	if (action.equals("whoIsTheOwner")) {
-    		whoIsTheOwner(token, userID);
     	}
     }
     
@@ -95,22 +86,6 @@ public class LobbyRessourceWebSocket {
                 System.out.println("Unable to send the hello from lobby message : "+result.getException());
         	}
         });
-    }
-    
-    public void lobby(String token, int userID){
-        // Here we are in the lobby
-    	// On récupère la session websocket actuelle
-        Session actualSession = sessionsList.get(token).get(userID);
-
-    	String message = "You are in the lobby : "+token;
-        
-        System.out.println("Succeed connecting to the lobby : "+token);
-        actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result.getException() != null) {
-                System.out.println("Unable to go in the lobby : "+token+" : "+result.getException());
-        	}
-        });
-    	
     }
     
     public void toggleReady(String token, int userID){
@@ -172,99 +147,6 @@ public class LobbyRessourceWebSocket {
         	}
         });
     	return;
-    }
-    
-    
-    public void isOwner(String token, int userID) {
-    	Session actualSession = sessionsList.get(token).get(userID);
-
-    	// Test si le lobby est bien présent
-    	if (!lobbyDB.lobbyExist(token)){
-            // Check if lobby exist
-    		System.out.println("This token doesn't belongs to any lobby. Token : "+token);
-        	
-        	String message = "This token doesn't belongs to any lobby. Token : "+token;
-        	
-        	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result.getException() != null) {
-                    System.out.println("Unable to send the message : "+message+" : "+result.getException());
-            	}
-            });
-        	return;
-        }
-    	
-    	// Verifie que ce userID est bien dans la session demandée
-    	if (!userLobbyDB.isUserInLobby(token, userID)) {
-    		System.out.println("Cet utilisateur(" +userID +") n'est pas dans ce Lobby:"+token);
-        	
-        	String message = "There isn't any user with this ID in the lobby : Token : " + token + " ; userID : " + userID;
-
-        	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result.getException() != null) {
-                    System.out.println("Unable to send the message : "+message+" : "+result.getException());
-            	}
-            });
-        	return;    	
-        }
-    	
-        // Si toutes les conditions sont remplies
-
-    	// La valeur de retour si le user est bien le owner ou non
-    	boolean isHeTheOwner = (lobbyDB.getFullDB().stream()
-    		.filter(l -> l.getToken().equals(token) && l.getCreator_user_id() == userID)
-    		.count() > 0);
-    	
-        System.out.println("Succeed asking if the user is the owner : userID : " + userID + ", owner : "+isHeTheOwner);
-        
-        // Creation du string convertit en JSON
-    	String message = "{\"isOwner\":"+isHeTheOwner+"}";
-    	
-    	actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result.getException() != null) {
-                System.out.println("Unable to send the message : "+message+" : "+result.getException());
-        	}
-        });
-    	return;  	
-    }
-    
-    public void whoIsTheOwner(String token, int userID) {
-    	Session actualSession = sessionsList.get(token).get(userID);
-
-    	// Test si le lobby est bien présent
-    	if (!lobbyDB.lobbyExist(token)){
-    		// Check if lobby exist
-    		System.out.println("This token doesn't belongs to any lobby. Token : "+token);
-        	
-        	String message = "This token doesn't belongs to any lobby. Token : "+token;
-        	
-        	actualSession.getAsyncRemote().sendObject(message, result -> {
-            	if (result.getException() != null) {
-                    System.out.println("Unable to send the message : "+message+" : "+result.getException());
-            	}
-            });
-        	return;
-    	}
-        // Si toutes les conditions sont remplies
-
-    	int ownerID = lobbyDB.getFullDB().stream()
-    			.filter(l -> l.getToken().equals(token))
-    			.collect(Collectors.toList())
-    			.get(0)
-    			.getCreator_user_id();
-    	
-    	
-    	System.out.println("Succeed getting the owner : userID : " + userID);
-        
-        // Creation du string convertit en JSON
-    	String message = "{\"ownerID\":"+ownerID+"}";
-    	
-    	actualSession.getAsyncRemote().sendObject(message, result -> {
-        	if (result.getException() != null) {
-                System.out.println("Unable to send the message : "+message+" : "+result.getException());
-        	}
-        });
-    	
-    	return;  
     }
     
 }

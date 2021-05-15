@@ -96,8 +96,6 @@ public class LobbyRessourceWebSocketTest extends TestCase{
             Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
             session.getAsyncRemote().sendText("helloworld");
             Assertions.assertEquals("This is lobby service in lobbyRessource", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("connectToLobby");
-            Assertions.assertEquals("You are in the lobby : TOKEN1", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     }
     
@@ -137,57 +135,6 @@ public class LobbyRessourceWebSocketTest extends TestCase{
             Assertions.assertEquals("There isn't any user with this ID in the lobby : Token : TOKEN1 ; userID : 2000", MESSAGES.poll(10, TimeUnit.SECONDS));
         }
     }
-
-    
-    @Test
-    public void isOwnerTest() throws Exception {
-    	// Correct isOwner = true 
-    	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, correctUri)) {
-            Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("isOwner");
-            Assertions.assertEquals("{\"isOwner\":true}", MESSAGES.poll(10, TimeUnit.SECONDS));
-        }
-    	
-    	// Correct isOwner = false 
-    	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, correctJoiner1Uri)) {
-            Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("isOwner");
-            Assertions.assertEquals("{\"isOwner\":false}", MESSAGES.poll(10, TimeUnit.SECONDS));
-        }
-    
-    	// isOwner wrong token
-    	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, wrongTokenUri)) {
-            Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("isOwner");
-            Assertions.assertEquals("This token doesn't belongs to any lobby. Token : TOKEN3", MESSAGES.poll(10, TimeUnit.SECONDS));
-        }
-    	
-    	// isOwner with a user that isn't in this lobby
-    	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, userInADifferentLobbyUri)) {
-            Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("isOwner");
-            Assertions.assertEquals("There isn't any user with this ID in the lobby : Token : TOKEN1 ; userID : 2000", MESSAGES.poll(10, TimeUnit.SECONDS));
-        }
-    }
-    
-    
-    @Test
-    public void whoIsTheOwnerTest() throws Exception {
-    	// Correct isOwner = true 
-    	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, correctUri)) {
-            Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("whoIsTheOwner");
-            Assertions.assertEquals("{\"ownerID\":1000}", MESSAGES.poll(10, TimeUnit.SECONDS));
-        }
-    
-    	// isOwner wrong token
-    	try (Session session = ContainerProvider.getWebSocketContainer().connectToServer(Client.class, wrongTokenUri)) {
-            Assertions.assertEquals("CONNECT", MESSAGES.poll(10, TimeUnit.SECONDS));
-            session.getAsyncRemote().sendText("whoIsTheOwner");
-            Assertions.assertEquals("This token doesn't belongs to any lobby. Token : TOKEN3", MESSAGES.poll(10, TimeUnit.SECONDS));
-        }
-    }
-    
     
     @ClientEndpoint
     public static class Client {
