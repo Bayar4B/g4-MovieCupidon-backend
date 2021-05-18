@@ -1,7 +1,6 @@
 package ch.unige.dao;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import ch.unige.domain.User;
 
@@ -33,20 +32,6 @@ public class UserDB {
     
     public synchronized void add_user(User newUser){
         this.user_db.add(newUser);
-    }
-
-    public synchronized boolean removeUser(int user_id){
-        for (Iterator<User> iterator = user_db.iterator(); iterator.hasNext();) {
-            User user = iterator.next();
-            
-            // Remove le user s'il correspond au token ainsi qu'a l'id
-            if (user_id == user.getUserId()) {
-                iterator.remove();
-                return true;
-            }
-            //System.out.println(user.getUsername() + " : " + user.getUserId());
-        }
-        return false;
     }
 
     public int getUserDB_size(){
