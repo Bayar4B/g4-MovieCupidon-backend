@@ -1,29 +1,22 @@
 package ch.unige.domain;
 
-import ch.unige.dao.LobbyDB;
-import ch.unige.dao.UserInLobbyDB;
+import ch.unige.dao.SessionsDB;
 
 
-public class Lobby {
+public class Session {
 
-    private static LobbyDB lobbyDB = LobbyDB.getInstance();
-    private static UserInLobbyDB userInLobbyDB = UserInLobbyDB.getInstance();
-
-
-
-    private String token; //lobby-id
+    private String token; //session-id
     private int creator_user_id;
-    private String lobby_status;
+    private String session_status;
     private int chat_id;
     private int nbMax;
 
-    public Lobby(int user_id) {
+    public Session(int user_id) {
         this.setCreator_user_id(user_id);
-        LobbyDB lobby_db = LobbyDB.getInstance();
-        this.setToken(lobby_db.getNewToken());
-        this.setlobby_status("Preparation - Lobby");
+        SessionsDB session_db = SessionsDB.getInstance();
+        this.setToken(session_db.getNewToken());
+        this.setSession_status("Preparation - Lobby");
         this.nbMax = 5;
-        lobbyDB.add_lobby(this);
     }
 
     public String getToken() {
@@ -41,12 +34,12 @@ public class Lobby {
 	public void setCreator_user_id(int creator_user_id) {
 		this.creator_user_id = creator_user_id;
 	}
-    public String getlobby_status() {
-		return lobby_status;
+    public String getSession_status() {
+		return session_status;
 	}
 
-	public void setlobby_status(String lobby_status) {
-		this.lobby_status = lobby_status;
+	public void setSession_status(String session_status) {
+		this.session_status = session_status;
 	}
 
 	public int getChat_id() {

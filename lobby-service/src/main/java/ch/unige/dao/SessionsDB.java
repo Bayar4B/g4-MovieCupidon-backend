@@ -1,28 +1,27 @@
 package ch.unige.dao;
 
-import ch.unige.domain.Lobby;
+import ch.unige.domain.Session;
 
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 
-public class LobbyDB {
+public class SessionsDB {
 
-    private static LobbyDB instance;
-    private static ArrayList<Lobby> lobby_db = new ArrayList();
+    private static SessionsDB instance;
+    private static ArrayList<Session> session_db = new ArrayList();
 
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     static SecureRandom rnd = new SecureRandom();
     static int token_len = 6;
 
 
-    public static LobbyDB getInstance(){
+    public static SessionsDB getInstance(){
         if(instance == null){
-            synchronized (LobbyDB.class) {
+            synchronized (SessionsDB.class) {
                 if(instance == null){
-                    instance = new LobbyDB();
+                    instance = new SessionsDB();
                 }
             }
         }
@@ -44,30 +43,29 @@ public class LobbyDB {
         return randomString();
     }
 
-    public boolean lobbyExist(String token){   	
-        return (lobby_db.stream()
-        		.filter(l -> l.getToken().equals(token)).count() > 0);
+    public boolean sessionExist(String token){
+        return session_db.stream().map(Session::getToken).filter(token::equals).findFirst().isPresent();
     }
 
-    public int lobbySize(String token) {
-        for (int i = 0; i < lobby_db.size(); i++) {
-            if (lobby_db.get(i).getToken().equals(token)) {
-                return lobby_db.get(i).getNbMax();
+    public int sessionSize(String token) {
+        for (int i = 0; i < session_db.size(); i++) {
+            if (session_db.get(i).getToken().equals(token)) {
+                return session_db.get(i).getNbMax();
             }
         }
         return -1;
     }
 
-    public synchronized void add_lobby(Lobby lobby_to_add){
-        lobby_db.add(lobby_to_add);
+    public synchronized void add_session(Session session_to_add){
+        session_db.add(session_to_add);
     }
 
-    public static int getlobbyDB_size(){
-        return lobby_db.size();
+    public static int getSessionDB_size(){
+        return session_db.size();
     }
 
-    public static ArrayList<Lobby> getFullDB(){
-        return lobby_db;
+    public static ArrayList<Session> getFullDB(){
+        return session_db;
     }
 
     public static void main(String[] args) {

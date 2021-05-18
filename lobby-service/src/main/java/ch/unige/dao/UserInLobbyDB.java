@@ -1,12 +1,11 @@
 package ch.unige.dao;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.unige.domain.Lobby;
+import ch.unige.domain.Session;
 import ch.unige.domain.UserInLobby;
 
 public class UserInLobbyDB {
@@ -36,33 +35,33 @@ public class UserInLobbyDB {
     }
 
     public boolean isTherePlaceInLobby(String token){
-        LobbyDB lobbyDBinstance = LobbyDB.getInstance();
-        int sizeOflobby = lobbyDBinstance.lobbySize(token);
-        if (userInLobbiesDB.stream().map(UserInLobby::getLobbyToken).filter(token::equals).count()+1 <= sizeOflobby) {
+        SessionsDB sessionDBinstance = SessionsDB.getInstance();
+        int sizeOfSession = sessionDBinstance.sessionSize(token);
+        if (userInLobbiesDB.stream().map(UserInLobby::getLobby).filter(token::equals).count()+1 <= sizeOfSession) {
             return true;
         }
         return false;
     }
     
     public boolean isEveryoneReady(String token) {
-    	LobbyDB lobbyDBinstance = LobbyDB.getInstance();
+    	SessionsDB sessionDBinstance = SessionsDB.getInstance();
     	
     	// Récupère le Owner id 
     	
-    	List<Integer> ownerId_List = lobbyDBinstance.getFullDB().stream()
+    	List<Integer> ownerId_List = sessionDBinstance.getFullDB().stream()
     			.filter(s -> s.getToken().equals(token))
-    			.map(Lobby::getCreator_user_id).collect(Collectors.toList());
+    			.map(Session::getCreator_user_id).collect(Collectors.toList());
     	
     	int ownerId = ownerId_List.get(0);
     			
-    	// Récupère le nombre d'untilisateur dans une lobby 
+    	// Récupère le nombre d'untilisateur dans une session 
     	long nbUser = userInLobbiesDB.stream()		// Nombre de personne dans un lobby
-    			.filter(s -> s.getLobbyToken().equals(token))
+    			.filter(s -> s.getLobby().equals(token))
     			.count();
     	
     	// Verifier que toutes les personnes dans le lobby différentes du owner sont ready
     	if (userInLobbiesDB.stream()
-    			.filter(s -> s.getLobbyToken().equals(token) &&
+    			.filter(s -> s.getLobby().equals(token) &&
     					s.getReady_status() == true && 
     					s.getUser().getUserId() != ownerId)
     			.count() == nbUser-1)
@@ -71,35 +70,10 @@ public class UserInLobbyDB {
         }
     	return false;
     }
-    
-    public boolean isUserInLobby(String token, int userID) {
-    	//Verifie qu'un User est bien dans le lobby souhaité
-    	
-    	Long listUserInLobby = userInLobbiesDB.stream()
-    		.filter(l -> l.getLobbyToken().equals(token) && l.getUser().getUserId() == userID)
-    		.count();
-    	
-    	return (listUserInLobby > 0);
-    }
 
     public synchronized void addUserInLobby(UserInLobby association){
         userInLobbiesDB.add(association);
     }
-
-    public synchronized boolean removeUserFromLobby(String token, int user_id) {
-        for (Iterator<UserInLobby> iterator = userInLobbiesDB.iterator(); iterator.hasNext();) {
-            UserInLobby association = iterator.next();
-            
-            // Remove le user s'il correspond au token ainsi qu'a l'id
-            if (token.equals(association.getLobbyToken()) && user_id == association.getUser().getUserId()) {
-                iterator.remove();
-                return true;
-            }
-            //System.out.println(association.getUser().getUsername() + " : " + association.getUser().getUserId() + " : " + association.getLobbyToken());
-        }
-        return false;
-    }
-
 
     public int getUserInLobbyDBSize(){
         return userInLobbiesDB.size();
@@ -148,7 +122,7 @@ public class UserInLobbyDB {
     public int findUserInLobbyById(String token) {
     	// TODO This isn't really usefull for now..
     	for (int i = 0; i < userInLobbiesDB.size(); i++) {
-			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobbyToken())) {
+			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobby())) {
 				return(i);		
 			}
 		}
