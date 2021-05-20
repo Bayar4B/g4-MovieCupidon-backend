@@ -4,12 +4,12 @@ import ch.unige.dao.UserInLobbyDB;
 
 public class UserInLobby {
     private User user;
-    private String lobby;
+    private String lobbyToken;
     private boolean ReadyStatus; //1 for ready, 0 for ready
 
     public UserInLobby(User user, String lobby){
         this.user = user;
-        this.lobby = lobby;
+        this.lobbyToken = lobby;
         this.ReadyStatus = false;
     }
 
@@ -21,12 +21,12 @@ public class UserInLobby {
         this.user = user;
     }
 
-    public String getLobby(){
-        return lobby;
+    public String getLobbyToken(){
+        return lobbyToken;
     }
 
     public void setLobby(String lobby){
-        this.lobby = lobby;
+        this.lobbyToken = lobby;
     }
     
     public boolean getReadyStatus() {
@@ -53,7 +53,7 @@ public class UserInLobby {
 
 	@Override
 	public String toString() { 
-	    String result = "User: "+ String.valueOf(this.user) + " , lobbyId:" + this.lobby + " , Ready Status: " + String.valueOf(this.ReadyStatus); 
+	    String result = "User: "+ String.valueOf(this.user) + " , lobbyId:" + this.lobbyToken + " , Ready Status: " + String.valueOf(this.ReadyStatus); 
 	    return result;
 	} 
     

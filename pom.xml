@@ -9,7 +9,6 @@
   <name>MovieCupidon-backend</name>
   <modules>
     <module>lobby-service</module>
-    <module>sample-service</module>
     <module>chat-service</module>
   </modules>
   <properties>
