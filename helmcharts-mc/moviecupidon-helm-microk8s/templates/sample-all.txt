@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : sample
+  template:
+    metadata:
+      labels:
+        app: sample
+    spec:
+      containers:
+      - name: sample
+        image: moviecupidon/sample-selection-service:latest
+        ports:
+        - containerPort: 8081
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sample-service
+  labels:
+    app: sample
+spec:
+  selector:
+    app: sample
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081

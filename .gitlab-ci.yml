@@ -22,4 +22,4 @@ deploy:
   script:
     - mvn package -Dquarkus.container-image.username=$DOCKER_USERNAME -Dquarkus.container-image.password=$DOCKER_PASSWORD -Dquarkus.container-image.push=true -Dquarkus.container-image.build=true -Dquarkus.container-image.tag=latest
   only:
-    - master
+    - dev
