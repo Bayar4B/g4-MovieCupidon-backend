@@ -1,0 +1,35 @@
+#WebUi
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+      - name: webui
+        image: moviecupidon/frontend:latest
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webui-service
+  labels:
+    app: webui
+spec:
+  selector:
+    app: webui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+

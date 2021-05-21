@@ -1,0 +1,65 @@
+# Static services 
+kind: Service
+apiVersion: v1
+metadata:
+  name: lobby-service
+  labels:
+    app: lobby
+spec:
+  type: NodePort
+  selector:
+    app: lobby
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sample-service
+  labels:
+    app: sample
+spec:
+  type: NodePort
+  selector:
+    app: sample
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30081
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: chat-service
+  labels:
+    app: chat
+spec:
+  type: NodePort
+  selector:
+    app: chat
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+      nodePort: 30082
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webui-service
+  labels:
+    app: webui
+spec:
+  type: NodePort
+  selector:
+    app: webui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30000
+---
