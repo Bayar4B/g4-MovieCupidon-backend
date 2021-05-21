@@ -5,7 +5,6 @@
 ### Issues et management
 
 - Les features à aborder lors du sprint **courant** sont à mettre dans la colonne `Feature in progress`.
-- Ensuite, la feature est décomposée en sous-tâches, qui sont des issues à faire et à mettre dans la colonne `Sprint backlog`.
 - Dans le `Sprint backlog` d'autre issue additionelle peuvent être ajoutée dépendant de la situation. (Exemple : Apprentissage ou setup d'environnement, etc...)
 - Estimer l'heure de toutes les sous-tâches à faire.
 
@@ -17,17 +16,14 @@
 - Features
 - Tasks
 
-Les branches telles que `Master` et `Develop` sont des branches protégées et ne peuvent pas être commit directement.
+Les branches telles que `Master` et `Develop` sont des branches protégées.
 Il faut faire des merges requests pour proposer un changement.
 
 Les noms des branches doivent respecter ce format :
--  Features : feat/\<nom-du-feature>
--  Sous-tâches : feat/\<nom-du-feature>/<nom-de-la-sous-tâche>  
+-  Features : NumeroFeature-NomFeature
 
 Les branches features sont des branches qui viennent de la branche `Develop`.
 Les branches sous-tâches sont des branches qui viennent de la branche `Features`.
-
-Rappel
 
 ### Time spending
 
