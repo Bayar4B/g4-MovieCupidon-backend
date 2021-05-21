@@ -11,6 +11,7 @@
     <module>lobby-service</module>
     <module>sample-service</module>
     <module>chat-service</module>
+    <module>play-service</module>
   </modules>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
