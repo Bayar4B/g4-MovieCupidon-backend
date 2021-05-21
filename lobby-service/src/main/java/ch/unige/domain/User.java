@@ -7,13 +7,16 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
 import ch.unige.dao.UserDB;
+import ch.unige.dao.UserInLobbyDB;
 
 
 public class User {
 	
 	private String username;
     private int user_id;
-	
+    private static UserDB userDB = UserDB.getInstance();
+    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
+    
 	public User(String username) {
 		if(this.validUsername(username)) {
 			this.setUsername(username);
@@ -22,6 +25,7 @@ public class User {
 		}
 		
 		this.user_id = UserDB.getNewUserID();
+		userDB.add_user(this);
 	}
 
 	public String getUsername() {

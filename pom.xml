@@ -9,8 +9,8 @@
   <name>MovieCupidon-backend</name>
   <modules>
     <module>lobby-service</module>
-    <module>sample-selection-service</module>
-    <module>play-service</module>
+    <module>sample-service</module>
+    <module>chat-service</module>
   </modules>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
