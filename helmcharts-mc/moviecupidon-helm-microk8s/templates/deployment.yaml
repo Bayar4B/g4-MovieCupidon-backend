@@ -1,0 +1,80 @@
+# Static deployments...
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lobby-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : lobby
+  template:
+    metadata:
+      labels:
+        app: lobby
+    spec:
+      containers:
+      - name: lobby
+        image: moviecupidon/lobby-service:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : sample
+  template:
+    metadata:
+      labels:
+        app: sample
+    spec:
+      containers:
+      - name: sample
+        image: moviecupidon/sample-selection-service:latest
+        ports:
+        - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : chat
+  template:
+    metadata:
+      labels:
+        app: chat
+    spec:
+      containers:
+      - name: chat
+        image: moviecupidon/chat-service:latest
+        ports:
+        - containerPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+      - name: webui
+        image: moviecupidon/frontend:latest
+        ports:
+        - containerPort: 80
