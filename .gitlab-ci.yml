@@ -15,7 +15,9 @@ build:
   artifacts:
     paths:
       - lobby-service/target/
-      - sample-selection-service/target/
+      - sample-service/target/
+      - chat-service/target/
+      - play-service/target/
 
 deploy:
   stage: deploy
