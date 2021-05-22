@@ -1,4 +1,4 @@
-package ch.unige.ChatService;
+package ch.unige;
 
 
 
