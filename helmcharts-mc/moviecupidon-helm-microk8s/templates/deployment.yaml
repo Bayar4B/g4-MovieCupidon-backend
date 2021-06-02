@@ -14,7 +14,12 @@ spec:
         app: lobby
     spec:
       containers:
-      - name: lobby
+      - envFrom:
+        - secretRef:
+            name: postgres-secret-lobby
+        - configMapRef:
+            name: postgres-config-lobby
+        name: lobby
         image: moviecupidon/lobby-service:latest
         ports:
         - containerPort: 8080
@@ -98,6 +103,11 @@ spec:
         image: moviecupidon/play-service:latest
         ports:
         - containerPort: 8083
+      - envFrom:
+        - secretRef:
+            name: postgres-secret-play
+        - configMapRef:
+            name: postgres-config-play
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -144,6 +154,9 @@ spec:
         - --redirect-url=https://movie.graved.ch/oauth2/callback
         - --pass-user-headers=true
         - --set-xauthrequest=true
+        - --pass-access-token=true
+        - --skip-jwt-bearer-tokens=true
+        - --set-authorization-header=true
         - --pass-authorization-header=true
         - --cookie-secure=true
         - --skip-auth-preflight=false
@@ -153,6 +166,8 @@ spec:
         - --redeem-url=https://moviecupidon.eu.auth0.com/oauth/token
         - --oidc-jwks-url=https://moviecupidon.eu.auth0.com/.well-known/jwks.json
         - --email-domain=*
+        - --skip-auth-strip-headers=false
+        - --pass-basic-auth=false
         env:
         - name: OAUTH2_PROXY_CLIENT_ID
           value: 9siovHnR5oWvOWz5FLFbbk1Xj5UhcDhY
