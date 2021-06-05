@@ -3,51 +3,64 @@ package ch.unige;
 import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
-import ch.unige.domain.Lobby;
-import ch.unige.domain.User;
-import ch.unige.domain.UserInLobby;
+import ch.unige.domain.UserInLobbyTable;
+import ch.unige.domain.UserTable;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.ArrayList;
 
 @Path("/join-lobby")
 public class JoinLobbyRessource {
 	
-	private static LobbyDB lobbyDB = LobbyDB.getInstance();
-    private static UserDB userDB = UserDB.getInstance();
-    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
+	@Inject
+    private UserDB userDB;
+    
+    @Inject
+    private LobbyDB lobbyDB;
+    
+    @Inject
+    private UserInLobbyDB userInLobbyDB;
 	
 	@POST
     @Path("/join")
+    @Transactional
     @Produces(MediaType.APPLICATION_JSON)
-    public Response joinLobby(@FormParam("username") String username, @FormParam("token") String token){
+    public Response joinLobby(@FormParam("username") String username, @FormParam("token") String token, @Context HttpHeaders headers){
+    	
+		String userID = headers.getHeaderString("X-User");
+    	
+    	if(userInLobbyDB.isUserInALobby(userID)) {
+    		String message = "User already in a lobby";
+    		return Response.status(Response.Status.UNAUTHORIZED)
+    			.entity(message)
+    			.build();
+    	}
     	
         if (!lobbyDB.lobbyExist(token)){
             // Check if lobby exist
             return Response.status(Response.Status.NOT_FOUND).entity("lobby inexistante ou mauvais token.").build();
         }
-
-        if (!userLobbyDB.isTherePlaceInLobby(token)){
+        
+        if (!userInLobbyDB.isTherePlaceInLobby(token)){
             //check if there is space in the looby
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Aucune place dans le lobby restante.").build(); //code 401
-            /*
-            TODO
-                code 401 pour le moment mais il faudra voir si on change pas
-             */
+        	return Response.status(Response.Status.UNAUTHORIZED).entity("Aucune place dans le lobby restante.").build(); 
         }
+        
+        if (lobbyDB.hasItStart(token)) {
+        	// Check si la game à déja été lancée
+            return Response.status(Response.Status.UNAUTHORIZED).entity("La partie a déjà été lancée.").build(); 
+        }
+        
+        UserTable joiner = userDB.add_user(userID, username);
 
-        User joiner = new User(username);
-        int joinerID = joiner.getUserId();
+        UserInLobbyTable userInLobby = userInLobbyDB.addUserInLobby(token, userID);
 
-        UserInLobby newUserInLobby = new UserInLobby(joiner, token);
-        userLobbyDB.addUserInLobby(newUserInLobby);
-
-        String message = "{\"joinerID\":"+joinerID+"}";
+        String message = "{\"token\":"+token+"}";
         
         // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
         return Response.status(Response.Status.OK)
