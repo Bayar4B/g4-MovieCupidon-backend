@@ -3,60 +3,62 @@ package ch.unige;
 import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
-import ch.unige.domain.Lobby;
-import ch.unige.domain.User;
-import ch.unige.domain.UserInLobby;
+import ch.unige.domain.LobbyTable;
+import ch.unige.domain.UserInLobbyTable;
+import ch.unige.domain.UserTable;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.ArrayList;
 
 @Path("/create-lobby")
 public class CreateLobbyRessource {
 
-    private static LobbyDB lobbyDB = LobbyDB.getInstance();
-    private static UserDB userDB = UserDB.getInstance();
-    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
-
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/size")
-    public Integer countlobbys(){
-        return lobbyDB.getlobbyDB_size();
-    }
-
+    @Inject
+    private UserDB userDB;
+    
+    @Inject
+    private LobbyDB lobbyDB;
+    
+    @Inject
+    private UserInLobbyDB userInLobbyDB;
+    
     @POST
     @Path("/new-lobby")
+    @Transactional
     @Produces(MediaType.APPLICATION_JSON) 
-    public Response createlobby(@FormParam("username") String username) {
+    public Response createlobby(@FormParam("username") String username, @Context HttpHeaders headers) {
     	
-    	User creator_user = new User(username);
-    	int ownerID = creator_user.getUserId();
+    	String userid = headers.getHeaderString("X-User");
+    	
+    	if(userInLobbyDB.isUserInALobby(userid)) {
+    		String message = "User already in a lobby";
+    		return Response.status(Response.Status.UNAUTHORIZED)
+    			.entity(message)
+    			.build();
+    	}
+    	
+    	UserTable owner = userDB.add_user(userid, username);
+    	
 
-    	Lobby newlobby = new Lobby(creator_user.getUserId()); 
-    	String token = newlobby.getToken();
-        UserInLobby userInLobby = new UserInLobby(creator_user, token);
-        userLobbyDB.addUserInLobby(userInLobby);
+    	LobbyTable lobby = lobbyDB.add_lobby(userid);
+    	String token = lobby.getToken();
+    	
+    	
+    	UserInLobbyTable userInLobby = userInLobbyDB.addUserInLobby(token, userid);
 
         // Message JSON envoyé
-        String message = "{\"ownerID\":"+ownerID+", \"token\":"+token+"}";
+        String message = "{\"token\":"+token+"}";
         
         // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
         return Response.status(Response.Status.OK)
         		.entity(message)
         		.type(MediaType.APPLICATION_JSON)
         		.build(); 
-    }
-
-    @GET
-    @Path("/seeDB")
-    @Produces(MediaType.TEXT_PLAIN)
-    public ArrayList<Lobby> seeDatabaseFull(){
-        return lobbyDB.getFullDB();
     }
 
 }

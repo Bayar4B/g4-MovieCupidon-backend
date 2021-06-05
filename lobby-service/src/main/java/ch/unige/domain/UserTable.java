@@ -1,52 +1,28 @@
 package ch.unige.domain;
 
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
 
-import ch.unige.dao.UserDB;
-import ch.unige.dao.UserInLobbyDB;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class User {
+@Entity
+@Table(name = "USERTABLE") // Le nom de la table sera USER
+public class UserTable extends PanacheEntity {
+
+	@NotEmpty
+	@Column(name = "userID")
+	private String userID;
 	
+	@NotEmpty
+	@Column(name="username", length=50)
 	private String username;
-    private int user_id;
-    private static UserDB userDB = UserDB.getInstance();
-    private static UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
-    
-	public User(String username) {
-		if(this.validUsername(username)) {
-			this.setUsername(username);
-		}else {
-			throw new BadRequestException();
-		}
-		
-		this.user_id = UserDB.getNewUserID();
-		userDB.add_user(this);
-	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public int getUserId() {
-		return user_id;
-	}
-
-	public void setUserID(int user_id) {
-		this.user_id = user_id;
-	}
-
-
-	
-	public boolean validUsername(String username) {
+	public static boolean validUsername(String username) {
 		if (username.isEmpty()) {		// Pas forcement besoin de cette partie mais permet de differencier si le username
 										// est juste vide ou s'il contient uniquement des espace ou tabs
 	        System.out.println("Username empty");
@@ -70,15 +46,29 @@ public class User {
 				return false;
 			}
 		}
-		return true;
-		
+		return true;	
 	}
-
 	
 	@Override
 	public String toString() { 
-	    String result = "Username: "+ this.getUsername() + " , userId:" + this.getUserId(); 
+	    String result = "Username: "+ this.getUsername() + " , userId:" + this.getUserID(); 
 	    return result;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getUserID() {
+		return userID;
+	}
+
+	public void setUserID(String userID) {
+		this.userID = userID;
 	} 
-	
+    
 }
