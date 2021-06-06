@@ -124,6 +124,11 @@ public class SampleSelectionRessource {
             }
             i++;
         }
+
+        for (int j = 0; j < sample.size(); j++) {
+            sample.get(j).setId(j);
+        }
+
         return Response.ok(sample).build();
     }
 
