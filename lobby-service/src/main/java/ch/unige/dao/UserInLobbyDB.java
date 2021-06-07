@@ -127,4 +127,20 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 	public boolean isUserInALobby(String userid) {
 		return !find("userid", userid).list().isEmpty();
 	}
+	
+	@Override
+	public String getAllUserInALobby_toString(String token) {
+		int length = find("token", token).list().size();
+		String msg = "{\n"
+				+ "\"token\": \""+token+"\",\n"
+				+ "\"listPlayer\": [";
+		for(int i = 0; i<length;i++) {
+			msg = msg+"\""+find("token", token).list().get(i).getUserID()+"\"";
+			if(i != length-1) {
+					msg = msg + ", ";
+			}
+		}
+		msg = msg + "]\n}";
+		return msg;
+	}
 }
