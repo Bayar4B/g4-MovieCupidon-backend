@@ -5,6 +5,7 @@ metadata:
   name: lobby-deployment
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app : lobby
@@ -30,6 +31,7 @@ metadata:
   name: sample-deployment
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app : sample
@@ -50,6 +52,7 @@ metadata:
   name: chat-deployment
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app : chat
@@ -70,6 +73,7 @@ metadata:
   name: webui-deployment
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app : webui
@@ -90,6 +94,7 @@ metadata:
   name: play-deployment
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app : play
@@ -103,7 +108,7 @@ spec:
         image: moviecupidon/play-service:latest
         ports:
         - containerPort: 8083
-      - envFrom:
+        envFrom:
         - secretRef:
             name: postgres-secret-play
         - configMapRef:
@@ -115,6 +120,7 @@ metadata:
   name: test-deployment
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: test
@@ -137,6 +143,7 @@ metadata:
   name: oauth2-proxy
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       k8s-app: oauth2-proxy

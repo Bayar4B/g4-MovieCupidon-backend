@@ -91,9 +91,11 @@ spec:
                 configMapKeyRef:
                   key: POSTGRES_USER
                   name: postgres-config-lobby
-          envFrom:
-          - secretRef:
-              name: postgres-secret-lobby
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: postgres-secret-lobby
           volumeMounts:
             - mountPath: /var/lib/postgresql/data/
               name: postgredb-lobby

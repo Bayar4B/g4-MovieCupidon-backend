@@ -91,9 +91,11 @@ spec:
                 configMapKeyRef:
                   key: POSTGRES_USER
                   name: postgres-config-play
-          envFrom:
-            - secretRef:
-                name: postgres-secret-play
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: postgres-secret-play
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgredb-play
