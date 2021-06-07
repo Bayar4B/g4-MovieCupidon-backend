@@ -69,7 +69,7 @@ public class LobbyDB implements LobbyDBInterface,PanacheRepository<LobbyTable>{
 	public void addLobbyPref(String token, LobbyConfig config) {
 		String json2string = "{\n\"genreList\" : [";
 		for(int i = 0; i<config.getGenreList().length; i++) {
-			json2string = json2string+config.getGenreList()[i];
+			json2string = json2string+"\""+config.getGenreList()[i]+"\"";
 			if(i < config.getGenreList().length-1) {
 				json2string = json2string+", ";
 			}

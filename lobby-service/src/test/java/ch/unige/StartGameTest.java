@@ -55,7 +55,11 @@ public class StartGameTest extends TestCase{
 	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby2.getUserID());
 	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby3.getUserID());
 	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby4.getUserID());
-
+	    
+	    // Recup du body de retour
+	    String msgInit = userLobbyDB.getAllUserInALobby_toString(lobby.getToken());
+	    String msgEncrypt = SecurityUtility.encrypt(msgInit);
+	    
         // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
         given().header("X-User", Owner.getUserID())
         	.body("{\"genreList\" : [\"action\", \"horror\", \"animation\"],\"rangeYear\" : [1900,2021]}")
@@ -63,7 +67,7 @@ public class StartGameTest extends TestCase{
 			.when().post("/lobby/start")
 			.then()
 				.statusCode(200)
-				.body("inLobbyStatus", is(false));
+				.body(is(msgEncrypt));
 	}
 	
 	

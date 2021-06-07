@@ -5,7 +5,6 @@ import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
 import ch.unige.domain.LobbyConfig;
 import ch.unige.domain.LobbyTable;
-import ch.unige.domain.UserInLobbyTable;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -15,7 +14,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/lobby")
 public class LobbyRessource {
@@ -81,9 +79,17 @@ public class LobbyRessource {
         lobbyDB.addLobbyPref(token, config);
     	lobbyDB.setInLobbyStatus(token, false);
         
-    	String message =  "{\"inLobbyStatus\": "+lobbyDB.getInLobbyStatus(token)+"}";
+    	String msgInit = userLobbyDB.getAllUserInALobby_toString(token);
+    	String msgEncrypt = SecurityUtility.encrypt(msgInit);
+    	    	
+    	try {
+			System.out.println("TEST : \n"+ SecurityUtility.decrypt(msgEncrypt));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	return Response.status(Response.Status.OK)
-    			.entity(message)
+    			.entity(msgEncrypt)
     			.type(MediaType.APPLICATION_JSON)
     			.build();
     }
