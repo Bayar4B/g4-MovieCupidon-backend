@@ -5,126 +5,166 @@ import org.junit.jupiter.api.Test;
 import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
-import ch.unige.domain.Lobby;
-import ch.unige.domain.User;
-import ch.unige.domain.UserInLobby;
+import ch.unige.domain.LobbyTable;
+import ch.unige.domain.UserInLobbyTable;
+import ch.unige.domain.UserTable;
 import io.quarkus.test.junit.QuarkusTest;
 import junit.framework.*;
 
-
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class StartGameTest extends TestCase{
+	
+	@Inject
+    private UserDB userDB;
+    
+    @Inject
+    private LobbyDB lobbyDB;
+    
+    @Inject 
+    private UserInLobbyDB userLobbyDB;
 
 	@Test
 	public void startGame_Test() {
-		// ----------- Init des DB ----------- // 
+		UserTable Owner = userDB.add_user("OwnerID1_startGame", "OwnerUsername");
 		
-		LobbyDB lobbyDB = LobbyDB.getInstance();
-	    UserDB userDB = UserDB.getInstance();
-	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
-	    
-	    
-	    // ----------- Création d'une Lobby ----------- // 
-	    
-	    User creator_user = new User("ownerUsername");
-
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
 		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+
         // ----------- Init des joiners ----------- // 
-        
-        User joiner1 = new User("joiner1");
-        User joiner2 = new User("joiner2");
-        User joiner3 = new User("joiner3");
-        User joiner4 = new User("joiner4");
+       
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_startGame", "JoinerUsername1");
+    	UserTable Joiner2 = userDB.add_user("JoinerID2_startGame", "JoinerUsername2");
+    	UserTable Joiner3 = userDB.add_user("JoinerID3_startGame", "JoinerUsername3");
+    	UserTable Joiner4 = userDB.add_user("JoinerID4_startGame", "JoinerUsername4");
 
         // ----------- Ajout des Joiners à la Lobby ----------- // 
         
-        UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
-        UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
-        UserInLobby userInLobbyJoiner3 = new UserInLobby(joiner3, token);
-        UserInLobby userInLobbyJoiner4 = new UserInLobby(joiner4, token);
+	    UserInLobbyTable joinerInLobby1 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
+	    UserInLobbyTable joinerInLobby2 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner2.getUserID());
+	    UserInLobbyTable joinerInLobby3 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner3.getUserID());
+	    UserInLobbyTable joinerInLobby4 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner4.getUserID());
         
-        // ----------- Setting them to Ready ----------- // 
-        
-        userInLobbyJoiner1.setReadyStatut(true);
-        userInLobbyJoiner2.setReadyStatut(true);
-        userInLobbyJoiner3.setReadyStatut(true);
-        userInLobbyJoiner4.setReadyStatut(true);
-        
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner2);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner3);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner4);
-
-        
-        
+	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby1.getUserID());
+	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby2.getUserID());
+	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby3.getUserID());
+	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby4.getUserID());
+	    
+	    // Recup du body de retour
+	    String msgInit = userLobbyDB.getAllUserInALobby_toString(lobby.getToken());
+	    String msgEncrypt = SecurityUtility.encrypt(msgInit);
+	    
         // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
-        given().pathParam("token", token)
-			.when().get("/lobby/{token}/start")
+        given().header("X-User", Owner.getUserID())
+        	.body("{\"genreList\" : [\"action\", \"horror\", \"animation\"],\"rangeYear\" : [1900,2021]}")
+        	.contentType(MediaType.APPLICATION_JSON)
+			.when().post("/lobby/start")
 			.then()
-				.statusCode(200);
+				.statusCode(200)
+				.body(is(msgEncrypt));
 	}
 	
 	
 	@Test
-	public void startGame_NotEveryoneReady_Test() {
-		// ----------- Init des DB ----------- // 
+	public void startGame_UserIsNotInAnyLobby() {
+		given().header("X-User", "RandomID")
+	    	.body("{\"genreList\" : [\"action\", \"horror\", \"animation\"],\"rangeYear\" : [1900,2021]}")
+	    	.contentType(MediaType.APPLICATION_JSON)
+			.when().post("/lobby/start")
+			.then()
+				.statusCode(404);
+	}
+	
+	@Test 
+	public void startGame_userIsNotTheOwner() {
+		UserTable Owner = userDB.add_user("OwnerID1_startGame_isNotTheOwner", "OwnerUsername");
 		
-		LobbyDB lobbyDB = LobbyDB.getInstance();
-	    UserDB userDB = UserDB.getInstance();
-	    UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
-	    
-	    
-	    // ----------- Création d'une Lobby ----------- // 
-	    
-	    User creator_user = new User("ownerUsername");
-
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
 		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+
         // ----------- Init des joiners ----------- // 
-        
-        User joiner1 = new User("joiner1");
-        User joiner2 = new User("joiner2");
-        User joiner3 = new User("joiner3");
-        User joiner4 = new User("joiner4");
+       
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_startGame_isNotTheOwner", "JoinerUsername1");
 
         // ----------- Ajout des Joiners à la Lobby ----------- // 
         
-        UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
-        UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
-        UserInLobby userInLobbyJoiner3 = new UserInLobby(joiner3, token);
-        UserInLobby userInLobbyJoiner4 = new UserInLobby(joiner4, token);
+	    UserInLobbyTable joinerInLobby1 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
         
-        // ----------- Setting them to Ready ----------- // 
-        
-        userInLobbyJoiner1.setReadyStatut(true);
-        userInLobbyJoiner2.setReadyStatut(true);
-        userInLobbyJoiner3.setReadyStatut(true);
-        userInLobbyJoiner4.setReadyStatut(false);
-        
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner2);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner3);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner4);
+	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby1.getUserID());
 
-        
-        
         // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
-        given().pathParam("token", token)
-			.when().get("/lobby/{token}/start")
+        given().header("X-User", Joiner1.getUserID())
+        	.body("{\"genreList\" : [\"action\", \"horror\", \"animation\"],\"rangeYear\" : [1900,2021]}")
+        	.contentType(MediaType.APPLICATION_JSON)
+			.when().post("/lobby/start")
 			.then()
 				.statusCode(409);
 	}
+	
+	@Test 
+	public void startGame_NotEveryoneReady() {
+		UserTable Owner = userDB.add_user("OwnerID1_startGame_notEveryoneReady", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+
+        // ----------- Init des joiners ----------- // 
+       
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_notEveryoneReady", "JoinerUsername1");
+
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
+        
+	    UserInLobbyTable joinerInLobby1 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
+        
+        // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
+        given().header("X-User", Owner.getUserID())
+        	.body("{\"genreList\" : [\"action\", \"horror\", \"animation\"],\"rangeYear\" : [1900,2021]}")
+        	.contentType(MediaType.APPLICATION_JSON)
+			.when().post("/lobby/start")
+			.then()
+				.statusCode(409);
+	}
+	
+	@Test
+	public void startGame_tooManyMovieGender() {
+		UserTable Owner = userDB.add_user("OwnerID1_startGame_tooManyMovieGender", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+
+        // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
+        given().header("X-User", Owner.getUserID())
+        	.body("{\"genreList\" : [\"action\", \"aventure\", \"horror\", \"animation\"],\"rangeYear\" : [1900,2021]}")
+        	.contentType(MediaType.APPLICATION_JSON)
+			.when().post("/lobby/start")
+			.then()
+				.statusCode(400);
+	}
+	
+	@Test
+	public void startGame_tooFewMovieGender() {
+		UserTable Owner = userDB.add_user("OwnerID1_startGame_tooFewMovieGender", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+
+        // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //
+        given().header("X-User", Owner.getUserID())
+        	.body("{\"genreList\" : [],\"rangeYear\" : [1900,2021]}")
+        	.contentType(MediaType.APPLICATION_JSON)
+			.when().post("/lobby/start")
+			.then()
+				.statusCode(400);
+	}
+	
 }

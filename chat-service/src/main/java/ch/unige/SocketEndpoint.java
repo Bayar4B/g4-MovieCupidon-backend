@@ -1,4 +1,4 @@
-package ch.unige.ChatService;
+package ch.unige;
 
 
 import java.util.Map;
@@ -11,9 +11,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-
-
-
 import javax.websocket.Session;
 
 @ServerEndpoint("/chat/{token}/{username}")         

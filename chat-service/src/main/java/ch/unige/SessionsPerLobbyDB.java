@@ -1,4 +1,4 @@
-package ch.unige.ChatService;
+package ch.unige;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

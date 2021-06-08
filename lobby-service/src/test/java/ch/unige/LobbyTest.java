@@ -1,50 +1,40 @@
 package ch.unige;
 
+import javax.inject.Inject;
+
 import org.junit.jupiter.api.Test;
 
-import ch.unige.domain.Lobby;
+import ch.unige.dao.LobbyDB;
+import ch.unige.domain.LobbyTable;
 import io.quarkus.test.junit.QuarkusTest;
 import junit.framework.*;
 
 @QuarkusTest
 public class LobbyTest extends TestCase{
 	
+	@Inject
+    private LobbyDB lobbyDB;
+	
 	@Test
 	public void createLobbyTest() {
-		Lobby lobby = new Lobby(11);
-		assertEquals(11, lobby.getCreator_user_id());
-		assertEquals("Preparation - Lobby", lobby.getlobby_status());
-	}
-	
-	@Test
-	public void setTokenIDTest() {
-		Lobby lobby = new Lobby(11);
-		lobby.setToken("TestToken");
-		assertEquals("TestToken", lobby.getToken());
-	}
+		LobbyTable lobby = lobbyDB.add_lobby("OwnerID");
+		lobby.setToken("tokenTest");
+		
+		assertEquals(lobby.getOwnerID(), "OwnerID");
+		assertEquals(lobby.getInLobbyStatus(), true);
+		assertEquals(lobby.getNbMax(), 5);
+		assertEquals(lobby.getToken(), "tokenTest");
+		assertEquals(lobby.toString(), "ownerID : OwnerID token: tokenTest");
 
-	@Test
-	public void setLobbyStatutTest() {
-		Lobby lobby = new Lobby(11);
-		lobby.setlobby_status("In Game");
-		assertEquals("In Game", lobby.getlobby_status());
-	}
-	
-	@Test
-	public void setChatIDTest() {
-		Lobby lobby = new Lobby(11);
-		lobby.setChat_id(11);
-		assertEquals(11, lobby.getChat_id());
-	}
-	
-	@Test
-	public void toStringTest() {
-		Lobby lobby = new Lobby(11);
-		String token = lobby.getToken();
-		lobby.setToken("ABCD");
-		assertEquals("UC: 11 token: ABCD", lobby.toString() );
-		lobby.setToken(token);		// Sert juste a reset le token pour ne pas 
-							//avoir de conflit plus tard dans les autres test qui essaye la valeur ABCD comme token
+		
+		lobby.setOwnerID("newOwnerID");
+		lobby.setNbMax(6);
+		lobby.setInLobbyStatus(false);
+		lobby.setLobbyPref("testLobbyPref");
+		assertEquals(lobby.getOwnerID(), "newOwnerID");
+		assertEquals(lobby.getNbMax(), 6);
+		assertEquals(lobby.getInLobbyStatus(), false);
+		assertEquals(lobby.getLobbyPref(), "testLobbyPref");
 	}
 	
 }

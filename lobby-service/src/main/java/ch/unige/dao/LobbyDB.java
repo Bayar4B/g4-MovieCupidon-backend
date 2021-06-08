@@ -1,80 +1,126 @@
 package ch.unige.dao;
 
-import ch.unige.domain.Lobby;
+import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import org.hibernate.loader.plan.build.internal.returns.CollectionFetchableIndexAnyGraph;
 
+import ch.unige.domain.LobbyConfig;
+import ch.unige.domain.LobbyTable;
+import ch.unige.domain.UserInLobbyTable;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Parameters;
 
-public class LobbyDB {
+@ApplicationScoped
+public class LobbyDB implements LobbyDBInterface,PanacheRepository<LobbyTable>{
+	
+	@Override
+	public boolean lobbyExist(String token) {
+		return !(find("token", token).list().isEmpty());
+	}
 
-    private static LobbyDB instance;
-    private static ArrayList<Lobby> lobby_db = new ArrayList();
+	@Override
+	public int lobbySize(String token) {
+		List<LobbyTable> lobbyInstance = find("token", token).list();
+		if(lobbyInstance.size() == 1) {
+			return find("token", token).firstResult().getNbMax();
+		}else { // Liste vide, le lobby existe pas
+			return -1;
+		}
+	}
 
-    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    static SecureRandom rnd = new SecureRandom();
-    static int token_len = 6;
+	@Override
+	@Transactional
+	public LobbyTable add_lobby(String ownerid) {
+		LobbyTable newLobby = new LobbyTable();
+		newLobby.setOwnerID(ownerid);
+		newLobby.setToken(newLobby.getNewToken());
+		newLobby.setInLobbyStatus(true);
+		newLobby.persist();
+		return newLobby;
+	}
+	
+	@Override
+	public int getlobbyDB_size() {
+		return listAll().size();
+	}
 
+	@Override
+	public List<LobbyTable> getFullDB() {
+		return listAll();
+	}
 
-    public static LobbyDB getInstance(){
-        if(instance == null){
-            synchronized (LobbyDB.class) {
-                if(instance == null){
-                    instance = new LobbyDB();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private static String randomString(){
-        StringBuilder sb = new StringBuilder(token_len);
-        for(int i = 0; i < token_len; i++)
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        return sb.toString();
-    }
-
-    public String getNewToken() {
-        /*
-        TODO
-            Verifier que le token generer ne se trouve pas deja dans la DB. MySQL creera tout seul un token unique je pense
-         */
-        return randomString();
-    }
-
-    public boolean lobbyExist(String token){   	
-        return (lobby_db.stream()
-        		.filter(l -> l.getToken().equals(token)).count() > 0);
-    }
-
-    public int lobbySize(String token) {
-        for (int i = 0; i < lobby_db.size(); i++) {
-            if (lobby_db.get(i).getToken().equals(token)) {
-                return lobby_db.get(i).getNbMax();
-            }
-        }
-        return -1;
-    }
-
-    public synchronized void add_lobby(Lobby lobby_to_add){
-        lobby_db.add(lobby_to_add);
-    }
-
-    public static int getlobbyDB_size(){
-        return lobby_db.size();
-    }
-
-    public static ArrayList<Lobby> getFullDB(){
-        return lobby_db;
-    }
-
-    public static void main(String[] args) {
-        String test = randomString();
-        System.out.println(test + " longueur est: " + test.length());
-    }
-
-
+	@Override
+	public boolean isHeTheOwner(String token, String userid) {
+		String ownerID = ((LobbyTable) find("token", token).firstResult()).getOwnerID();
+		return userid.equals(ownerID);
+	}
+	
+	@Override
+	public boolean hasItStart(String token) {
+		return !find("token", token).firstResult().getInLobbyStatus();
+	}
+	
+	@Override
+	@Transactional
+	public void addLobbyPref(String token, LobbyConfig config) {
+		String json2string = "{\n\"genreList\" : [";
+		for(int i = 0; i<config.getGenreList().length; i++) {
+			json2string = json2string+"\""+config.getGenreList()[i]+"\"";
+			if(i < config.getGenreList().length-1) {
+				json2string = json2string+", ";
+			}
+		}
+		json2string = json2string+"],\n";
+		json2string = json2string+"\"rangeYear\" : [";
+		for(int i = 0; i<config.getRangeYear().length; i++) {
+			json2string = json2string+config.getRangeYear()[i];
+			if(i < config.getRangeYear().length-1) {
+				json2string = json2string+", ";
+			}
+		}
+		json2string = json2string+"]\n";
+		json2string = json2string+"}";
+		
+		find("token", token).firstResult().setLobbyPref(json2string);
+	}
+	
+	@Override
+	@Transactional
+	public boolean removeLobby(String token) {
+		LobbyTable lobbyInstance = (LobbyTable) find("token", token).firstResult();
+		
+		if(lobbyInstance.isPersistent()) {
+			lobbyInstance.delete();
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	@Override 
+	@Transactional
+	public void setInLobbyStatus(String token, boolean newStatus) {
+		find("token", token).firstResult().setInLobbyStatus(newStatus);
+	}
+	
+	@Override
+	@Transactional
+	public String getLobbyPreferences(String token) {
+		return find("token", token).firstResult().getLobbyPref();
+	}
+	
+	@Override
+	public boolean getInLobbyStatus(String token) {
+		return find("token", token).firstResult().getInLobbyStatus();
+	}
+	
+	@Override 
+	public String getOwnerID(String token) {
+		return find("token", token).firstResult().getOwnerID();
+	}
 }
 
