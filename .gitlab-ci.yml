@@ -31,7 +31,6 @@ coverage:
       - coverage/target/site/jacoco-aggregate
   
   only:
-    - dev
     - master
 
 deploy:
