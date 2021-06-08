@@ -1,164 +1,146 @@
 package ch.unige.dao;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import ch.unige.domain.Lobby;
-import ch.unige.domain.UserInLobby;
+import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
-public class UserInLobbyDB {
-    private static UserInLobbyDB instance;
-    private static ArrayList<UserInLobby> userInLobbiesDB = new ArrayList<UserInLobby>();
-    private int nextUserLobbyId;
+import ch.unige.domain.UserInLobbyTable;
+import ch.unige.domain.LobbyTable;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Parameters;
 
-    public UserInLobbyDB() {
-        this.setNextAssociationUserLobby(0);
-    }
-
-    public static UserInLobbyDB getInstance() {
-        if (instance == null) {
-            synchronized (UserInLobbyDB.class) {
-                if (instance == null) {
-                    instance = new UserInLobbyDB();
-                }
-            }
-        }
-        return instance;
-    }
-
-    public static int getNewUserInLobbyId() {
-    	int id = UserInLobbyDB.getInstance().getNextUserLobbyId();
-        UserInLobbyDB.getInstance().incrementUserLobbyId();
-        return id;
-    }
-
-    public boolean isTherePlaceInLobby(String token){
-        LobbyDB lobbyDBinstance = LobbyDB.getInstance();
-        int sizeOflobby = lobbyDBinstance.lobbySize(token);
-        if (userInLobbiesDB.stream().map(UserInLobby::getLobbyToken).filter(token::equals).count()+1 <= sizeOflobby) {
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean isEveryoneReady(String token) {
-    	LobbyDB lobbyDBinstance = LobbyDB.getInstance();
-    	
-    	// Récupère le Owner id 
-    	
-    	List<Integer> ownerId_List = lobbyDBinstance.getFullDB().stream()
-    			.filter(s -> s.getToken().equals(token))
-    			.map(Lobby::getCreator_user_id).collect(Collectors.toList());
-    	
-    	int ownerId = ownerId_List.get(0);
-    			
-    	// Récupère le nombre d'untilisateur dans une lobby 
-    	long nbUser = userInLobbiesDB.stream()		// Nombre de personne dans un lobby
-    			.filter(s -> s.getLobbyToken().equals(token))
-    			.count();
-    	
-    	// Verifier que toutes les personnes dans le lobby différentes du owner sont ready
-    	if (userInLobbiesDB.stream()
-    			.filter(s -> s.getLobbyToken().equals(token) &&
-    					s.getReady_status() == true && 
-    					s.getUser().getUserId() != ownerId)
-    			.count() == nbUser-1)
-    	{
-            return true;
-        }
-    	return false;
-    }
-    
-    public boolean isUserInLobby(String token, int userID) {
-    	//Verifie qu'un User est bien dans le lobby souhaité
-    	
-    	Long listUserInLobby = userInLobbiesDB.stream()
-    		.filter(l -> l.getLobbyToken().equals(token) && l.getUser().getUserId() == userID)
-    		.count();
-    	
-    	return (listUserInLobby > 0);
-    }
-
-    public synchronized void addUserInLobby(UserInLobby association){
-        userInLobbiesDB.add(association);
-    }
-
-    public synchronized boolean removeUserFromLobby(String token, int user_id) {
-        for (Iterator<UserInLobby> iterator = userInLobbiesDB.iterator(); iterator.hasNext();) {
-            UserInLobby association = iterator.next();
-            
-            // Remove le user s'il correspond au token ainsi qu'a l'id
-            if (token.equals(association.getLobbyToken()) && user_id == association.getUser().getUserId()) {
-                iterator.remove();
-                return true;
-            }
-            //System.out.println(association.getUser().getUsername() + " : " + association.getUser().getUserId() + " : " + association.getLobbyToken());
-        }
-        return false;
-    }
-
-
-    public int getUserInLobbyDBSize(){
-        return userInLobbiesDB.size();
-    }
-
-    public ArrayList<UserInLobby> getFullUserInLobbyDB(){
-        return userInLobbiesDB;
-    }
-
-    public int getNextUserLobbyId() {
-		return nextUserLobbyId;
-	}   
-
-    public void setNextAssociationUserLobby(int nextUserLobbyId) {
-        this.nextUserLobbyId = nextUserLobbyId;
-    }
-
-    public void incrementUserLobbyId(){
-        this.nextUserLobbyId++;
-    }
-    
-    /**
-    *  Updates a user info in the UserInLobby table.
-    * @param  user  a UserInLobby object, which is the user whose info we want to update.
-    */
-    public void updateUserInLobby(UserInLobby user) {
-
-    	int index = findUserInLobbyById(user.getUser().getUserId());
-    	if(index == -1) {
-    		//TODO Handling when user not found in DB...
-    		return;
-    	}
-    	userInLobbiesDB.set(index,user);
-
-    }
-    
-    public int findUserInLobbyById(int id) {
-    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
-			if(id == userInLobbiesDB.get(i).getUser().getUserId() ) {
-				return(i);		
-			}
-		}
-    	return(-1);
-    }
-    
-    public int findUserInLobbyById(String token) {
-    	// TODO This isn't really usefull for now..
-    	for (int i = 0; i < userInLobbiesDB.size(); i++) {
-			if(token.equalsIgnoreCase(userInLobbiesDB.get(i).getLobbyToken())) {
-				return(i);		
-			}
-		}
-    	return(-1);
-    }
+@ApplicationScoped
+public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<UserInLobbyTable>{
 
 	@Override
-	public String toString() { 
-	    String result = "";
-	    for (int i = 0; i < userInLobbiesDB.size(); i++) {result += String.valueOf(i) + ") "+ String.valueOf(userInLobbiesDB.get(i)) + " \n";}
-	    return result;
-	} 
+	public int getUserInLobbyDBSize() {
+		return listAll().size();
+	}
+
+	@Override
+	public List<UserInLobbyTable> getFullUserInLobbyDB() {
+		return listAll();
+	}
+
+	@Override
+	public boolean isTherePlaceInLobby(String token) {
+		// Nombre de place max dans le lobby
+		int nbMax = ((LobbyTable) LobbyTable.find("token", token).firstResult()).getNbMax();
+				
+		if(UserInLobbyTable.find("token", token).list().size() < nbMax) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isEveryoneReady(String token) {
+		// Nombre de user dans le lobby
+		int nbUserTot = UserInLobbyTable.find("token", token).list().size();
+		
+		// Nombre de user ready dans le lobby
+		int nbUserReady = UserInLobbyTable.find("token = :token and readyStatus = :ready_status",
+		         Parameters.with("token", token).and("ready_status", true).map()).list().size();
+
+		if (nbUserTot-1 == nbUserReady) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	@Override
+	@Transactional
+	public boolean toggleReadyStatus(String token, String userid) {
+		UserInLobbyTable user = ((UserInLobbyTable) UserInLobbyTable.find("token = :token and userID = :userid",
+		         Parameters.with("token", token).and("userid", userid).map()).firstResult());
+		
+		if(user == null) {
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		
+		boolean last_Status = user.getReadyStatus();
+		
+		user.setReadyStatus(!last_Status);
+		
+		if(user.getReadyStatus() == !last_Status) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean isUserInLobby(String token, String userID) {
+		return !(UserInLobbyTable.find("token = :token and userID = :userid",
+		         Parameters.with("token", token).and("userid", userID).map()).list().isEmpty());
+	}
+
+	@Override
+	@Transactional
+	public UserInLobbyTable addUserInLobby(String token, String userid) {
+		UserInLobbyTable newUserInLobby = new UserInLobbyTable();
+		newUserInLobby.setToken(token);
+		newUserInLobby.setUserID(userid);
+		newUserInLobby.persist();
+		return newUserInLobby;
+	}
+
+	@Override
+	public UserInLobbyTable findUserInLobbyById(String id) {
+		List<UserInLobbyTable> userInLobbyInstance = find("userID", id).list();
+		if(userInLobbyInstance.size() == 1) {
+			return find("userID", id).firstResult();
+		}
+		return null;
+	}
+
+	@Override
+	@Transactional
+	public boolean removeUserFromLobby(String token, String user_id) {
+		UserInLobbyTable userInLobbyInstance = (UserInLobbyTable) UserInLobbyTable.find("token = :token and userID = :userid",
+		         Parameters.with("token", token).and("userid", user_id).map()).firstResult();
+		
+		if(userInLobbyInstance.isPersistent()) {
+			userInLobbyInstance.delete();
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	@Override
+	public String getTokenFromUserID(String userid) {
+		return find("userID", userid).firstResult().getToken();
+	}
+	
+	@Override
+	public boolean getReadyStatusFromUserID(String userid) {
+		return find("userID", userid).firstResult().getReadyStatus();
+	}
+
+	@Override
+	public boolean isUserInALobby(String userid) {
+		return !find("userid", userid).list().isEmpty();
+	}
+	
+	@Override
+	public String getAllUserInALobby_toString(String token) {
+		int length = find("token", token).list().size();
+		String msg = "{\n"
+				+ "\"token\": \""+token+"\",\n"
+				+ "\"listPlayer\": [";
+		for(int i = 0; i<length;i++) {
+			msg = msg+"\""+find("token", token).list().get(i).getUserID()+"\"";
+			if(i != length-1) {
+					msg = msg + ", ";
+			}
+		}
+		msg = msg + "]\n}";
+		return msg;
+	}
 }

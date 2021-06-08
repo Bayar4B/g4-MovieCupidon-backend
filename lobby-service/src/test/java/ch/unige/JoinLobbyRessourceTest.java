@@ -5,56 +5,40 @@ import org.junit.jupiter.api.Test;
 import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserDB;
 import ch.unige.dao.UserInLobbyDB;
-import ch.unige.domain.Lobby;
-import ch.unige.domain.User;
-import ch.unige.domain.UserInLobby;
+import ch.unige.domain.LobbyTable;
+import ch.unige.domain.UserInLobbyTable;
+import ch.unige.domain.UserTable;
 import io.quarkus.test.junit.QuarkusTest;
 import junit.framework.*;
-
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
-
 import static io.restassured.RestAssured.given;
+
+import javax.inject.Inject;
 
 @QuarkusTest
 class JoinLobbyRessourceTest extends TestCase{
-
-	private LobbyDB lobbyDB = LobbyDB.getInstance();
-	private UserDB userDB = UserDB.getInstance();
-	private UserInLobbyDB userLobbyDB = UserInLobbyDB.getInstance();
 	
-	@Test
+	@Inject
+    private static UserDB userDB;
+    
+    @Inject
+    private static LobbyDB lobbyDB;
+    
+    @Inject
+    private static UserInLobbyDB userLobbyDB;
+    
+    
+    @Test 
 	public void validLobby_Test() {
+    	UserTable Owner = userDB.add_user("OwnerID1_validLobby", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_validLobby", "JoinerUsername1");
 		
-		// ----------- Création d'une Lobby ----------- // 
-	    
-	    User creator_user = new User("ownerUsername");
-
-    	Lobby newLobby = new Lobby(creator_user.getUserId());
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
-
-        // ----------- Init des joiners ----------- // 
-        
-        User joiner1 = new User("joiner1");
-        User joiner2 = new User("joiner2");
-        User joiner3 = new User("joiner3");
-        User joiner4 = new User("joiner4");
-
-        // ----------- Ajout des Joiners à la Lobby ----------- // 
-        
-        UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
-        UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner2);
-        UserInLobby userInLobbyJoiner3 = new UserInLobby(joiner3, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner3);
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
 		
-        
-		given().formParam("username", joiner4.getUsername()).formParam("token", token)
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    	    
+		given().formParam("username", Joiner1.getUsername()).formParam("token", lobby.getToken())
+			.headers("X-User", Joiner1.getUserID())
 			.when().post("/join-lobby/join")
 			.then()
 				.statusCode(200);
@@ -62,8 +46,8 @@ class JoinLobbyRessourceTest extends TestCase{
 	
 	@Test
 	public void lobby_WrongToken_Test() {
-		
 		given().formParam("username", "username_test").formParam("token", "ABCD")
+			.headers("X-User", "UserIDTest")
 			.when().post("/join-lobby/join")
 			.then()
 				.statusCode(404);
@@ -71,20 +55,17 @@ class JoinLobbyRessourceTest extends TestCase{
 	
 	
 	@Test
-	public void lobby_EmptyUsername_Test() {
+	public void lobby_EmptyUsername_Test() {  
+		UserTable Owner = userDB.add_user("OwnerID1_emptyUsername", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_emptyUsername", "JoinerUsername1");
 		
-		// ----------- Création d'une Lobby ----------- // 
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
 	    
-	    User creator_user = new User("ownerUsername");
-
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
-        
-		given().formParam("username", "").formParam("token", token)
+		given().formParam("username", "").formParam("token", lobby.getToken())
+			.headers("X-User", "UserIDTest")
 			.when().post("/join-lobby/join")
 			.then()
 				.statusCode(400);
@@ -92,19 +73,16 @@ class JoinLobbyRessourceTest extends TestCase{
 	
 	@Test
 	public void lobby_BlankUsername_Test() {
+		UserTable Owner = userDB.add_user("OwnerID1_blankUsername", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_blankUsername", "JoinerUsername1");
 		
-		// ----------- Création d'une Lobby ----------- // 
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
 	    
-	    User creator_user = new User("ownerUsername");
-
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
-        
-		given().formParam("username", " ").formParam("token", token)
+		given().formParam("username", " ").formParam("token", lobby.getToken())
+			.headers("X-User", "UserIDTest")
 			.when().post("/join-lobby/join")
 			.then()
 				.statusCode(400);
@@ -112,19 +90,16 @@ class JoinLobbyRessourceTest extends TestCase{
 	
 	@Test
 	public void lobby_WrongUsername_Test() {
+		UserTable Owner = userDB.add_user("OwnerID1_wrongUsername", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_wrongUsername", "JoinerUsername1");
 		
-		// ----------- Création d'une Lobby ----------- // 
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
 	    
-	    User creator_user = new User("ownerUsername");
-
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
-        
-		given().formParam("username", "username_test%").formParam("token", token)
+		given().formParam("username", "username_test%").formParam("token", lobby.getToken())
+			.headers("X-User", "UserIDTest")
 			.when().post("/join-lobby/join")
 			.then()
 				.statusCode(400);
@@ -132,41 +107,70 @@ class JoinLobbyRessourceTest extends TestCase{
 	
 	@Test
 	public void lobby_LobbyFull_Test() {
+		UserTable Owner = userDB.add_user("OwnerID_lobbyfull", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_lobbyfull", "JoinerUsername1");
 		
-		// ----------- Création d'une Lobby ----------- // 
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
 	    
-	    User creator_user = new User("ownerUsername");
+	    UserTable Joiner2 = userDB.add_user("JoinerID2_lobbyfull", "JoinerUsername2");
+	    UserTable Joiner3 = userDB.add_user("JoinerID3_lobbyfull", "JoinerUsername3");
+	    UserTable Joiner4 = userDB.add_user("JoinerID4_lobbyfull", "JoinerUsername4");
 
-    	Lobby newLobby = new Lobby(creator_user.getUserId()); 
-
-        UserInLobby userInLobby = new UserInLobby(creator_user, newLobby.getToken());
-        userLobbyDB.addUserInLobby(userInLobby);
-        
-        String token = newLobby.getToken();
-        
-        
-        // ----------- Init des joiners ----------- // 
-        
-        User joiner1 = new User("joiner1");
-        User joiner2 = new User("joiner2");
-        User joiner3 = new User("joiner3");
-        User joiner4 = new User("joiner4");
-
-        // ----------- Ajout des Joiners à la Lobby ----------- // 
-        
-        UserInLobby userInLobbyJoiner1 = new UserInLobby(joiner1, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner1);
-        UserInLobby userInLobbyJoiner2 = new UserInLobby(joiner2, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner2);
-        UserInLobby userInLobbyJoiner3 = new UserInLobby(joiner3, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner3);
-        UserInLobby userInLobbyJoiner4 = new UserInLobby(joiner4, token);
-        userLobbyDB.addUserInLobby(userInLobbyJoiner4);
+        // ----------- Ajout des Joiners à la Lobby --------- //
+        UserInLobbyTable userInLobbyJoiner1 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
+        UserInLobbyTable userInLobbyJoiner2 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner2.getUserID());
+        UserInLobbyTable userInLobbyJoiner3 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner3.getUserID());
+        UserInLobbyTable userInLobbyJoiner4 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner4.getUserID());
         
         
         // ----------- Teste le fait que la Lobby est bien pleine ----------- // 
         
-		given().formParam("username", "joiner5").formParam("token", token)
+		given().formParam("username", "joiner5").formParam("token", lobby.getToken())
+			.headers("X-User", "UserIDTest")
+			.when().post("/join-lobby/join")
+			.then()
+				.statusCode(401);
+	}
+	
+	@Test
+	public void joinLobby_gameAlreadyStarted() {
+		UserTable Owner = userDB.add_user("OwnerID_lobbyStart", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_lobbyStart", "JoinerUsername1");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    
+	    lobbyDB.setInLobbyStatus(lobby.getToken(), false);
+	    
+	    given().formParam("username", Joiner1.getUsername()).formParam("token", lobby.getToken())
+		.headers("X-User", Joiner1.getUserID())
+		.when().post("/join-lobby/join")
+		.then()
+			.statusCode(401);
+	}
+	
+	@Test
+	public void joinLobby_UserInLobby() {
+		UserTable Owner = userDB.add_user("OwnerID_userInLobby", "OwnerUsername");
+
+    	UserTable Joiner1 = userDB.add_user("JoinerID1_userInLobby", "JoinerUsername1");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    UserInLobbyTable joinerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
+
+	    UserTable Owner2 = userDB.add_user("OwnerID2_userInLobby", "OwnerUsername2");
+		
+	    LobbyTable lobby2 = lobbyDB.add_lobby(Owner.getUserID());
+	    
+	    given().formParam("username", Joiner1.getUsername()).formParam("token", lobby2.getToken())
+			.headers("X-User", Joiner1.getUserID())
 			.when().post("/join-lobby/join")
 			.then()
 				.statusCode(401);

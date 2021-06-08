@@ -21,7 +21,7 @@ call script
 Il est normal qu'il y aie un message d'erreur du type "service already exists..."
 Le script a bien marché si à la fin on voit des messages pour l'url (message standard)
 
-Pour le remote, il faut créer les secrets
+Pour le remote, il faut créer les secrets **PLUS BESOIN**
 
     cd tls-secrets
     kubectl create secret tls tls-secret      --key movie.graved.ch.key     --cert fullchain.cer -n namespace_name

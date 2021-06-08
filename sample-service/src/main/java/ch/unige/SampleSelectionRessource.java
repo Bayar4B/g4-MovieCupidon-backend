@@ -12,10 +12,7 @@ import info.movito.themoviedbapi.TmdbGenre;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 
 @Path("/sample-selection")
@@ -37,6 +34,7 @@ public class SampleSelectionRessource {
         }
         return res;
     }
+
 
     @POST
     @Path("/get-sample")
@@ -82,22 +80,50 @@ public class SampleSelectionRessource {
             String yearDown = config.getRangeYear()[0] +"-01-01";
             String yearUp = config.getRangeYear()[1] +"-12-31";
 
-            MovieResultsPage res = disco.getDiscover(1, "en-US", "vote_average.desc",
-                    false, -1, -1, 25, 0, genreIDStr,
+            int pageCounter = 1;
+            MovieResultsPage res = disco.getDiscover(pageCounter, "en-US", "vote_average.desc",
+                    false, -1, -1, 35, 0, genreIDStr,
                     yearDown, yearUp,
                     "", "", "");
 
             int j = 0;
-            for(MovieDb movie : res){
+            for (Iterator<MovieDb> it = res.iterator(); it.hasNext(); ) {
+                MovieDb movie = it.next();
                 if (j == genreNumbersMovies[i]){
                     break;
                 }
+
+                // Si jamais le film est déjà présent dans la liste de sample
+                while (sample.contains(movie)) {
+                    movie = it.next();
+
+                    // Si jamais il n'y a plus de films disponible dans les résultats, on prends ceux de la page suivante
+                    if (!it.hasNext()){
+                        pageCounter++;
+                        res = disco.getDiscover(pageCounter, "en-US", "vote_average.desc",
+                                false, -1, -1, 25, 0, genreIDStr,
+                                yearDown, yearUp,
+                                "", "", "");
+                        it = res.iterator();
+                    }
+                }
+
+                // Ajoute le film au sample
                 sample.add(movie);
                 j++;
+
+                // Si jamais il faut encore selectionner des films pour le genre i
+                if (!it.hasNext() && j != genreNumbersMovies[i]){
+                    pageCounter++;
+                    res = disco.getDiscover(pageCounter, "en-US", "vote_average.desc",
+                            false, -1, -1, 25, 0, genreIDStr,
+                            yearDown, yearUp,
+                            "", "", "");
+                    it = res.iterator();
+                }
             }
             i++;
         }
-
         return Response.ok(sample).build();
     }
 
