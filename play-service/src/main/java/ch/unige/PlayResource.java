@@ -1,58 +1,233 @@
 package ch.unige;
 
-import javax.management.relation.RelationSupport;
+import java.util.ArrayList;
+//import java.util.List;
+
+import javax.transaction.Transactional;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.unige.dao.GameDB;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ch.unige.dao.LobbyDB;
+import ch.unige.dao.UserInLobbyDB;
 
 @Path("/play")
 public class PlayResource {
 
-    private static GameDB gameDB = GameDB.getInstance();
+    /*
+    @GET
+    @Path("users")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllUsers() {
+        List<UserInLobbyDB> UIL = UserInLobbyDB.listAll();
+        return Response.ok(UIL).build();
+    }
 
     @GET
-    @Path("/send/{TOKEN}/{MOVIEID}/{SCORE}")
+    @Path("lobbies")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllLobbies() {
+        List<LobbyDB> L = LobbyDB.listAll();
+        return Response.ok(L).build();
+    }
+    */
+
+    @GET
+    @Path("gameStarted")
+    public Response getStarted(@Context HttpHeaders headers) {
+
+        String userid = headers.getHeaderString("X-User");
+
+        UserInLobbyDB userExistant = UserInLobbyDB.getUser(userid);
+        if (userExistant == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.status(Response.Status.ACCEPTED).build();
+        }
+    }
+
+    @POST
+    @Transactional
+    @Path("initGame/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response initGame(String initString) {
+
+        String initJSON = "";
+        try {
+            initJSON = SecurityUtility.decrypt(initString);
+        } catch (Exception e) {
+            String message = "Encryption non valide";
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
+        }
+
+        StringToJSON jsonObj = null;
+        try {
+            jsonObj = new ObjectMapper().readValue(initJSON, StringToJSON.class);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        // Vérifier que le lobby n'est pas déjà en DB
+        LobbyDB lobbyExistant = LobbyDB.getLobby(jsonObj.token);
+        if (lobbyExistant != null) { 
+            String message = "Lobby déjà enregistré !";
+            return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
+        }
+
+        // Create players
+        for (String userID : jsonObj.listPlayer) {
+            UserInLobbyDB player = new UserInLobbyDB();
+            player.token = jsonObj.token;
+            player.userID = userID;
+            // add player to lobby
+            UserInLobbyDB.persist(player);
+        }
+
+        // Create and init lobby
+        LobbyDB lobby = new LobbyDB();
+        lobby.token = jsonObj.token;
+        for (int i = 0; i < 20; i++) {
+            lobby.sumScores.add(0);
+            lobby.numberVotes.add(0);
+        }
+
+        // Add lobby dans la DB
+        LobbyDB.persist(lobby);
+        return Response.created(null).build();
+    }
+
+    @POST
+    @Transactional
+    @Path("/send/{MOVIEID}/{SCORE}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response GameScore(@PathParam("MOVIEID") int movie_id, @PathParam("SCORE") int score,
+            @Context HttpHeaders headers) {
+
+        String userid = headers.getHeaderString("X-User");
+        // movie_id valide ?
+        if (movie_id < 0 || movie_id > 19 || movie_id != (int) movie_id) {
+            String message = "Le id du film n'est pas valide !";
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
+        }
+        // score valide ?
+        if (score < 0 || score > 100 || score != (int) score) {
+            String message = "Le score attribué n'est pas valide !";
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
+        }
+        // Regarder si le sender est dans une partie
+        UserInLobbyDB UIL = UserInLobbyDB.getUser(userid);
+        if (UIL == null) {
+            String message = "Le joueur n'est pas dans une partie !";
+            return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
+        }
+        // Get les attributs du sender
+        String token = UIL.getToken();
+        ArrayList<Integer> votesID = UIL.getVotesID();
+
+        // Le joueur a déjà joué toutes ses cartes ?
+        if (votesID.size() >= 20) {
+            String message = "Le joueur a déjà épuisé son nombre de votes !";
+            return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
+        }
+
+        // Le joueur a déjà voté pour ce même film ?
+        if (votesID.contains(movie_id)) {
+            String message = "Le joueur a déjà voté pour ce film !";
+            return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
+        }
+
+        // Get le LobbyDB correspondant au token
+        LobbyDB L = LobbyDB.getLobby(token);
+
+        // Add le score côté user
+        votesID.add(movie_id);
+        UIL.setVotesID(votesID);
+
+        // Add le score côté lobby
+        int currentScore = L.sumScores.get(movie_id);
+        L.sumScores.set(movie_id, currentScore + score);
+        int currentVotes = L.numberVotes.get(movie_id);
+        L.numberVotes.set(movie_id, currentVotes + 1);
+
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Transactional
+    @Path("/quit")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response GetGameScores(@PathParam("TOKEN") String token, @PathParam("MOVIEID") int movie_id, @PathParam("SCORE") int score) {
+    public Response UserQuitLobby(@Context HttpHeaders headers) {
 
-        /**
-         * TOKEN : token du lobby qui joue la partie
-         * MOVIEID : id du film voté par le joueur. Les ids vont de 0 à 19 !
-         * SCORE : score du joueur pour un film particulier
-         */
+    	String userID = headers.getHeaderString("X-User");
 
-        // * Récupère le score d'un user donné pour un film donné
-        gameDB.saveScores(token, movie_id, score);
-
-        String message = "Success";
+        // Regarder si le joueur est dans une partie
+        UserInLobbyDB UIL = UserInLobbyDB.getUser(userID);
+        if (UIL == null) {
+            String message = "Le joueur n'est pas dans une partie !";
+            return Response.status(Response.Status.NO_CONTENT).entity(message).build();
+        }
+        UserInLobbyDB.deleteUser(userID);
+        String message = "Joueur retiré de la partie";
         return Response.status(Response.Status.OK).entity(message).build();
     }
 
     @GET
-    @Path("/getResult/{TOKEN}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response GetGameResult(@PathParam("TOKEN") String token) {
+    @Transactional
+    @Path("/getResult")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getResult(@Context HttpHeaders headers) {
 
-        /**
-         * TOKEN : token du lobby dont on veut le résultat
-         * L'appel de cette fonction peut se faire à tout moment 
-         * même si la partie n'est pas terminée.
-         */
+        String userid = headers.getHeaderString("X-User");
 
-        // * Retourne le movie_id du film gagnant
-        int result_id = gameDB.getResult(token);
-        //* Vérifier la vailidé du token
-        if(result_id == -1) {
-            String message = "Token not in DB";
-            return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+        // Vérifier si le user est dand un lobby et get le token
+        String token;
+        try {
+            UserInLobbyDB UIL = UserInLobbyDB.getUser(userid);
+            token = UIL.getToken();
+        } catch (Exception e) {
+            String message = "La requête n'est pas valide !";
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
-        gameDB.deleteData(token);
 
-        return Response.status(Response.Status.OK).entity(result_id).build();
+        if(UserInLobbyDB.getStatus(token)) {
+            UserInLobbyDB UIL = UserInLobbyDB.getUser(userid);
+            int movie_winner_id;
+            if(UIL.result == -1) {
+                // get result
+                movie_winner_id = LobbyDB.getMovieWinner(token);
+                // write results to all users
+                UserInLobbyDB.writeResultToDB(movie_winner_id, token);
+            }
+            else {
+                movie_winner_id = UIL.result;
+            }
+            // delete le user
+            UserInLobbyDB.deleteUser(userid);
+            // vérifier si il y a toujours qqn dans le lobby sinon delete lobby
+            UserInLobbyDB user = UserInLobbyDB.getUserFromToken(token);
+            if(user == null) {
+                LobbyDB.deleteLobby(token);
+            }
+            // return result
+            return Response.status(Response.Status.OK).entity(movie_winner_id).build();
+        } else {
+            String message = "La partie n'est pas finie";
+            return Response.status(Response.Status.NO_CONTENT).entity(message).build();
+        }
     }
 }
