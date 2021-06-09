@@ -337,19 +337,6 @@ public class LobbyRessourceTest extends TestCase{
 	}
 	
 	@Test
-	public void TokkenTest() {
-		UserTable Owner = userDB.add_user("OwnerID_size", "OwnerUsername");
-		
-	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
-		
-	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
-	    given().header("X-User", Owner.getUserID())
-			.when().get("/lobby/"+lobby.getToken())
-			.then()
-				.statusCode(200);
-	}
-	
-	@Test
 	public void HelloWorldTest() {
 		given()
 			.when().get("/lobby/helloworld")
