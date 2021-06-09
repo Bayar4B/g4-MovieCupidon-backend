@@ -81,13 +81,7 @@ public class LobbyRessource {
         
     	String msgInit = userLobbyDB.getAllUserInALobby_toString(token);
     	String msgEncrypt = SecurityUtility.encrypt(msgInit);
-    	    	
-    	try {
-			System.out.println("TEST : \n"+ SecurityUtility.decrypt(msgEncrypt));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	  
     	return Response.status(Response.Status.OK)
     			.entity(msgEncrypt)
     			.type(MediaType.APPLICATION_JSON)
