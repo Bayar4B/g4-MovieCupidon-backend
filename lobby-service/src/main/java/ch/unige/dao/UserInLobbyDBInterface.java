@@ -19,4 +19,6 @@ public interface UserInLobbyDBInterface {
 	public boolean getReadyStatusFromUserID(String userid);
 	public boolean isUserInALobby(String userid);
 	String getAllUserInALobby_toString(String token);
+	String getAllUserInALobbyUsername_toString(String token);
+
 }

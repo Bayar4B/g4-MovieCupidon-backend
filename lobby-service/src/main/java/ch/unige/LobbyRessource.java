@@ -322,7 +322,34 @@ public class LobbyRessource {
         }
     	
     }
+    @GET
+    @Path("/seeUserInLobby")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response seeUserInLobby(@Context HttpHeaders headers) {
+    	
+    	String userId = headers.getHeaderString("X-User");
+    	
+    	if(!userLobbyDB.isUserInALobby(userId)) {
+    		String message = "This User isn't in any lobby";
+        	
+        	return Response.status(Response.Status.NOT_FOUND)
+        			.entity(message)
+        			.build();
+    	}
+    	
+    	String token = userLobbyDB.getTokenFromUserID(userId);
+
+    	
+    	String message = userLobbyDB.getAllUserInALobbyUsername_toString(token);
+    	
+    	return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
+    }
+
     
+  
     @GET
     @Path("/seeDB")
     @Produces(MediaType.TEXT_PLAIN)

@@ -3,6 +3,7 @@ package ch.unige.dao;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -15,6 +16,9 @@ import io.quarkus.panache.common.Parameters;
 @ApplicationScoped
 public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<UserInLobbyTable>{
 
+	@Inject
+    private UserDB userDB;
+	
 	@Override
 	public int getUserInLobbyDBSize() {
 		return listAll().size();
@@ -59,19 +63,11 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 		UserInLobbyTable user = ((UserInLobbyTable) UserInLobbyTable.find("token = :token and userID = :userid",
 		         Parameters.with("token", token).and("userid", userid).map()).firstResult());
 		
-		if(user == null) {
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-		
 		boolean last_Status = user.getReadyStatus();
 		
 		user.setReadyStatus(!last_Status);
 		
-		if(user.getReadyStatus() == !last_Status) {
-			return true;
-		}else {
-			return false;
-		}
+		return true;
 	}
 	
 	@Override
@@ -136,6 +132,24 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 				+ "\"listPlayer\": [";
 		for(int i = 0; i<length;i++) {
 			msg = msg+"\""+find("token", token).list().get(i).getUserID()+"\"";
+			if(i != length-1) {
+					msg = msg + ", ";
+			}
+		}
+		msg = msg + "]\n}";
+		return msg;
+	}
+	
+	@Override
+	public String getAllUserInALobbyUsername_toString(String token) {
+		int length = find("token", token).list().size();
+		String msg = "{\n"
+				+ "\"listPlayer\": [";
+		for(int i = 0; i<length;i++) {
+			
+			String userID = find("token", token).list().get(i).getUserID();
+			
+			msg = msg+"\""+userDB.find("userID", userID).firstResult().getUsername()+"\"";
 			if(i != length-1) {
 					msg = msg + ", ";
 			}
