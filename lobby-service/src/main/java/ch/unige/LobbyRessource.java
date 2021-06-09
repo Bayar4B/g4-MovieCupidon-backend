@@ -204,7 +204,7 @@ public class LobbyRessource {
     	String token = userLobbyDB.getTokenFromUserID(userId);
     	
     	String ownerID = lobbyDB.getOwnerID(token);
-    	String message = "{\"ownerID\":"+ownerID+"}";
+    	String message = "{\"ownerID\": \""+ownerID+"\"}";
     	return Response.status(Response.Status.OK)
     			.entity(message)
     			.type(MediaType.APPLICATION_JSON)
