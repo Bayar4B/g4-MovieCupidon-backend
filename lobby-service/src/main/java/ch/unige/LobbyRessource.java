@@ -33,13 +33,6 @@ public class LobbyRessource {
     public Integer countlobbys(){
     	return lobbyDB.getlobbyDB_size();
     }
-    @GET
-    @Path("{TOKEN}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response Lobby(@PathParam("TOKEN") String token){
-        // Here we are in the lobby
-        return Response.ok().build();
-    }
 
     @POST
     @Transactional
