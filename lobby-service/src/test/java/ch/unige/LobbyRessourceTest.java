@@ -107,7 +107,7 @@ public class LobbyRessourceTest extends TestCase{
 			.when().get("/lobby/whoIsTheOwner")
 			.then()
 				.statusCode(200)
-				.body(is("{\"ownerID\":"+Owner.getUserID()+"}"));
+				.body(is("{\"ownerID\": \""+Owner.getUserID()+"\"}"));
 	}
 	
 	@Test
