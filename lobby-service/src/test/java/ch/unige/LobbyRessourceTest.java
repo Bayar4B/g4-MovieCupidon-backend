@@ -356,6 +356,7 @@ public class LobbyRessourceTest extends TestCase{
 			.then()
 				.statusCode(200);
 	}
+	
 	@Test
 	public void seeDBTest() {
 		List<LobbyTable> db = lobbyDB.getFullDB();
@@ -366,4 +367,36 @@ public class LobbyRessourceTest extends TestCase{
 				.statusCode(200)
 				.body(is(dbString));
 	}
+	
+	@Test
+	public void seeUserInLobbyTest() {
+		UserTable Owner = userDB.add_user("OwnerID_seeUserInLobby", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    
+	    UserTable Joiner1 = userDB.add_user("JoinerID1_seeUserInLobby", "JoinerUsername1");
+    	
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
+        
+	    UserInLobbyTable joinerInLobby1 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
+	    
+	    given().header("X-User", Owner.getUserID())
+			.when().get("/lobby/seeUserInLobby")
+			.then()
+				.statusCode(200)
+				.body(is("{\n"
+						+ "\"listPlayer\": [\"OwnerUsername\", \"JoinerUsername1\"]\n"
+						+ "}"));
+	}
+	
+	@Test
+	public void seeUserInLobby_unknownTest() {
+		given().header("X-User", "ABCDEF")
+			.when().get("/lobby/seeUserInLobby")
+			.then()
+				.statusCode(404);
+	}
+	
 }
