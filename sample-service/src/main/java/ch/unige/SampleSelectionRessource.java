@@ -124,6 +124,13 @@ public class SampleSelectionRessource {
             }
             i++;
         }
+
+        for (int j = 0; j < sample.size(); j++) {
+            sample.get(j).setId(j);
+            String finalPosterPath = "https://image.tmdb.org/t/p/original" + sample.get(j).getPosterPath();
+            sample.get(j).setPosterPath(finalPosterPath);
+        }
+
         return Response.ok(sample).build();
     }
 
