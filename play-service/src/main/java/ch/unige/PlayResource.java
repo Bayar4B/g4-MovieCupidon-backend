@@ -1,16 +1,12 @@
 package ch.unige;
 
-//import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
+//import java.util.List;
 
-//import javax.management.relation.RelationSupport;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-//import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-//import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -26,11 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.unige.dao.LobbyDB;
 import ch.unige.dao.UserInLobbyDB;
-//import io.vertx.core.json.JsonObject;
 
 @Path("/play")
 public class PlayResource {
 
+    /*
     @GET
     @Path("users")
     @Produces(MediaType.APPLICATION_JSON)
@@ -46,6 +42,7 @@ public class PlayResource {
         List<LobbyDB> L = LobbyDB.listAll();
         return Response.ok(L).build();
     }
+    */
 
     @GET
     @Path("gameStarted")
@@ -97,6 +94,7 @@ public class PlayResource {
             UserInLobbyDB player = new UserInLobbyDB();
             player.token = jsonObj.token;
             player.userID = userID;
+            // add player to lobby
             UserInLobbyDB.persist(player);
         }
 
@@ -121,29 +119,24 @@ public class PlayResource {
             @Context HttpHeaders headers) {
 
         String userid = headers.getHeaderString("X-User");
-
         // movie_id valide ?
         if (movie_id < 0 || movie_id > 19 || movie_id != (int) movie_id) {
             String message = "Le id du film n'est pas valide !";
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
-
         // score valide ?
         if (score < 0 || score > 100 || score != (int) score) {
             String message = "Le score attribué n'est pas valide !";
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
-
         // Regarder si le sender est dans une partie
         UserInLobbyDB UIL = UserInLobbyDB.getUser(userid);
         if (UIL == null) {
             String message = "Le joueur n'est pas dans une partie !";
             return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
         }
-
         // Get les attributs du sender
         String token = UIL.getToken();
-        // boolean user_finished = UIL.getUser_finished();
         ArrayList<Integer> votesID = UIL.getVotesID();
 
         // Le joueur a déjà joué toutes ses cartes ?
@@ -211,13 +204,26 @@ public class PlayResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
 
-        // Vérifier que tous les joueurs de ce lobby ont fini de voter pour tous les
-        // films
-        if (UserInLobbyDB.getStatus(token)) {
-            // Retourner le résultat
-            int movie_winner_id = LobbyDB.getMovieWinner(token);
-            UserInLobbyDB.deleteUsers(token);
-            LobbyDB.deleteLobby(token);
+        if(UserInLobbyDB.getStatus(token)) {
+            UserInLobbyDB UIL = UserInLobbyDB.getUser(userid);
+            int movie_winner_id;
+            if(UIL.result == -1) {
+                // get result
+                movie_winner_id = LobbyDB.getMovieWinner(token);
+                // write results to all users
+                UserInLobbyDB.writeResultToDB(movie_winner_id, token);
+            }
+            else {
+                movie_winner_id = UIL.result;
+            }
+            // delete le user
+            UserInLobbyDB.deleteUser(userid);
+            // vérifier si il y a toujours qqn dans le lobby sinon delete lobby
+            UserInLobbyDB user = UserInLobbyDB.getUserFromToken(token);
+            if(user == null) {
+                LobbyDB.deleteLobby(token);
+            }
+            // return result
             return Response.status(Response.Status.OK).entity(movie_winner_id).build();
         } else {
             String message = "La partie n'est pas finie";

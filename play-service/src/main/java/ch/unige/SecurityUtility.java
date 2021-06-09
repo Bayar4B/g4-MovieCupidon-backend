@@ -4,24 +4,17 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-//import javax.inject.Inject;
-//import javax.resource.spi.ConfigProperty;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 
-//import io.quarkus.arc.config.ConfigProperties;
-
-//import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
-
 public class SecurityUtility {
 
-    //private static final String SECRET_KEY = "my_super_secret_key_ho_ho_ho";
     private static final String SECRET_KEY = ConfigProvider.getConfig().getValue("security.aes.key", String.class);
     private static final String SALT = ConfigProvider.getConfig().getValue("security.aes.salt", String.class);
     private static final byte[] iv = ConfigProvider.getConfig().getValue("security.aes.iv", byte[].class);
@@ -42,37 +35,12 @@ public class SecurityUtility {
     private static String cutString(String stringToCut) throws Exception {
         String[] splitted = stringToCut.split("}");
         splitted[0] += "}";
-        if (splitted[1].equals(getSHA256(splitted[0]))){
+        if (splitted[1].equals(getSHA256(splitted[0]))) {
             return splitted[0];
-        }
-        else{
+        } else {
             throw new Exception("Message and SHA Different");
         }
     }
-
-    /*
-    public static String encrypt(String strToEncrypt) {
-        try {
-
-            strToEncrypt += getSHA256(strToEncrypt); //concatenate message + sha256(message)
-
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
-        }
-        return null;
-    }
-    */
 
     public static String decrypt(String strToDecrypt) throws Exception {
         IvParameterSpec ivspec = new IvParameterSpec(iv);
@@ -92,25 +60,5 @@ public class SecurityUtility {
         return decrypted;
     }
 
-    public static void main(String[] args) {
-        /*
-        String message = "{\n" +
-                "token: AAAAAA\n" +
-                "ownerID : oauth\n" +
-                "joinList : [oauthJ1, oauthJ2 ...]\n" +
-                "}";
-
-        String encryptMess = SecurityUtility.encrypt(message);
-        String decrypted = "";
-        try {
-            decrypted = SecurityUtility.decrypt(encryptMess);
-        }
-        catch (Exception e){
-            System.out.println("Il y a eu une erreur");
-        }
-        System.out.println(encryptMess);
-        System.out.println(decrypted);
-        System.out.println(message.equals(decrypted));
-        */
-    }
+    public static void main(String[] args) {}
 }
