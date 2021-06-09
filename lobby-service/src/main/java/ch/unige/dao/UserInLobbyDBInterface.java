@@ -20,5 +20,5 @@ public interface UserInLobbyDBInterface {
 	public boolean isUserInALobby(String userid);
 	String getAllUserInALobby_toString(String token);
 	String getAllUserInALobbyUsername_toString(String token);
-
+	int getNumberOfUserInALobby(String token);
 }

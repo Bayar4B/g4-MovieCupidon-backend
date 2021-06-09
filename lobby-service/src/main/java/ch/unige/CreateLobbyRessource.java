@@ -32,7 +32,7 @@ public class CreateLobbyRessource {
     @Transactional
     @Produces(MediaType.APPLICATION_JSON) 
     public Response createlobby(@FormParam("username") String username, @Context HttpHeaders headers) {
-    	
+
     	String userid = headers.getHeaderString("X-User");
     	
     	if(userInLobbyDB.isUserInALobby(userid)) {

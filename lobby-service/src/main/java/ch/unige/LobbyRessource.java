@@ -288,10 +288,11 @@ public class LobbyRessource {
     }
     
     @DELETE
+    @Transactional
     @Path("/endGameDeletion")
     @Produces(MediaType.TEXT_PLAIN)
     public Response endGameDeletion(@Context HttpHeaders headers) {
-    	
+
     	String userId = headers.getHeaderString("X-User");
     	
     	if(!userLobbyDB.isUserInALobby(userId)) {
@@ -301,24 +302,24 @@ public class LobbyRessource {
         			.entity(message)
         			.build();
     	}
-    	
+
     	String token = userLobbyDB.getTokenFromUserID(userId);
-    	    	
-    	String message = lobbyDB.getLobbyPreferences(token);
-    	
+    	    	    
+    	String message = "";
+    	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
+    		if(lobbyDB.removeLobby(token)) {
+    			message += "Lobby deleted ";
+    		}else {
+    			message = "Lobby didn't deleted";
+                return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+    		}
+    	}
     	if(!(userLobbyDB.removeUserFromLobby(token, userId) && userDB.removeUser(userId))){
             message = "User or Lobby not found";
             return Response.status(Response.Status.NOT_FOUND).entity(message).build();
         }else {
-        	if(lobbyDB.isHeTheOwner(token, userId)) {
-        		lobbyDB.removeLobby(token);
-    			message = "Lobby Deleted";
-                return Response.status(Response.Status.OK).entity(message).build();
-        	}else{
-	        	 message = "User deleted";
-	             return Response.status(Response.Status.OK).entity(message).build();
-        	}
-             
+    		message += "User deleted";
+            return Response.status(Response.Status.OK).entity(message).build();
         }
     	
     }
