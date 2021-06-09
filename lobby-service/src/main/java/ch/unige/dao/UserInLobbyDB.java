@@ -157,4 +157,9 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 		msg = msg + "]\n}";
 		return msg;
 	}
+	
+	@Override
+	public int getNumberOfUserInALobby(String token) {
+		return find("token", token).list().size();
+	}
 }
