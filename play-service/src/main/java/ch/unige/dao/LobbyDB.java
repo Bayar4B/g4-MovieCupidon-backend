@@ -2,6 +2,7 @@ package ch.unige.dao;
 
 import java.util.ArrayList;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
@@ -10,7 +11,9 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 public class LobbyDB extends PanacheEntity{
     
     public String token;
+    @Column(length = 1024)
     public ArrayList<Integer> sumScores = new ArrayList<Integer>();
+    @Column(length = 1024)
     public ArrayList<Integer> numberVotes = new ArrayList<Integer>();
 
     public String getToken() {
