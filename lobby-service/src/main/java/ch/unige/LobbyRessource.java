@@ -37,7 +37,7 @@ public class LobbyRessource {
     @POST
     @Transactional
     @Path("/start")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response startGame(LobbyConfig config, @Context HttpHeaders headers) {
 
@@ -77,7 +77,7 @@ public class LobbyRessource {
     	  
     	return Response.status(Response.Status.OK)
     			.entity(msgEncrypt)
-    			.type(MediaType.APPLICATION_JSON)
+    			.type(MediaType.TEXT_PLAIN)
     			.build();
     }
     
