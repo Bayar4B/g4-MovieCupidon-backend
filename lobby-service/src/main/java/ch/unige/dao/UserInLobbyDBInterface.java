@@ -13,12 +13,12 @@ public interface UserInLobbyDBInterface {
 	boolean isUserInLobby(String token, String userID);
 	UserInLobbyTable addUserInLobby(String token, String userid);
 	UserInLobbyTable findUserInLobbyById(String id);
-	public boolean toggleReadyStatus(String token, String userid);
+	boolean toggleReadyStatus(String token, String userid);
 	boolean removeUserFromLobby(String token, String user_id);
-	public String getTokenFromUserID(String userid);
-	public boolean getReadyStatusFromUserID(String userid);
-	public boolean isUserInALobby(String userid);
-	String getAllUserInALobby_toString(String token);
-	String getAllUserInALobbyUsername_toString(String token);
+	String getTokenFromUserID(String userid);
+	boolean getReadyStatusFromUserID(String userid);
+	boolean isUserInALobby(String userid);
+	String getAllUserInALobbyToString(String token);
+	String getAllUserInALobbyUsernameToString(String token);
 	int getNumberOfUserInALobby(String token);
 }

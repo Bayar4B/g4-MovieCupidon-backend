@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class UserInLobbyDBTest extends TestCase{
+class UserInLobbyDBTest extends TestCase{
 
 	@Inject
     private UserDB userDB;
@@ -28,7 +28,7 @@ public class UserInLobbyDBTest extends TestCase{
     private UserInLobbyDB userLobbyDB;
 	 
     @Test
-    public void TestUserInLobbyDB() {
+    void TestUserInLobbyDB() {
     	int init_Size = userLobbyDB.getUserInLobbyDBSize();
     	
     	UserTable Owner = userDB.add_user("OwnerID_userInLobbyDB", "OwnerUsername");

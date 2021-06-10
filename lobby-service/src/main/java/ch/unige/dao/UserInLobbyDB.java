@@ -5,9 +5,6 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
 import ch.unige.domain.UserInLobbyTable;
 import ch.unige.domain.LobbyTable;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
@@ -125,7 +122,7 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 	}
 	
 	@Override
-	public String getAllUserInALobby_toString(String token) {
+	public String getAllUserInALobbyToString(String token) {
 		int length = find("token", token).list().size();
 		String msg = "{\n"
 				+ "\"token\": \""+token+"\",\n"
@@ -141,7 +138,7 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 	}
 	
 	@Override
-	public String getAllUserInALobbyUsername_toString(String token) {
+	public String getAllUserInALobbyUsernameToString(String token) {
 		int length = find("token", token).list().size();
 		String msg = "{\n"
 				+ "\"listPlayer\": [";
