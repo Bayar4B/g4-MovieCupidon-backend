@@ -17,9 +17,13 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 
 public class SecurityUtility {
-	
+
+    private SecurityUtility(){
+        // Added a private constructor to hide the implicit public one
+    }
+
 	private static final String SECRET_KEY = ConfigProvider.getConfig().getValue("security.aes.key", String.class);
-	
+
     private static final String SALT = ConfigProvider.getConfig().getValue("security.aes.salt", String.class);
 
     private static final byte[] iv = ConfigProvider.getConfig().getValue("security.aes.iv", byte[].class);
@@ -70,25 +74,6 @@ public class SecurityUtility {
             System.out.println("Error while encrypting: " + e.toString());
         }
         return null;
-    }
-
-
-    public static String decrypt(String strToDecrypt) throws Exception {
-        IvParameterSpec ivspec = new IvParameterSpec(iv);
-
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-        SecretKey tmp = factory.generateSecret(spec);
-        SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-
-        String decrypted = new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-
-        decrypted = cutString(decrypted);
-
-        return decrypted;
     }
 
 
