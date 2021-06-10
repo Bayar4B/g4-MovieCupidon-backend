@@ -306,22 +306,17 @@ public class LobbyRessource {
     	    	    
     	var message = "";
     	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
-    		if(lobbyDB.removeLobby(token)) {
-    			message += "Lobby deleted ";
-    		}else {
-    			message = "Lobby didn't deleted";
-                return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-    		}
+    		lobbyDB.removeLobby(token);
+    		message += "Lobby deleted ";
     	}
-    	if(!(userLobbyDB.removeUserFromLobby(token, userId) && userDB.removeUser(userId))){
-            message = "User or Lobby not found";
-            return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-        }else {
-    		message += "User deleted";
-            return Response.status(Response.Status.OK).entity(message).build();
-        }
+    	userLobbyDB.removeUserFromLobby(token, userId);
+    	userDB.removeUser(userId);
+    	message += "User deleted";
+        return Response.status(Response.Status.OK).entity(message).build();
     	
     }
+    
+    
     @GET
     @Path("/seeUserInLobby")
     @Produces(MediaType.APPLICATION_JSON)
