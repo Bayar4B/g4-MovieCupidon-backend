@@ -18,12 +18,12 @@ import java.util.*;
 @Path("/sample-selection")
 public class SampleSelectionRessource {
 
-    private final static String API_KEY = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
-    private final static TmdbApi TMDB_API = new TmdbApi(API_KEY);
+    private static final String API_KEY = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
+    private static final TmdbApi TMDB_API = new TmdbApi(API_KEY);
 
-    private final static TmdbGenre TMDB_GENRE = TMDB_API.getGenre();
+    private static final TmdbGenre TMDB_GENRE = TMDB_API.getGenre();
 
-    private final static Map<String, Integer> GENRE_HASH_MAP = generateGenreHashMap();
+    private static final Map<String, Integer> GENRE_HASH_MAP = generateGenreHashMap();
 
     private int sizeSample = 20;
 
@@ -43,7 +43,7 @@ public class SampleSelectionRessource {
 
         int sizeGenreList = config.getGenreList().length;
         if (sizeGenreList > 3 || sizeGenreList < 1){
-            String message = "Please choose between 1 and 3 genres.";
+            var message = "Please choose between 1 and 3 genres.";
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
 
@@ -128,7 +128,7 @@ public class SampleSelectionRessource {
             i++;
         }
 
-        for (int j = 0; j < sample.size(); j++) {
+        for (var j = 0; j < sample.size(); j++) {
             sample.get(j).setId(j);
             String finalPosterPath = "https://image.tmdb.org/t/p/original" + sample.get(j).getPosterPath();
             sample.get(j).setPosterPath(finalPosterPath);
