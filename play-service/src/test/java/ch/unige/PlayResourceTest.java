@@ -57,7 +57,7 @@ public class PlayResourceTest {
     }
 
     @Test
-    public void InitGameTest() {
+    void InitGameTest() {
         // Init new room
         given().body(
                 "sfql1a4vXLYdvHRJBhxPlgntz9jJy38Sfd+raZnOWAYxLQGtRJPV5ayH7zXsXUEsC118UcjVivBMgjbk95pekNP1v799frKY6ZWzYBONKWAqbanVAy1QAOjg2nKDPsPi19DUp/UX4IQ3kF11ae3KR2rZesPhlJlInvSnhdKYMp5tvi/ai3JS/D97tcvMN/nWMXNx+1N/4Ppoqgo5WmtkgX/rzgnexmpwLj7378jOLKQ=")
@@ -69,6 +69,10 @@ public class PlayResourceTest {
         // Essayer de init avec une encryption non valide
         given().body(
                 "fql1a4vXLYdvHRJBhxPlgntz9jJy38Sfd+raZnOWAYxLQGtRJPV5ayH7zXsXUEsC118UcjVivBMgjbk95pekNP1v799frKY6ZWzYBONKWAqbanVAy1QAOjg2nKDPsPi19DUp/UX4IQ3kF11ae3KR2rZesPhlJlInvSnhdKYMp5tvi/ai3JS/D97tcvMN/nWMXNx+1N/4Ppoqgo5WmtkgX/rzgnexmpwLj7378jOLKQ=")
+                .when().post("/play/initGame").then().statusCode(400);
+        // Essayer de init avec un JSON décrypté invalide
+        given().body(
+                "VVNFZLmE452gP+KzcLQ/yPH/Ik85U2xELEhlhytgg4B9qnNmEvOzivqcxhPIpXgZnEm7+dC1GNyuH6rKMkDOhIn+v57FIGr6d3q5jB5Lu2DzxS1aV99M3XQMhCQZM9U8")
                 .when().post("/play/initGame").then().statusCode(400);
         // Essayer de init avec une encryption vide
         given().body("").when().post("/play/initGame").then().statusCode(400);
@@ -125,7 +129,7 @@ public class PlayResourceTest {
 
     
     @Test
-    public void sendTest() {
+    void sendTest() {
         String token = "ABCDEF";
         AddLobby(token);
         AddUser(token, "userID0", "userID1", "userID2");
@@ -154,10 +158,15 @@ public class PlayResourceTest {
         given().header("X-User", "userID1").when().post("/play/send/12/22.5").then().statusCode(404);
         given().header("X-User", "userID1").when().post("/play/send/13/abc").then().statusCode(404);
         given().header("X-User", "userID2").when().post("/play/send/13/101").then().statusCode(400); 
+        // Add scores avec un score et film non valide
+        given().header("X-User", "userID0").when().post("/play/send/-9/-140").then().statusCode(400);
+        given().header("X-User", "userID1").when().post("/play/send/5.5/22.5").then().statusCode(404);
+        given().header("X-User", "userID1").when().post("/play/send/abc/abc").then().statusCode(404);
+        given().header("X-User", "userID2").when().post("/play/send/20/101").then().statusCode(400);
     }
 
     @Test 
-    public void maxVotes() {
+    void maxVotes() {
         String token = "FEDCBA";
         AddLobby(token);
         AddUser(token, "userID3", "userID4", "userID5");
@@ -189,7 +198,7 @@ public class PlayResourceTest {
 
 
     @Test
-    public void QuitTest() {
+    void QuitTest() {
         String token = "JDHTZG";
         AddLobby(token);
         AddUser(token, "userID6", "userID7", "userID8");
@@ -211,7 +220,7 @@ public class PlayResourceTest {
     }
     
     @Test
-    public void ResultTest() {
+    void ResultTest() {
         String token = "QWERTZ";
         AddLobby(token);
         AddUser(token, "userID9", "userID10", "userID11");
@@ -285,9 +294,12 @@ public class PlayResourceTest {
         // get result avec user qui a quitté
         given().header("X-User", "userID9").when().get("/play/getResult").then().statusCode(400);
 
+        // chack all finished pour un user enregistré
+        given().header("X-User", "userID10").when().get("/play/checkAllFinish").then().statusCode(200).body(is("{\"fin\":"+true+"}"));
+
         // get le result de la partie
-        given().header("X-User", "userID10").when().get("/play/getResult").then().statusCode(200).body(is("14"));
-        given().header("X-User", "userID11").when().get("/play/getResult").then().statusCode(200).body(is("14"));
+        given().header("X-User", "userID10").when().get("/play/getResult").then().statusCode(200).body(is("{\"id\":"+14+"}"));
+        given().header("X-User", "userID11").when().get("/play/getResult").then().statusCode(200).body(is("{\"id\":"+14+"}"));
 
         // re get le résultat pour un joueur
         given().header("X-User", "userID10").when().get("/play/getResult").then().statusCode(400);
@@ -296,4 +308,24 @@ public class PlayResourceTest {
         AddLobby(token);
         AddUser(token, "userID12", "userID13", "userID14");
     }  
+
+    @Test
+    void GetUsersAndLobbies() {
+        String token = "KDUEHF";
+        AddLobby(token);
+        AddUser(token, "userID18", "userID19", "userID20");
+        given().when().get("play/users").then().statusCode(200);
+        given().when().get("play/lobbies").then().statusCode(200);
+    }
+
+    @Test
+    void AllDone() {
+        String token = "AJSZDF";
+        AddLobby(token);
+        AddUser(token, "userID21", "userID22", "userID23");
+        // chack all finished pour un user non enregistré
+        given().header("X-User", "sdfhrgtktuzjthghn").when().get("/play/checkAllFinish").then().statusCode(400);
+        // chack all finished pour un user enregistré (partie non finie)
+        given().header("X-User", "userID21").when().get("/play/checkAllFinish").then().statusCode(200).body(is("{\"fin\":"+false+"}"));
+    }
 }
