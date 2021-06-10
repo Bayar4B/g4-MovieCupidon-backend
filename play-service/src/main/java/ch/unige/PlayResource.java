@@ -30,8 +30,8 @@ public class PlayResource {
     @Path("users")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() {
-        List<UserInLobbyDB> UIL = UserInLobbyDB.listAll();
-        return Response.ok(UIL).build();
+        List<UserInLobbyDB> uil = UserInLobbyDB.listAll();
+        return Response.ok(uil).build();
     }
 
     @GET
@@ -129,14 +129,14 @@ public class PlayResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
         // Regarder si le sender est dans une partie
-        UserInLobbyDB UIL = UserInLobbyDB.getUser(userid);
-        if (UIL == null) {
+        UserInLobbyDB uil = UserInLobbyDB.getUser(userid);
+        if (uil == null) {
             var message = "Le_joueur_n'est_pas_dans_une_partie_!";
             return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
         }
         // Get les attributs du sender
-        String token = UIL.token;
-        ArrayList<Integer> votesID = UIL.votesID;
+        String token = uil.token;
+        ArrayList<Integer> votesID = uil.votesID;
 
         // Le joueur a déjà joué toutes ses cartes ?
         if (votesID.size() >= 20) {
@@ -155,7 +155,7 @@ public class PlayResource {
 
         // Add le score côté user
         votesID.add(movie_id);
-        UIL.votesID = votesID;
+        uil.votesID = votesID;
 
         // Add le score côté lobby
         int currentScore = L.sumScores.get(movie_id);
@@ -202,8 +202,8 @@ public class PlayResource {
         // Vérifier si le user est dans un lobby et get le token
         String token;
         try {
-            var UIL = UserInLobbyDB.getUser(userid);
-            token = UIL.token;
+            var uil = UserInLobbyDB.getUser(userid);
+            token = uil.token;
         } catch (Exception e) {
             var message = "La_requête_n'est_pas_valide_!";
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
