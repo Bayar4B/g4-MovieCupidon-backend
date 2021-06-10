@@ -17,40 +17,6 @@ public class UserInLobbyDB extends PanacheEntity{
 
     @Column(length = 1024)
     public ArrayList<Integer> votesID = new ArrayList<Integer>(); 
-    
-
-    public Integer getResult() {
-        return this.result;
-    }
-
-    public void setResult(Integer result) {
-        this.result = result;
-    }
-    
-
-    public String getToken() {
-        return this.token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getUserID() {
-        return this.userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    public ArrayList<Integer> getVotesID() {
-        return this.votesID;
-    }
-
-    public void setVotesID(ArrayList<Integer> votesID) {
-        this.votesID = votesID;
-    }
 
     public static UserInLobbyDB getUser(String userID) {
         return find("userID", userID).firstResult();

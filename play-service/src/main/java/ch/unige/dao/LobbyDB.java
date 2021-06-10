@@ -16,30 +16,6 @@ public class LobbyDB extends PanacheEntity{
     @Column(length = 1024)
     public ArrayList<Integer> numberVotes = new ArrayList<Integer>();
 
-    public String getToken() {
-        return this.token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public ArrayList<Integer> getSumScores() {
-        return this.sumScores;
-    }
-
-    public void setSumScores(ArrayList<Integer> sumScores) {
-        this.sumScores = sumScores;
-    }
-
-    public ArrayList<Integer> getNumberVotes() {
-        return this.numberVotes;
-    }
-
-    public void setNumberVotes(ArrayList<Integer> numberVotes) {
-        this.numberVotes = numberVotes;
-    }
-
     public static LobbyDB getLobby(String token) {
         return find("token", token).firstResult();
     }
@@ -48,8 +24,8 @@ public class LobbyDB extends PanacheEntity{
         LobbyDB L = getLobby(token);
         ArrayList<Float> resultList = new ArrayList<Float>();
         for (int i = 0; i < 20; i++){
-            if(L.getNumberVotes().get(i) != 0){
-                resultList.add((float) ((float) L.getSumScores().get(i)/ (float) L.getNumberVotes().get(i)));
+            if(L.numberVotes.get(i) != 0){
+                resultList.add((float) ((float) L.sumScores.get(i)/ (float) L.numberVotes.get(i)));
             }
             else {
                 resultList.add((float) 0);

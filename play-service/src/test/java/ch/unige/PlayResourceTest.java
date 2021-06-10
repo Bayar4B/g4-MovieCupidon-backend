@@ -82,26 +82,20 @@ public class PlayResourceTest {
         for (UserInLobbyDB user : UIL) {
             // Vérifier le token des users
             assertEquals("ABVDC8", user.token);
-            assertEquals("ABVDC8", user.getToken());
             // Vérifier que la liste les votes est vide
             assertTrue(user.votesID.isEmpty());
-            assertTrue(user.getVotesID().isEmpty());
             // Vérifier les userID
             if (user.id == 1) {
                 assertEquals("OwnerIDTest", user.userID);
-                assertEquals("OwnerIDTest", user.getUserID());
             }
             if (user.id == 2) {
                 assertEquals("JoinerIDTest1", user.userID);
-                assertEquals("JoinerIDTest1", user.getUserID());
             }
             if (user.id == 3) {
                 assertEquals("JoinerIDTest2", user.userID);
-                assertEquals("JoinerIDTest2", user.getUserID());
             }
             if (user.id == 4) {
                 assertEquals("JoinerIDTest3", user.userID);
-                assertEquals("JoinerIDTest3", user.getUserID());
             }
         }
         // Le lobby est déjà créé, vérifier que les joueurs y soient
@@ -109,23 +103,15 @@ public class PlayResourceTest {
         for (LobbyDB lobby : L) {
             // Vérifier le token des users
             assertEquals("ABVDC8", lobby.token);
-            assertEquals("ABVDC8", lobby.getToken());
             // Get les deux arrays du lobby
             ArrayList<Integer> nb_Votes = lobby.numberVotes;
             ArrayList<Integer> sum_Scores = lobby.sumScores;
-            ArrayList<Integer> nb_Votes_get = lobby.getNumberVotes();
-            ArrayList<Integer> sum_Scores_get = lobby.getSumScores();
-            assertEquals(nb_Votes, nb_Votes_get);
-            assertEquals(sum_Scores, sum_Scores_get);
             // Vérifier la tailles des array (20)
             assertEquals(20, nb_Votes.size());
-            assertEquals(20, nb_Votes_get.size());
             assertEquals(20, sum_Scores.size());
-            assertEquals(20, sum_Scores_get.size());
             // Vérifier que tout soit initialisé à 0
             for (int i = 0; i < 20; i++) {
                 assertEquals(0, nb_Votes.get(i));
-                assertEquals(0, nb_Votes_get.get(i));
             }
         }
         // get une game déjà démarrée avec un id valide
@@ -134,7 +120,6 @@ public class PlayResourceTest {
         // get une game déjà démarrée avec un id non valide
         given().header("X-User", "OwnerIDIDTest").when().get("/play/gameStarted").then().statusCode(404);
         given().header("X-User", "JoinerIDIDTest2").when().get("/play/gameStarted").then().statusCode(404);
-
         given().header("X-User", "OwnerIDTest").when().post("/play/send/15/33").then().statusCode(200);
     }
 
@@ -216,6 +201,13 @@ public class PlayResourceTest {
         given().header("X-User", "userID7").when().delete("/play/quit").then().statusCode(204);
         // remove un user non enregistré
         given().header("X-User", "sfuzhgfr54f").when().delete("/play/quit").then().statusCode(204);
+        // tous les joueurs quittent le lobby
+        given().header("X-User", "userID6").when().delete("/play/quit").then().statusCode(200);
+        given().header("X-User", "userID8").when().delete("/play/quit").then().statusCode(200);
+        // Le lobby est supprimé à présent donc on devrait pourvoir le recréer sans erreur
+        AddLobby(token);
+        AddUser(token, "userID15", "userID16", "userID17");
+
     }
     
     @Test
