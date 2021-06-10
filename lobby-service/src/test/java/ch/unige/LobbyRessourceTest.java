@@ -386,4 +386,27 @@ public class LobbyRessourceTest extends TestCase{
 				.statusCode(404);
 	}
 	
+	@Test
+	public void getTokenTest() {
+		UserTable Owner = userDB.add_user("OwnerID_getToken", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    
+	    given().header("X-User", Owner.getUserID())
+		.when().get("/lobby/getToken")
+		.then()
+			.statusCode(200)
+			.body(is("{\"token\": \""+lobby.getToken()+"\"}"));
+	}
+	
+	@Test
+	public void getToken_RandomID() {
+		given().header("X-User", "ABCDEF")
+			.when().get("/lobby/getToken")
+			.then()
+				.statusCode(404);
+	}
+	
 }
