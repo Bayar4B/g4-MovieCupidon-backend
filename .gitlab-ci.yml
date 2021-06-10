@@ -12,8 +12,9 @@ build:
     MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
   cache:
     key: maven
-    paths: 
-      - .repository/
+    paths: [.repository/]
+  artifacts:
+    paths:
       - lobby-service/target/
       - sample-service/target/
       - chat-service/target/
@@ -22,7 +23,6 @@ build:
 coverage:
   stage: report
   script:
-    - mvn install
     - mvn verify sonar:sonar -Dsonar.projectKey=Bayar4B_g4-MovieCupidon-backend -Dsonar.organization=bayar4b -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=fbb37c529d7dfeb48d1f6a0111d994e3e2edd593
     
   artifacts:
