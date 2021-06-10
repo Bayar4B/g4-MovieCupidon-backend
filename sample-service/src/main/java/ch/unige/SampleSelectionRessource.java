@@ -43,7 +43,7 @@ public class SampleSelectionRessource {
 
         int sizeGenreList = config.getGenreList().length;
         if (sizeGenreList > 3 || sizeGenreList < 1){
-            String message = "Please choose between 1 and 3 genres.";
+            var message = "Please choose between 1 and 3 genres.";
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
 
@@ -128,7 +128,7 @@ public class SampleSelectionRessource {
             i++;
         }
 
-        for (int j = 0; j < sample.size(); j++) {
+        for (var j = 0; j < sample.size(); j++) {
             sample.get(j).setId(j);
             String finalPosterPath = "https://image.tmdb.org/t/p/original" + sample.get(j).getPosterPath();
             sample.get(j).setPosterPath(finalPosterPath);
