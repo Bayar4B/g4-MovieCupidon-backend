@@ -80,6 +80,7 @@ public class LobbyRessource {
     			.type(MediaType.TEXT_PLAIN)
     			.build();
     }
+
     
     @GET
     @Path("/helloworld")
@@ -335,6 +336,29 @@ public class LobbyRessource {
 
     	
     	String message = userLobbyDB.getAllUserInALobbyUsername_toString(token);
+    	
+    	return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
+    }
+    
+    @GET
+    @Path("getToken")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getToken(@Context HttpHeaders headers) {
+    	
+    	String userId = headers.getHeaderString("X-User");
+    	
+    	if(!userLobbyDB.isUserInALobby(userId)) {
+    		String message = "This User isn't in any lobby";
+        	
+        	return Response.status(Response.Status.NOT_FOUND)
+        			.entity(message)
+        			.build();
+    	}
+    	
+    	String message = "{\"token\": \""+userLobbyDB.getTokenFromUserID(userId)+"\"}";
     	
     	return Response.status(Response.Status.OK)
     			.entity(message)
