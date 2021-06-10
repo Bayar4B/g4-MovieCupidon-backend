@@ -18,23 +18,22 @@ import java.util.*;
 @Path("/sample-selection")
 public class SampleSelectionRessource {
 
-    private String apiKey = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
-    private TmdbApi tmdbApi = new TmdbApi(apiKey);
+    private final static String apiKey = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
+    private final static TmdbApi tmdbApi = new TmdbApi(apiKey);
 
-    private TmdbGenre tmdbGenre = tmdbApi.getGenre();
+    private final static TmdbGenre tmdbGenre = tmdbApi.getGenre();
 
-    private Map<String, Integer> genreHashMap = generateGenreHashMap();
+    private final static Map<String, Integer> genreHashMap = generateGenreHashMap();
 
     private int sizeSample = 20;
 
-    private Map<String, Integer> generateGenreHashMap(){
+    private static Map<String, Integer> generateGenreHashMap(){
         Map<String, Integer> res = new HashMap<>();
         for (Genre g : tmdbGenre.getGenreList("en")){
             res.put(g.getName().toLowerCase(Locale.ROOT), g.getId());
         }
         return res;
     }
-
 
     @POST
     @Path("/get-sample")
@@ -44,7 +43,8 @@ public class SampleSelectionRessource {
 
         int sizeGenreList = config.getGenreList().length;
         if (sizeGenreList > 3 || sizeGenreList < 1){
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            String message = "Please choose between 1 and 3 genres.";
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
 
         int[] genreIdList = new int[sizeGenreList];
@@ -56,7 +56,10 @@ public class SampleSelectionRessource {
                 i++;
             }
             else{
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                String message = "The chosen gender " + genreParam +
+                        " does not exist. Please select a valid genre from : "
+                        + genreHashMap.keySet();
+                return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
             }
         }
 
@@ -138,9 +141,14 @@ public class SampleSelectionRessource {
     @Path("/helloworld")
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {
-
         return "This is sample selection service";
     }
+
+
+    public void changeSizeSample(int newSize){
+        this.sizeSample = newSize;
+    }
+
 
 
 

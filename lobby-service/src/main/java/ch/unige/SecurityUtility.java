@@ -92,27 +92,4 @@ public class SecurityUtility {
     }
 
 
-    public static void main(String[] args) {
-        String message = "{\n" +
-                "token: AAAAAA\n" +
-                "ownerID : oauth\n" +
-                "joinList : [oauthJ1, oauthJ2 ...]\n" +
-                "}";
-
-        String encryptMess = SecurityUtility.encrypt(message);
-        String decrypted = "";
-        try {
-            decrypted = SecurityUtility.decrypt(encryptMess);
-        }
-        catch (Exception e){
-            System.out.println("Il y a eu une erreur");
-        }
-
-        System.out.println(encryptMess);
-        System.out.println(decrypted);
-        System.out.println(message.equals(decrypted));
-
-
-    }
-
 }

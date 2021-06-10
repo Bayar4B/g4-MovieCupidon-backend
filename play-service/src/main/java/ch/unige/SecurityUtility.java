@@ -60,5 +60,4 @@ public class SecurityUtility {
         return decrypted;
     }
 
-    public static void main(String[] args) {}
 }
