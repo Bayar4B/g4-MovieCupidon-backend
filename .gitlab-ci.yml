@@ -23,8 +23,8 @@ build:
 coverage:
   stage: report
   script:
-    - mvn clean install
-    - mvn clean verify sonar:sonar -Dsonar.projectKey=Bayar4B_g4-MovieCupidon-backend -Dsonar.organization=bayar4b -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=fbb37c529d7dfeb48d1f6a0111d994e3e2edd593
+    - mvn install
+    - mvn verify sonar:sonar -Dsonar.projectKey=Bayar4B_g4-MovieCupidon-backend -Dsonar.organization=bayar4b -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=fbb37c529d7dfeb48d1f6a0111d994e3e2edd593
     
   artifacts:
     paths:
