@@ -12,9 +12,8 @@ build:
     MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.repository/"
   cache:
     key: maven
-    paths: [.repository/]
-  artifacts:
-    paths:
+    paths: 
+      - .repository/
       - lobby-service/target/
       - sample-service/target/
       - chat-service/target/
