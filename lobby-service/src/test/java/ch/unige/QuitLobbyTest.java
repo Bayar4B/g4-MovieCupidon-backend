@@ -54,6 +54,20 @@ public class QuitLobbyTest extends TestCase{
     }
     
     @Test
+    public void quitLobby_lastUserTest() {
+    	UserTable Owner = userDB.add_user("OwnerID_quitGame", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+
+	    given().header("X-User", Owner.getUserID())
+		.when().delete("/lobby/quit")
+		.then()
+			.statusCode(200);
+    }
+    
+    @Test
     public void quitLobby_UserIsNotInALobby_Test() {
         given().header("X-User", "RandomID")
 			.when().delete("/lobby/quit")
