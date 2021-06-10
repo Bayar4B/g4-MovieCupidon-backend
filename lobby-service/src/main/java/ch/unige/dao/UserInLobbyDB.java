@@ -124,7 +124,7 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 	@Override
 	public String getAllUserInALobbyToString(String token) {
 		int length = find("token", token).list().size();
-		StringBuilder msg = new StringBuilder();
+		var msg = new StringBuilder();
 		msg.append("{\n"
 				+ "\"token\": \""+token+"\",\n"
 				+ "\"listPlayer\": [");
@@ -135,14 +135,13 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 			}
 		}
 		msg = msg.append("]\n}");
-		String msg_final = msg.toString();
-		return msg_final;
+		return msg.toString();
 	}
 	
 	@Override
 	public String getAllUserInALobbyUsernameToString(String token) {
 		int length = find("token", token).list().size();
-		StringBuilder msg = new StringBuilder();
+		var msg = new StringBuilder();
 
 		msg.append("{\n"
 				+ "\"listPlayer\": [");
@@ -156,8 +155,7 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 			}
 		}
 		msg = msg.append("]\n}");
-		String msg_final = msg.toString();
-		return msg_final;
+		return msg.toString();
 	}
 	
 	@Override

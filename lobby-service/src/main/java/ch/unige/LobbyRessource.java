@@ -137,20 +137,17 @@ public class LobbyRessource {
     	String token = userLobbyDB.getTokenFromUserID(userID);
           
     	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
-    		if(lobbyDB.removeLobby(token)) {
-    			message += "Lobby deleted ";
-    		}else {
-    			message = "Lobby didn't deleted";
-                return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-    		}
+    		lobbyDB.removeLobby(token);
+    		message += "Lobby deleted ";
+    		
     	}
-        if(!(userLobbyDB.removeUserFromLobby(token, userID) && userDB.removeUser(userID))){
-            message = "User or Lobby not found";
-            return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-        }else {
-        	 message += "User removed end deleted";
-             return Response.status(Response.Status.OK).entity(message).build();
-        }
+        userLobbyDB.removeUserFromLobby(token, userID);
+        userDB.removeUser(userID);
+        message += "User removed end deleted";
+        return Response.status(Response.Status.OK)
+        		.entity(message)
+        		.build();
+        
     }
     
     @GET
@@ -373,23 +370,12 @@ public class LobbyRessource {
     			.type(MediaType.APPLICATION_JSON)
     			.build();
     }
-
-    
   
     @GET
     @Path("/seeDB")
     @Produces(MediaType.TEXT_PLAIN)
     public List<LobbyTable> seeDatabaseFull(){
         return lobbyDB.getFullDB();
-    }
-    
-    /*TODO: This is for dev purposes only: */
-    
-    @GET
-    @Path("/seeUserInLobbyDB")
-    public String seeUserInLobbyDB() {
-        return String.valueOf(userLobbyDB);
-    }
-    
+    }    
 }
 
