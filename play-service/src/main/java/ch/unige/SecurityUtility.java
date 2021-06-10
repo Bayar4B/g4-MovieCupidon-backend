@@ -15,6 +15,10 @@ import java.security.MessageDigest;
 
 public class SecurityUtility {
 
+    private SecurityUtility(){
+        // Added a private constructor to hide the implicit public one
+    }
+
     private static final String SECRET_KEY = ConfigProvider.getConfig().getValue("security.aes.key", String.class);
     private static final String SALT = ConfigProvider.getConfig().getValue("security.aes.salt", String.class);
     private static final byte[] iv = ConfigProvider.getConfig().getValue("security.aes.iv", byte[].class);
