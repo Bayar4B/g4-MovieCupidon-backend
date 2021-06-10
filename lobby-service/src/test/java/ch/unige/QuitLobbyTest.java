@@ -54,7 +54,7 @@ public class QuitLobbyTest extends TestCase{
     }
     
     @Test
-    public void quitLobby_lastUserTest() {
+    void quitLobby_lastUserTest() {
     	UserTable Owner = userDB.add_user("OwnerID_quitGame", "OwnerUsername");
 		
 	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
