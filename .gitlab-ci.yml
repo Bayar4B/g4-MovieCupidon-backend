@@ -23,7 +23,7 @@ build:
 coverage:
   cache:
     key: maven
-  dependecies: 
+  dependencies: 
     - build
   stage: report
   script:
