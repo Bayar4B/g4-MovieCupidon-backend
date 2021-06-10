@@ -42,17 +42,6 @@ public class SecurityUtility {
         return toReturn;
     }
 
-    private static String cutString(String stringToCut) throws Exception {
-        String[] splitted = stringToCut.split("}");
-        splitted[0] += "}";
-        if (splitted[1].equals(getSHA256(splitted[0]))){
-            return splitted[0];
-        }
-        else{
-            throw new Exception("Message and SHA Different");
-        }
-    }
-
 
     public static String encrypt(String strToEncrypt) {
         try {
