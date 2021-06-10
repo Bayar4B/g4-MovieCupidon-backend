@@ -72,7 +72,7 @@ public class LobbyRessource {
         lobbyDB.addLobbyPref(token, config);
     	lobbyDB.setInLobbyStatus(token, false);
         
-    	String msgInit = userLobbyDB.getAllUserInALobbyToString(token);
+    	var msgInit = userLobbyDB.getAllUserInALobbyToString(token);
     	String msgEncrypt = SecurityUtility.encrypt(msgInit);
     	  
     	return Response.status(Response.Status.OK)
@@ -122,7 +122,7 @@ public class LobbyRessource {
     @Path("/quit")
     @Produces(MediaType.TEXT_PLAIN)
     public Response UserQuitLobby(@Context HttpHeaders headers) {
-        String message;
+    	var message = "";
 
     	String userID = headers.getHeaderString("X-User");
     	
@@ -135,12 +135,20 @@ public class LobbyRessource {
     	}
     		
     	String token = userLobbyDB.getTokenFromUserID(userID);
-           
+          
+    	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
+    		if(lobbyDB.removeLobby(token)) {
+    			message += "Lobby deleted ";
+    		}else {
+    			message = "Lobby didn't deleted";
+                return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+    		}
+    	}
         if(!(userLobbyDB.removeUserFromLobby(token, userID) && userDB.removeUser(userID))){
             message = "User or Lobby not found";
             return Response.status(Response.Status.NOT_FOUND).entity(message).build();
         }else {
-        	 message = "User removed end deleted";
+        	 message += "User removed end deleted";
              return Response.status(Response.Status.OK).entity(message).build();
         }
     }

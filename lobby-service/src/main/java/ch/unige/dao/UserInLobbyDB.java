@@ -124,35 +124,40 @@ public class UserInLobbyDB implements UserInLobbyDBInterface,PanacheRepository<U
 	@Override
 	public String getAllUserInALobbyToString(String token) {
 		int length = find("token", token).list().size();
-		String msg = "{\n"
+		StringBuilder msg = new StringBuilder();
+		msg.append("{\n"
 				+ "\"token\": \""+token+"\",\n"
-				+ "\"listPlayer\": [";
+				+ "\"listPlayer\": [");
 		for(int i = 0; i<length;i++) {
-			msg = msg+"\""+find("token", token).list().get(i).getUserID()+"\"";
+			msg.append("\""+find("token", token).list().get(i).getUserID()+"\"");
 			if(i != length-1) {
-					msg = msg + ", ";
+					msg.append(", ");
 			}
 		}
-		msg = msg + "]\n}";
-		return msg;
+		msg = msg.append("]\n}");
+		String msg_final = msg.toString();
+		return msg_final;
 	}
 	
 	@Override
 	public String getAllUserInALobbyUsernameToString(String token) {
 		int length = find("token", token).list().size();
-		String msg = "{\n"
-				+ "\"listPlayer\": [";
-		for(int i = 0; i<length;i++) {
+		StringBuilder msg = new StringBuilder();
+
+		msg.append("{\n"
+				+ "\"listPlayer\": [");
+		for(var i = 0; i<length;i++) {
 			
 			String userID = find("token", token).list().get(i).getUserID();
 			
-			msg = msg+"\""+userDB.find("userID", userID).firstResult().getUsername()+"\"";
+			msg.append("\""+userDB.find("userID", userID).firstResult().getUsername()+"\"");
 			if(i != length-1) {
-					msg = msg + ", ";
+					msg = msg.append(", ");
 			}
 		}
-		msg = msg + "]\n}";
-		return msg;
+		msg = msg.append("]\n}");
+		String msg_final = msg.toString();
+		return msg_final;
 	}
 	
 	@Override
