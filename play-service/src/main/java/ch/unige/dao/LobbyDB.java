@@ -25,7 +25,7 @@ public class LobbyDB extends PanacheEntity{
         ArrayList<Float> resultList = new ArrayList<Float>();
         for (int i = 0; i < 20; i++){
             if(L.numberVotes.get(i) != 0){
-                resultList.add((float) ((float) L.sumScores.get(i)/ (float) L.numberVotes.get(i)));
+                resultList.add((float) L.sumScores.get(i)/L.numberVotes.get(i));
             }
             else {
                 resultList.add((float) 0);

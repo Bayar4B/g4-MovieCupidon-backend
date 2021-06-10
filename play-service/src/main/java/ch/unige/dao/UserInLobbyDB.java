@@ -15,6 +15,8 @@ public class UserInLobbyDB extends PanacheEntity{
     public String userID;
     public Integer result = -1;
 
+    static final String tk = "token";
+
     @Column(length = 1024)
     public ArrayList<Integer> votesID = new ArrayList<Integer>(); 
 
@@ -23,11 +25,11 @@ public class UserInLobbyDB extends PanacheEntity{
     }
 
     public static UserInLobbyDB getUserFromToken(String token) {
-        return find("token", token).firstResult();
+        return find(tk, token).firstResult();
     }
     
     public static boolean getStatus(String token) {
-        List<UserInLobbyDB> users = UserInLobbyDB.list("token", token);
+        List<UserInLobbyDB> users = UserInLobbyDB.list(tk, token);
         for(UserInLobbyDB user : users) {
             if(user.votesID.size() != 20) {
                 return false;
@@ -36,15 +38,15 @@ public class UserInLobbyDB extends PanacheEntity{
         return true;
     }
 
-    public static void writeResultToDB(Integer movie_winner_id, String token) {
-        List<UserInLobbyDB> users = UserInLobbyDB.list("token", token);
+    public static void writeResultToDB(Integer movieWinnerID, String token) {
+        List<UserInLobbyDB> users = find(tk, token).list();
         for(UserInLobbyDB user : users) {
-            user.result = movie_winner_id;
+            user.result = movieWinnerID;
         }
     }
 
     public static void deleteUsers(String token) {
-        UserInLobbyDB.delete("token", token);
+        UserInLobbyDB.delete(tk, token);
     }
 
     public static void deleteUser(String userID) {
