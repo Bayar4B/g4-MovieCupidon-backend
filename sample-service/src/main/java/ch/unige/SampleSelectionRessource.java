@@ -18,18 +18,18 @@ import java.util.*;
 @Path("/sample-selection")
 public class SampleSelectionRessource {
 
-    private final static String apiKey = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
-    private final static TmdbApi tmdbApi = new TmdbApi(apiKey);
+    private final static String API_KEY = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
+    private final static TmdbApi TMDB_API = new TmdbApi(API_KEY);
 
-    private final static TmdbGenre tmdbGenre = tmdbApi.getGenre();
+    private final static TmdbGenre TMDB_GENRE = TMDB_API.getGenre();
 
-    private final static Map<String, Integer> genreHashMap = generateGenreHashMap();
+    private final static Map<String, Integer> GENRE_HASH_MAP = generateGenreHashMap();
 
     private int sizeSample = 20;
 
     private static Map<String, Integer> generateGenreHashMap(){
         Map<String, Integer> res = new HashMap<>();
-        for (Genre g : tmdbGenre.getGenreList("en")){
+        for (Genre g : TMDB_GENRE.getGenreList("en")){
             res.put(g.getName().toLowerCase(Locale.ROOT), g.getId());
         }
         return res;
@@ -51,14 +51,14 @@ public class SampleSelectionRessource {
 
         int i = 0;
         for (String genreParam : config.getGenreList()){
-            if (genreHashMap.get(genreParam.toLowerCase(Locale.ROOT)) != null){
-                genreIdList[i] = genreHashMap.get(genreParam.toLowerCase(Locale.ROOT));
+            if (GENRE_HASH_MAP.get(genreParam.toLowerCase(Locale.ROOT)) != null){
+                genreIdList[i] = GENRE_HASH_MAP.get(genreParam.toLowerCase(Locale.ROOT));
                 i++;
             }
             else{
                 String message = "The chosen gender " + genreParam +
                         " does not exist. Please select a valid genre from : "
-                        + genreHashMap.keySet();
+                        + GENRE_HASH_MAP.keySet();
                 return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
             }
         }
@@ -76,7 +76,7 @@ public class SampleSelectionRessource {
         }
 
         ArrayList<MovieDb> sample = new ArrayList<>();
-        TmdbDiscover disco = tmdbApi.getDiscover();
+        TmdbDiscover disco = TMDB_API.getDiscover();
         i = 0;
         for (int genreID: genreIdList){
             String genreIDStr = Integer.toString(genreID);
