@@ -8,8 +8,8 @@ import javax.persistence.Entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
-public class LobbyDB extends PanacheEntity{
-    
+public class LobbyDB extends PanacheEntity {
+
     public String token;
     @Column(length = 1024)
     public ArrayList<Integer> sumScores = new ArrayList<Integer>();
@@ -23,13 +23,8 @@ public class LobbyDB extends PanacheEntity{
     public static int getMovieWinner(String token) {
         LobbyDB L = getLobby(token);
         ArrayList<Float> resultList = new ArrayList<Float>();
-        for (int i = 0; i < 20; i++){
-            if(L.numberVotes.get(i) != 0){
-                resultList.add((float) L.sumScores.get(i)/L.numberVotes.get(i));
-            }
-            else {
-                resultList.add((float) 0);
-            }
+        for (int i = 0; i < 20; i++) {
+            resultList.add((float) L.sumScores.get(i) / L.numberVotes.get(i));
         }
         return calcMax(resultList);
     }
@@ -39,7 +34,7 @@ public class LobbyDB extends PanacheEntity{
         float max = 0;
         int maxIndex = 0;
         for (int i = 0; i < 20; i++) {
-            if(resultList.get(i) > max) {
+            if (resultList.get(i) > max) {
                 max = resultList.get(i);
                 maxIndex = i;
             }

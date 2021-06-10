@@ -295,11 +295,11 @@ public class PlayResourceTest {
         given().header("X-User", "userID9").when().get("/play/getResult").then().statusCode(400);
 
         // chack all finished pour un user enregistré
-        given().header("X-User", "userID10").when().get("/play/checkAllFinish").then().statusCode(200).body(is("{\"isOwner\":"+true+"}"));
+        given().header("X-User", "userID10").when().get("/play/checkAllFinish").then().statusCode(200).body(is("{\"fin\":"+true+"}"));
 
         // get le result de la partie
-        given().header("X-User", "userID10").when().get("/play/getResult").then().statusCode(200).body(is("14"));
-        given().header("X-User", "userID11").when().get("/play/getResult").then().statusCode(200).body(is("14"));
+        given().header("X-User", "userID10").when().get("/play/getResult").then().statusCode(200).body(is("{\"id\":"+14+"}"));
+        given().header("X-User", "userID11").when().get("/play/getResult").then().statusCode(200).body(is("{\"id\":"+14+"}"));
 
         // re get le résultat pour un joueur
         given().header("X-User", "userID10").when().get("/play/getResult").then().statusCode(400);
@@ -326,6 +326,6 @@ public class PlayResourceTest {
         // chack all finished pour un user non enregistré
         given().header("X-User", "sdfhrgtktuzjthghn").when().get("/play/checkAllFinish").then().statusCode(400);
         // chack all finished pour un user enregistré (partie non finie)
-        given().header("X-User", "userID21").when().get("/play/checkAllFinish").then().statusCode(200).body(is("{\"isOwner\":"+false+"}"));
+        given().header("X-User", "userID21").when().get("/play/checkAllFinish").then().statusCode(200).body(is("{\"fin\":"+false+"}"));
     }
 }
