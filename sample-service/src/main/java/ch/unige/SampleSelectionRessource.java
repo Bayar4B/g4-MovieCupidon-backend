@@ -18,12 +18,12 @@ import java.util.*;
 @Path("/sample-selection")
 public class SampleSelectionRessource {
 
-    private final static String API_KEY = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
-    private final static TmdbApi TMDB_API = new TmdbApi(API_KEY);
+    private static final String API_KEY = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
+    private static final TmdbApi TMDB_API = new TmdbApi(API_KEY);
 
-    private final static TmdbGenre TMDB_GENRE = TMDB_API.getGenre();
+    private static final TmdbGenre TMDB_GENRE = TMDB_API.getGenre();
 
-    private final static Map<String, Integer> GENRE_HASH_MAP = generateGenreHashMap();
+    private static final Map<String, Integer> GENRE_HASH_MAP = generateGenreHashMap();
 
     private int sizeSample = 20;
 
