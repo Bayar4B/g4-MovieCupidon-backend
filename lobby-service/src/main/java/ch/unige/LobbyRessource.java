@@ -72,7 +72,7 @@ public class LobbyRessource {
         lobbyDB.addLobbyPref(token, config);
     	lobbyDB.setInLobbyStatus(token, false);
         
-    	String msgInit = userLobbyDB.getAllUserInALobby_toString(token);
+    	String msgInit = userLobbyDB.getAllUserInALobbyToString(token);
     	String msgEncrypt = SecurityUtility.encrypt(msgInit);
     	  
     	return Response.status(Response.Status.OK)
@@ -299,7 +299,7 @@ public class LobbyRessource {
 
     	String token = userLobbyDB.getTokenFromUserID(userId);
     	    	    
-    	String message = "";
+    	var message = "";
     	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
     		if(lobbyDB.removeLobby(token)) {
     			message += "Lobby deleted ";
@@ -322,10 +322,10 @@ public class LobbyRessource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response seeUserInLobby(@Context HttpHeaders headers) {
     	
-    	String userId = headers.getHeaderString("X-User");
+    	var userId = headers.getHeaderString("X-User");
     	
     	if(!userLobbyDB.isUserInALobby(userId)) {
-    		String message = "This User isn't in any lobby";
+    		var message = "This User isn't in any lobby";
         	
         	return Response.status(Response.Status.NOT_FOUND)
         			.entity(message)
@@ -335,7 +335,7 @@ public class LobbyRessource {
     	String token = userLobbyDB.getTokenFromUserID(userId);
 
     	
-    	String message = userLobbyDB.getAllUserInALobbyUsername_toString(token);
+    	var message = userLobbyDB.getAllUserInALobbyUsernameToString(token);
     	
     	return Response.status(Response.Status.OK)
     			.entity(message)
@@ -348,10 +348,10 @@ public class LobbyRessource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getToken(@Context HttpHeaders headers) {
     	
-    	String userId = headers.getHeaderString("X-User");
+    	var userId = headers.getHeaderString("X-User");
     	
     	if(!userLobbyDB.isUserInALobby(userId)) {
-    		String message = "This User isn't in any lobby";
+    		var message = "This User isn't in any lobby";
         	
         	return Response.status(Response.Status.NOT_FOUND)
         			.entity(message)

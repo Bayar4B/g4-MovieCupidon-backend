@@ -24,7 +24,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.core.MediaType;
 
 @QuarkusTest
-public class LobbyRessourceTest extends TestCase{
+class LobbyRessourceTest extends TestCase{
 	
 	@Inject
     private UserDB userDB;
@@ -356,7 +356,7 @@ public class LobbyRessourceTest extends TestCase{
 	}
 	
 	@Test
-	public void seeUserInLobbyTest() {
+	void seeUserInLobbyTest() {
 		UserTable Owner = userDB.add_user("OwnerID_seeUserInLobby", "OwnerUsername");
 		
 	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
@@ -379,7 +379,7 @@ public class LobbyRessourceTest extends TestCase{
 	}
 	
 	@Test
-	public void seeUserInLobby_unknownTest() {
+	void seeUserInLobby_unknownTest() {
 		given().header("X-User", "ABCDEF")
 			.when().get("/lobby/seeUserInLobby")
 			.then()
@@ -387,7 +387,7 @@ public class LobbyRessourceTest extends TestCase{
 	}
 	
 	@Test
-	public void getTokenTest() {
+	void getTokenTest() {
 		UserTable Owner = userDB.add_user("OwnerID_getToken", "OwnerUsername");
 		
 	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
@@ -402,7 +402,7 @@ public class LobbyRessourceTest extends TestCase{
 	}
 	
 	@Test
-	public void getToken_RandomID() {
+	void getToken_RandomID() {
 		given().header("X-User", "ABCDEF")
 			.when().get("/lobby/getToken")
 			.then()

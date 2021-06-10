@@ -4,8 +4,6 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.inject.Inject;
-import javax.resource.spi.ConfigProperty;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 
