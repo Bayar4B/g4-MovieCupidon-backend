@@ -117,7 +117,7 @@ public class PlayResource {
     public Response GameScore(@PathParam("MOVIEID") int movie_id, @PathParam("SCORE") int score,
             @Context HttpHeaders headers) {
 
-        String userid = headers.getHeaderString("X-User");
+        var userid = headers.getHeaderString("X-User");
         // movie_id valide ?
         if (movie_id < 0 || movie_id > 19 || movie_id != (int) movie_id) {
             var message = "Le_id_du_film_n'est_pas_valide !";
@@ -172,19 +172,19 @@ public class PlayResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response UserQuitLobby(@Context HttpHeaders headers) {
 
-        String userID = headers.getHeaderString("X-User");
+        var userID = headers.getHeaderString("X-User");
 
         // Regarder si le joueur est dans une partie
-        var UIL = UserInLobbyDB.getUser(userID);
-        if (UIL == null) {
+        var uil = UserInLobbyDB.getUser(userID);
+        if (uil == null) {
             var message = "Le_joueur_n'est_pas_dans_une_partie_!";
             return Response.status(Response.Status.NO_CONTENT).entity(message).build();
         }
         UserInLobbyDB.deleteUser(userID);
         var message = "Joueur_retiré_de_la_partie";
         // vérifier si il y a toujours qqn dans le lobby sinon delete lobby
-        String token = UIL.token;
-        UserInLobbyDB user = UserInLobbyDB.getUserFromToken(token);
+        String token = uil.token;
+        var user = UserInLobbyDB.getUserFromToken(token);
         if (user == null) {
             LobbyDB.deleteLobby(token);
         }
@@ -197,7 +197,7 @@ public class PlayResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResult(@Context HttpHeaders headers) {
 
-        String userid = headers.getHeaderString("X-User");
+        var userid = headers.getHeaderString("X-User");
 
         // Vérifier si le user est dans un lobby et get le token
         String token;
@@ -210,15 +210,15 @@ public class PlayResource {
         }
 
         if (UserInLobbyDB.getStatus(token)) {
-            var UIL = UserInLobbyDB.getUser(userid);
+            var uil = UserInLobbyDB.getUser(userid);
             int movieWinnerID;
-            if (UIL.result == -1) {
+            if (uil.result == -1) {
                 // get result
                 movieWinnerID = LobbyDB.getMovieWinner(token);
                 // write results to all users
                 UserInLobbyDB.writeResultToDB(movieWinnerID, token);
             } else {
-                movieWinnerID = UIL.result;
+                movieWinnerID = uil.result;
             }
             // delete le user
             UserInLobbyDB.deleteUser(userid);
@@ -228,7 +228,8 @@ public class PlayResource {
                 LobbyDB.deleteLobby(token);
             }
             // return result
-            return Response.status(Response.Status.OK).entity(movieWinnerID).build();
+            String message = "{\"id\":" + movieWinnerID + "}";
+            return Response.status(Response.Status.OK).entity(message).type(MediaType.APPLICATION_JSON).build();
         } else {
             var message = "La_partie_n'est_pas_terminée";
             return Response.status(Response.Status.NO_CONTENT).entity(message).build();
@@ -239,20 +240,20 @@ public class PlayResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/checkAllFinish")
 
-    public Response GameDone(@Context HttpHeaders headers) {
-        String userid = headers.getHeaderString("X-User");
+    public Response gameDone(@Context HttpHeaders headers) {
+        var userid = headers.getHeaderString("X-User");
 
         // Vérifier si le user est dans un lobby et get le token
         String token;
         try {
-            var UIL = UserInLobbyDB.getUser(userid);
-            token = UIL.token;
+            var uil = UserInLobbyDB.getUser(userid);
+            token = uil.token;
         } catch (Exception e) {
             var message = "La_requête_n'est_pas_valide_!";
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
         boolean status = UserInLobbyDB.getStatus(token);
-        String message = "{\"isOwner\":"+status+"}";
+        String message = "{\"fin\":" + status + "}";
         return Response.status(Response.Status.OK).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 }
