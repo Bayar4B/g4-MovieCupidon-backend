@@ -2,40 +2,19 @@ package ch.unige.dao;
 
 import java.util.ArrayList;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
-public class LobbyDB extends PanacheEntity{
-    
+public class LobbyDB extends PanacheEntity {
+
     public String token;
+    @Column(length = 1024)
     public ArrayList<Integer> sumScores = new ArrayList<Integer>();
+    @Column(length = 1024)
     public ArrayList<Integer> numberVotes = new ArrayList<Integer>();
-
-    public String getToken() {
-        return this.token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public ArrayList<Integer> getSumScores() {
-        return this.sumScores;
-    }
-
-    public void setSumScores(ArrayList<Integer> sumScores) {
-        this.sumScores = sumScores;
-    }
-
-    public ArrayList<Integer> getNumberVotes() {
-        return this.numberVotes;
-    }
-
-    public void setNumberVotes(ArrayList<Integer> numberVotes) {
-        this.numberVotes = numberVotes;
-    }
 
     public static LobbyDB getLobby(String token) {
         return find("token", token).firstResult();
@@ -44,13 +23,8 @@ public class LobbyDB extends PanacheEntity{
     public static int getMovieWinner(String token) {
         LobbyDB L = getLobby(token);
         ArrayList<Float> resultList = new ArrayList<Float>();
-        for (int i = 0; i < 20; i++){
-            if(L.getNumberVotes().get(i) != 0){
-                resultList.add((float) ((float) L.getSumScores().get(i)/ (float) L.getNumberVotes().get(i)));
-            }
-            else {
-                resultList.add((float) 0);
-            }
+        for (int i = 0; i < 20; i++) {
+            resultList.add((float) L.sumScores.get(i) / L.numberVotes.get(i));
         }
         return calcMax(resultList);
     }
@@ -60,7 +34,7 @@ public class LobbyDB extends PanacheEntity{
         float max = 0;
         int maxIndex = 0;
         for (int i = 0; i < 20; i++) {
-            if(resultList.get(i) > max) {
+            if (resultList.get(i) > max) {
                 max = resultList.get(i);
                 maxIndex = i;
             }

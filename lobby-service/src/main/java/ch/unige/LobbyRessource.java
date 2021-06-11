@@ -33,18 +33,11 @@ public class LobbyRessource {
     public Integer countlobbys(){
     	return lobbyDB.getlobbyDB_size();
     }
-    @GET
-    @Path("{TOKEN}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response Lobby(@PathParam("TOKEN") String token){
-        // Here we are in the lobby
-        return Response.ok().build();
-    }
 
     @POST
     @Transactional
     @Path("/start")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response startGame(LobbyConfig config, @Context HttpHeaders headers) {
 
@@ -79,20 +72,15 @@ public class LobbyRessource {
         lobbyDB.addLobbyPref(token, config);
     	lobbyDB.setInLobbyStatus(token, false);
         
-    	String msgInit = userLobbyDB.getAllUserInALobby_toString(token);
+    	var msgInit = userLobbyDB.getAllUserInALobbyToString(token);
     	String msgEncrypt = SecurityUtility.encrypt(msgInit);
-    	    	
-    	try {
-			System.out.println("TEST : \n"+ SecurityUtility.decrypt(msgEncrypt));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	  
     	return Response.status(Response.Status.OK)
     			.entity(msgEncrypt)
-    			.type(MediaType.APPLICATION_JSON)
+    			.type(MediaType.TEXT_PLAIN)
     			.build();
     }
+
     
     @GET
     @Path("/helloworld")
@@ -134,7 +122,7 @@ public class LobbyRessource {
     @Path("/quit")
     @Produces(MediaType.TEXT_PLAIN)
     public Response UserQuitLobby(@Context HttpHeaders headers) {
-        String message;
+    	var message = "";
 
     	String userID = headers.getHeaderString("X-User");
     	
@@ -147,14 +135,19 @@ public class LobbyRessource {
     	}
     		
     	String token = userLobbyDB.getTokenFromUserID(userID);
-           
-        if(!(userLobbyDB.removeUserFromLobby(token, userID) && userDB.removeUser(userID))){
-            message = "User or Lobby not found";
-            return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-        }else {
-        	 message = "User removed end deleted";
-             return Response.status(Response.Status.OK).entity(message).build();
-        }
+          
+    	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
+    		lobbyDB.removeLobby(token);
+    		message += "Lobby deleted ";
+    		
+    	}
+        userLobbyDB.removeUserFromLobby(token, userID);
+        userDB.removeUser(userID);
+        message += "User removed end deleted";
+        return Response.status(Response.Status.OK)
+        		.entity(message)
+        		.build();
+        
     }
     
     @GET
@@ -204,7 +197,7 @@ public class LobbyRessource {
     	String token = userLobbyDB.getTokenFromUserID(userId);
     	
     	String ownerID = lobbyDB.getOwnerID(token);
-    	String message = "{\"ownerID\":"+ownerID+"}";
+    	String message = "{\"ownerID\": \""+ownerID+"\"}";
     	return Response.status(Response.Status.OK)
     			.entity(message)
     			.type(MediaType.APPLICATION_JSON)
@@ -294,10 +287,11 @@ public class LobbyRessource {
     }
     
     @DELETE
+    @Transactional
     @Path("/endGameDeletion")
     @Produces(MediaType.TEXT_PLAIN)
     public Response endGameDeletion(@Context HttpHeaders headers) {
-    	
+
     	String userId = headers.getHeaderString("X-User");
     	
     	if(!userLobbyDB.isUserInALobby(userId)) {
@@ -307,42 +301,76 @@ public class LobbyRessource {
         			.entity(message)
         			.build();
     	}
-    	
+
     	String token = userLobbyDB.getTokenFromUserID(userId);
-    	    	
-    	String message = lobbyDB.getLobbyPreferences(token);
-    	
-    	if(!(userLobbyDB.removeUserFromLobby(token, userId) && userDB.removeUser(userId))){
-            message = "User or Lobby not found";
-            return Response.status(Response.Status.NOT_FOUND).entity(message).build();
-        }else {
-        	if(lobbyDB.isHeTheOwner(token, userId)) {
-        		lobbyDB.removeLobby(token);
-    			message = "Lobby Deleted";
-                return Response.status(Response.Status.OK).entity(message).build();
-        	}else{
-	        	 message = "User deleted";
-	             return Response.status(Response.Status.OK).entity(message).build();
-        	}
-             
-        }
+    	    	    
+    	var message = "";
+    	if(userLobbyDB.getNumberOfUserInALobby(token)==1) {
+    		lobbyDB.removeLobby(token);
+    		message += "Lobby deleted ";
+    	}
+    	userLobbyDB.removeUserFromLobby(token, userId);
+    	userDB.removeUser(userId);
+    	message += "User deleted";
+        return Response.status(Response.Status.OK).entity(message).build();
     	
     }
     
+    
+    @GET
+    @Path("/seeUserInLobby")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response seeUserInLobby(@Context HttpHeaders headers) {
+    	
+    	var userId = headers.getHeaderString("X-User");
+    	
+    	if(!userLobbyDB.isUserInALobby(userId)) {
+    		var message = "This User isn't in any lobby";
+        	
+        	return Response.status(Response.Status.NOT_FOUND)
+        			.entity(message)
+        			.build();
+    	}
+    	
+    	String token = userLobbyDB.getTokenFromUserID(userId);
+
+    	
+    	var message = userLobbyDB.getAllUserInALobbyUsernameToString(token);
+    	
+    	return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
+    }
+    
+    @GET
+    @Path("getToken")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getToken(@Context HttpHeaders headers) {
+    	
+    	var userId = headers.getHeaderString("X-User");
+    	
+    	if(!userLobbyDB.isUserInALobby(userId)) {
+    		var message = "This User isn't in any lobby";
+        	
+        	return Response.status(Response.Status.NOT_FOUND)
+        			.entity(message)
+        			.build();
+    	}
+    	
+    	String message = "{\"token\": \""+userLobbyDB.getTokenFromUserID(userId)+"\"}";
+    	
+    	return Response.status(Response.Status.OK)
+    			.entity(message)
+    			.type(MediaType.APPLICATION_JSON)
+    			.build();
+    }
+  
     @GET
     @Path("/seeDB")
     @Produces(MediaType.TEXT_PLAIN)
     public List<LobbyTable> seeDatabaseFull(){
         return lobbyDB.getFullDB();
-    }
-    
-    /*TODO: This is for dev purposes only: */
-    
-    @GET
-    @Path("/seeUserInLobbyDB")
-    public String seeUserInLobbyDB() {
-        return String.valueOf(userLobbyDB);
-    }
-    
+    }    
 }
 

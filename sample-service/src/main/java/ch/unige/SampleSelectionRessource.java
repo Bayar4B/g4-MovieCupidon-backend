@@ -18,23 +18,22 @@ import java.util.*;
 @Path("/sample-selection")
 public class SampleSelectionRessource {
 
-    private String apiKey = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
-    private TmdbApi tmdbApi = new TmdbApi(apiKey);
+    private static final String API_KEY = ConfigProvider.getConfig().getValue("tmdb.apiKey", String.class);
+    private static final TmdbApi TMDB_API = new TmdbApi(API_KEY);
 
-    private TmdbGenre tmdbGenre = tmdbApi.getGenre();
+    private static final TmdbGenre TMDB_GENRE = TMDB_API.getGenre();
 
-    private Map<String, Integer> genreHashMap = generateGenreHashMap();
+    private static final Map<String, Integer> GENRE_HASH_MAP = generateGenreHashMap();
 
     private int sizeSample = 20;
 
-    private Map<String, Integer> generateGenreHashMap(){
+    private static Map<String, Integer> generateGenreHashMap(){
         Map<String, Integer> res = new HashMap<>();
-        for (Genre g : tmdbGenre.getGenreList("en")){
+        for (Genre g : TMDB_GENRE.getGenreList("en")){
             res.put(g.getName().toLowerCase(Locale.ROOT), g.getId());
         }
         return res;
     }
-
 
     @POST
     @Path("/get-sample")
@@ -44,19 +43,23 @@ public class SampleSelectionRessource {
 
         int sizeGenreList = config.getGenreList().length;
         if (sizeGenreList > 3 || sizeGenreList < 1){
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            var message = "Please choose between 1 and 3 genres.";
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
 
         int[] genreIdList = new int[sizeGenreList];
 
         int i = 0;
         for (String genreParam : config.getGenreList()){
-            if (genreHashMap.get(genreParam.toLowerCase(Locale.ROOT)) != null){
-                genreIdList[i] = genreHashMap.get(genreParam.toLowerCase(Locale.ROOT));
+            if (GENRE_HASH_MAP.get(genreParam.toLowerCase(Locale.ROOT)) != null){
+                genreIdList[i] = GENRE_HASH_MAP.get(genreParam.toLowerCase(Locale.ROOT));
                 i++;
             }
             else{
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                String message = "The chosen gender " + genreParam +
+                        " does not exist. Please select a valid genre from : "
+                        + GENRE_HASH_MAP.keySet();
+                return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
             }
         }
 
@@ -73,7 +76,7 @@ public class SampleSelectionRessource {
         }
 
         ArrayList<MovieDb> sample = new ArrayList<>();
-        TmdbDiscover disco = tmdbApi.getDiscover();
+        TmdbDiscover disco = TMDB_API.getDiscover();
         i = 0;
         for (int genreID: genreIdList){
             String genreIDStr = Integer.toString(genreID);
@@ -124,6 +127,13 @@ public class SampleSelectionRessource {
             }
             i++;
         }
+
+        for (var j = 0; j < sample.size(); j++) {
+            sample.get(j).setId(j);
+            String finalPosterPath = "https://image.tmdb.org/t/p/original" + sample.get(j).getPosterPath();
+            sample.get(j).setPosterPath(finalPosterPath);
+        }
+
         return Response.ok(sample).build();
     }
 
@@ -131,9 +141,14 @@ public class SampleSelectionRessource {
     @Path("/helloworld")
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {
-
         return "This is sample selection service";
     }
+
+
+    public void changeSizeSample(int newSize){
+        this.sizeSample = newSize;
+    }
+
 
 
 

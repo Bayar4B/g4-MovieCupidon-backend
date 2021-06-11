@@ -3,60 +3,46 @@ package ch.unige.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-//import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-//import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
 @Entity
 public class UserInLobbyDB extends PanacheEntity{
     
     public String token;
     public String userID;
-    public ArrayList<Integer> votesID = new ArrayList<Integer>();
+    public Integer result = -1;
 
-    public String getToken() {
-        return this.token;
-    }
+    static final String TOKEN_STRING = "token";
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getUserID() {
-        return this.userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    public ArrayList<Integer> getVotesID() {
-        return this.votesID;
-    }
-
-    public void setVotesID(ArrayList<Integer> votesID) {
-        this.votesID = votesID;
-    }
+    @Column(length = 1024)
+    public ArrayList<Integer> votesID = new ArrayList<Integer>(); 
 
     public static UserInLobbyDB getUser(String userID) {
         return find("userID", userID).firstResult();
     }
+
+    public static UserInLobbyDB getUserFromToken(String token) {
+        return find(TOKEN_STRING, token).firstResult();
+    }
     
     public static boolean getStatus(String token) {
-        List<UserInLobbyDB> users = UserInLobbyDB.list("token", token);
+        List<UserInLobbyDB> users = list(TOKEN_STRING, token);
         for(UserInLobbyDB user : users) {
-            if(user.votesID.size() != 1) {
+            if(user.votesID.size() != 20) {
                 return false;
             }
-            //System.out.println(user.votesID.size());
         }
         return true;
     }
 
-    public static void deleteUsers(String token) {
-        UserInLobbyDB.delete("token", token);
+    public static void writeResultToDB(Integer movieWinnerID, String token) {
+        List<UserInLobbyDB> users = find(TOKEN_STRING, token).list();
+        for(UserInLobbyDB user : users) {
+            user.result = movieWinnerID;
+        }
     }
 
     public static void deleteUser(String userID) {

@@ -60,7 +60,7 @@ public class JoinLobbyRessource {
 
         UserInLobbyTable userInLobby = userInLobbyDB.addUserInLobby(token, userID);
 
-        String message = "{\"token\":"+token+"}";
+        String message = "{\"token\": \""+token+"\"}";
         
         // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
         return Response.status(Response.Status.OK)
