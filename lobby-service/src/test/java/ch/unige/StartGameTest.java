@@ -57,7 +57,7 @@ public class StartGameTest extends TestCase{
 	    userLobbyDB.toggleReadyStatus(lobby.getToken(), joinerInLobby4.getUserID());
 	    
 	    // Recup du body de retour
-	    String msgInit = userLobbyDB.getAllUserInALobby_toString(lobby.getToken());
+	    String msgInit = userLobbyDB.getAllUserInALobbyToString(lobby.getToken());
 	    String msgEncrypt = SecurityUtility.encrypt(msgInit);
 	    
         // ----------- Test que toutes les conditions sont réunis pour pouvoir lancer la game ----------- //

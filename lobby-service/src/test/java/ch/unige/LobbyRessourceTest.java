@@ -24,7 +24,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.core.MediaType;
 
 @QuarkusTest
-public class LobbyRessourceTest extends TestCase{
+class LobbyRessourceTest extends TestCase{
 	
 	@Inject
     private UserDB userDB;
@@ -107,7 +107,7 @@ public class LobbyRessourceTest extends TestCase{
 			.when().get("/lobby/whoIsTheOwner")
 			.then()
 				.statusCode(200)
-				.body(is("{\"ownerID\":"+Owner.getUserID()+"}"));
+				.body(is("{\"ownerID\": \""+Owner.getUserID()+"\"}"));
 	}
 	
 	@Test
@@ -337,25 +337,13 @@ public class LobbyRessourceTest extends TestCase{
 	}
 	
 	@Test
-	public void TokkenTest() {
-		UserTable Owner = userDB.add_user("OwnerID_size", "OwnerUsername");
-		
-	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
-		
-	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
-	    given().header("X-User", Owner.getUserID())
-			.when().get("/lobby/"+lobby.getToken())
-			.then()
-				.statusCode(200);
-	}
-	
-	@Test
 	public void HelloWorldTest() {
 		given()
 			.when().get("/lobby/helloworld")
 			.then()
 				.statusCode(200);
 	}
+	
 	@Test
 	public void seeDBTest() {
 		List<LobbyTable> db = lobbyDB.getFullDB();
@@ -366,4 +354,59 @@ public class LobbyRessourceTest extends TestCase{
 				.statusCode(200)
 				.body(is(dbString));
 	}
+	
+	@Test
+	void seeUserInLobbyTest() {
+		UserTable Owner = userDB.add_user("OwnerID_seeUserInLobby", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    
+	    UserTable Joiner1 = userDB.add_user("JoinerID1_seeUserInLobby", "JoinerUsername1");
+    	
+        // ----------- Ajout des Joiners à la Lobby ----------- // 
+        
+	    UserInLobbyTable joinerInLobby1 = userLobbyDB.addUserInLobby(lobby.getToken(), Joiner1.getUserID());
+	    
+	    given().header("X-User", Owner.getUserID())
+			.when().get("/lobby/seeUserInLobby")
+			.then()
+				.statusCode(200)
+				.body(is("{\n"
+						+ "\"listPlayer\": [\"OwnerUsername\", \"JoinerUsername1\"]\n"
+						+ "}"));
+	}
+	
+	@Test
+	void seeUserInLobby_unknownTest() {
+		given().header("X-User", "ABCDEF")
+			.when().get("/lobby/seeUserInLobby")
+			.then()
+				.statusCode(404);
+	}
+	
+	@Test
+	void getTokenTest() {
+		UserTable Owner = userDB.add_user("OwnerID_getToken", "OwnerUsername");
+		
+	    LobbyTable lobby = lobbyDB.add_lobby(Owner.getUserID());
+		
+	    UserInLobbyTable ownerInLobby = userLobbyDB.addUserInLobby(lobby.getToken(), Owner.getUserID());
+	    
+	    given().header("X-User", Owner.getUserID())
+		.when().get("/lobby/getToken")
+		.then()
+			.statusCode(200)
+			.body(is("{\"token\": \""+lobby.getToken()+"\"}"));
+	}
+	
+	@Test
+	void getToken_RandomID() {
+		given().header("X-User", "ABCDEF")
+			.when().get("/lobby/getToken")
+			.then()
+				.statusCode(404);
+	}
+	
 }

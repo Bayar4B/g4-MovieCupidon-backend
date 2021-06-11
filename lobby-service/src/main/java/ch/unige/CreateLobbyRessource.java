@@ -32,7 +32,7 @@ public class CreateLobbyRessource {
     @Transactional
     @Produces(MediaType.APPLICATION_JSON) 
     public Response createlobby(@FormParam("username") String username, @Context HttpHeaders headers) {
-    	
+
     	String userid = headers.getHeaderString("X-User");
     	
     	if(userInLobbyDB.isUserInALobby(userid)) {
@@ -52,7 +52,7 @@ public class CreateLobbyRessource {
     	UserInLobbyTable userInLobby = userInLobbyDB.addUserInLobby(token, userid);
 
         // Message JSON envoyé
-        String message = "{\"token\":"+token+"}";
+        String message = "{\"token\": \""+token+"\"}";
         
         // Retourne 200 en cas de succès et le body "{"ownerID": ownerID}"
         return Response.status(Response.Status.OK)
