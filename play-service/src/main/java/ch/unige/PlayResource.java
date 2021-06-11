@@ -129,7 +129,7 @@ public class PlayResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
         // Regarder si le sender est dans une partie
-        UserInLobbyDB uil = UserInLobbyDB.getUser(userid);
+        var uil = UserInLobbyDB.getUser(userid);
         if (uil == null) {
             var message = "Le_joueur_n'est_pas_dans_une_partie_!";
             return Response.status(Response.Status.UNAUTHORIZED).entity(message).build();
