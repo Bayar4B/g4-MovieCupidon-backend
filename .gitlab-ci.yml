@@ -17,7 +17,6 @@ build:
     paths:
       - lobby-service/target/
       - sample-service/target/
-      - chat-service/target/
       - play-service/target/
 
 coverage:

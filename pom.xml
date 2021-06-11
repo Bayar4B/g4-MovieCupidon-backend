@@ -9,7 +9,6 @@
   <modules>
     <module>lobby-service</module>
     <module>sample-service</module>
-    <module>chat-service</module>
     <module>play-service</module>
     <module>coverage</module>
   </modules>
